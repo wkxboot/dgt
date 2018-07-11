@@ -1,0 +1,861 @@
+###############################################################################
+#
+# IAR ELF Linker V8.11.2.13589/W32 for ARM                11/Jul/2018  20:00:33
+# Copyright 2007-2017 IAR Systems AB.
+#
+#    Output file  =  
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\hello_world.out.tmp
+#    Map file     =  
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\list\hello_world.map
+#    Command line =  
+#        -f C:\Users\dell\AppData\Local\Temp\EWFA6.tmp
+#        (D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\board.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\clock_config.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\cmsis_os.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\cpu_utils.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\croutine.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\event_groups.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\freertos.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_assert.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_clock.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_common.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_debug_console.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_gpio.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_power.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_reset.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_swm.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_syscon.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\fsl_usart.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\heap_4.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\hello_world.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\list.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\log.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\modbus-rtu.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\modbus.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\modbus_port.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\pin_mux.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\port.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\portasm.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\queue.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\SEGGER_RTT.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\SEGGER_RTT_printf.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\SEGGER_RTT_Syscalls_IAR.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\serial.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\serial_device.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\serial_device_port.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\startup_LPC824.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\system_LPC824.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\tasks.o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj\timers.o
+#        --redirect _Printf=_PrintfSmallNoMb --redirect _Scanf=_ScanfSmallNoMb
+#        -o
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\hello_world.out.tmp
+#        --map
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\list\hello_world.map
+#        --config
+#        D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar/LPC824_flash.icf
+#        --semihosting --entry __iar_program_start --vfe --text_out locale)
+#
+###############################################################################
+
+*******************************************************************************
+*** RUNTIME MODEL ATTRIBUTES
+***
+
+CppFlavor       = *
+__Heap_Handler  = DLMalloc
+__SystemLibrary = DLib
+__dlib_version  = 6
+
+
+*******************************************************************************
+*** HEAP SELECTION
+***
+
+The advanced heap was selected because the application calls memory
+allocation functions outside of system library functions, and there
+are calls to deallocation functions in the application.
+
+
+*******************************************************************************
+*** PLACEMENT SUMMARY
+***
+
+"A0":  place at 0x00000000 { ro section .intvec };
+"P1":  place in [from 0x00000000 to 0x0000013f] |
+                [from 0x00000140 to 0x00007fff] { ro };
+define block RW { rw };
+"P2":  place in [from 0x10000000 to 0x10001eff] { block RW };
+define block ZI { zi };
+"P3":  place in [from 0x10000000 to 0x10001eff] { block ZI };
+define block CSTACK with size = 256, alignment = 8 { };
+"P5":  place in [from 0x10001f00 to 0x10001fff] { block CSTACK };
+initialize by copy { rw, section .textrw };
+
+  Section            Kind        Address    Size  Object
+  -------            ----        -------    ----  ------
+"A0":                                       0xc0
+  .intvec            ro code  0x00000000    0xc0  startup_LPC824.o [1]
+                            - 0x000000c0    0xc0
+
+"P1", part 1 of 2:                          0x78
+  .text              ro code  0x000000c0     0x2  startup_LPC824.o [1]
+  .text              ro code  0x000000c4    0x5c  ABImemcpy.o [4]
+  .text              ro code  0x00000120     0x2  IntDivZer.o [4]
+  .text              ro code  0x00000122     0x2  startup_LPC824.o [1]
+  .text              ro code  0x00000124     0x2  freertos.o [1]
+  .text              ro code  0x00000126     0x4  low_level_init.o [3]
+  .rodata            const    0x0000012c     0x4  fsl_usart.o [1]
+  .rodata            const    0x00000130     0x0  zero_init3.o [4]
+  .rodata            const    0x00000130     0x0  copy_init3.o [4]
+  .rodata            const    0x00000130     0x8  clock_config.o [1]
+                            - 0x00000138    0x78
+
+"P1", part 2 of 2:                        0x6514
+  .text              ro code  0x00000140  0x14d6  modbus.o [1]
+  .text              ro code  0x00001618   0x350  hello_world.o [1]
+  .text              ro code  0x00001968   0x410  SEGGER_RTT_printf.o [1]
+  .text              ro code  0x00001d78    0xe0  I32DivModFast.o [4]
+  .text              ro code  0x00001e58    0x10  modbus_port.o [1]
+  .text              ro code  0x00001e68    0x50  ABImemset.o [4]
+  .text              ro code  0x00001eb8    0x9c  cmsis_os.o [1]
+  .text              ro code  0x00001f54    0x60  cpu_utils.o [1]
+  .text              ro code  0x00001fb4    0x1c  log.o [1]
+  .text              ro code  0x00001fd0   0x3a0  modbus-rtu.o [1]
+  .text              ro code  0x00002370    0x74  pin_mux.o [1]
+  .text              ro code  0x000023e4    0xa8  clock_config.o [1]
+  .text              ro code  0x0000248c   0x37c  fsl_debug_console.o [1]
+  .text              ro code  0x00002808   0x1f4  SEGGER_RTT.o [1]
+  .text              ro code  0x000029fc   0x230  heap_4.o [1]
+  .text              ro code  0x00002c2c   0x904  tasks.o [1]
+  .text              ro code  0x00003530   0x10c  port.o [1]
+  .text              ro code  0x0000363c   0x3ca  serial_device.o [1]
+  .text              ro code  0x00003a08    0x70  fsl_swm.o [1]
+  .text              ro code  0x00003a78    0x18  fsl_assert.o [1]
+  .text              ro code  0x00003a90   0x274  fsl_clock.o [1]
+  .text              ro code  0x00003d04    0x10  strlen.o [4]
+  .text              ro code  0x00003d14    0x10  strcpy.o [4]
+  .text              ro code  0x00003d24     0x2  freertos.o [1]
+  .text              ro code  0x00003d26    0x9a  list.o [1]
+  .text              ro code  0x00003dc0   0x3b4  timers.o [1]
+  CODE               ro code  0x00004174    0x7c  portasm.o [1]
+  .text              ro code  0x000041f0    0x38  serial_device_port.o [1]
+  .text              ro code  0x00004228   0x606  queue.o [1]
+  .text              ro code  0x00004830   0x210  fsl_usart.o [1]
+  .text              ro code  0x00004a40    0x6e  fsl_reset.o [1]
+  .text              ro code  0x00004ab0   0x1ec  serial.o [1]
+  .rodata            const    0x00004c9c   0x100  modbus-rtu.o [1]
+  .rodata            const    0x00004d9c   0x100  modbus-rtu.o [1]
+  .rodata            const    0x00004e9c    0x78  modbus.o [1]
+  .rodata            const    0x00004f14    0x74  modbus.o [1]
+  .rodata            const    0x00004f88    0x6c  modbus.o [1]
+  .rodata            const    0x00004ff4    0x6c  modbus.o [1]
+  .rodata            const    0x00005060    0x64  modbus.o [1]
+  .rodata            const    0x000050c4    0x60  modbus-rtu.o [1]
+  .rodata            const    0x00005124    0x60  modbus.o [1]
+  .rodata            const    0x00005184    0x60  modbus.o [1]
+  .rodata            const    0x000051e4    0x5c  modbus-rtu.o [1]
+  .rodata            const    0x00005240    0x5c  modbus.o [1]
+  .rodata            const    0x0000529c    0x5c  modbus.o [1]
+  .rodata            const    0x000052f8    0x5c  modbus.o [1]
+  .rodata            const    0x00005354    0x58  modbus-rtu.o [1]
+  .rodata            const    0x000053ac    0x58  modbus.o [1]
+  .rodata            const    0x00005404    0x54  modbus.o [1]
+  .rodata            const    0x00005458    0x54  modbus.o [1]
+  .rodata            const    0x000054ac    0x54  modbus.o [1]
+  .rodata            const    0x00005500    0x50  modbus-rtu.o [1]
+  .rodata            const    0x00005550    0x50  modbus-rtu.o [1]
+  .rodata            const    0x000055a0    0x50  modbus.o [1]
+  .rodata            const    0x000055f0    0x50  modbus.o [1]
+  .rodata            const    0x00005640    0x50  modbus.o [1]
+  .rodata            const    0x00005690    0x50  modbus.o [1]
+  .rodata            const    0x000056e0    0x50  modbus.o [1]
+  .rodata            const    0x00005730    0x50  modbus.o [1]
+  .rodata            const    0x00005780    0x4c  modbus-rtu.o [1]
+  .rodata            const    0x000057cc    0x4c  modbus-rtu.o [1]
+  .rodata            const    0x00005818    0x4c  modbus.o [1]
+  .rodata            const    0x00005864    0x4c  modbus.o [1]
+  .rodata            const    0x000058b0    0x48  clock_config.o [1]
+  .rodata            const    0x000058f8    0x48  fsl_clock.o [1]
+  .rodata            const    0x00005940    0x48  fsl_reset.o [1]
+  .rodata            const    0x00005988    0x48  fsl_usart.o [1]
+  .rodata            const    0x000059d0    0x48  modbus-rtu.o [1]
+  .rodata            const    0x00005a18    0x48  modbus.o [1]
+  .rodata            const    0x00005a60    0x44  fsl_swm.o [1]
+  .rodata            const    0x00005aa4    0x44  hello_world.o [1]
+  .rodata            const    0x00005ae8    0x44  modbus-rtu.o [1]
+  .rodata            const    0x00005b2c    0x44  modbus.o [1]
+  .rodata            const    0x00005b70    0x44  modbus.o [1]
+  .rodata            const    0x00005bb4    0x40  hello_world.o [1]
+  .rodata            const    0x00005bf4    0x40  modbus-rtu.o [1]
+  .rodata            const    0x00005c34    0x40  modbus-rtu.o [1]
+  .rodata            const    0x00005c74    0x40  modbus.o [1]
+  .text              ro code  0x00005cb4    0x40  zero_init3.o [4]
+  .rodata            const    0x00005cf4    0x3c  hello_world.o [1]
+  .rodata            const    0x00005d30    0x3c  hello_world.o [1]
+  .rodata            const    0x00005d6c    0x3c  hello_world.o [1]
+  .rodata            const    0x00005da8    0x3c  hello_world.o [1]
+  .rodata            const    0x00005de4    0x3c  hello_world.o [1]
+  .rodata            const    0x00005e20    0x3c  hello_world.o [1]
+  .rodata            const    0x00005e5c    0x3c  hello_world.o [1]
+  .rodata            const    0x00005e98    0x3c  hello_world.o [1]
+  .rodata            const    0x00005ed4    0x3c  modbus-rtu.o [1]
+  .rodata            const    0x00005f10    0x3c  modbus-rtu.o [1]
+  .rodata            const    0x00005f4c    0x3c  modbus.o [1]
+  .rodata            const    0x00005f88    0x3c  modbus.o [1]
+  .rodata            const    0x00005fc4    0x38  hello_world.o [1]
+  .rodata            const    0x00005ffc    0x38  hello_world.o [1]
+  .rodata            const    0x00006034    0x38  hello_world.o [1]
+  .rodata            const    0x0000606c    0x38  modbus.o [1]
+  .rodata            const    0x000060a4    0x38  modbus.o [1]
+  .rodata            const    0x000060dc    0x34  hello_world.o [1]
+  .rodata            const    0x00006110    0x34  hello_world.o [1]
+  .rodata            const    0x00006144    0x34  modbus.o [1]
+  .rodata            const    0x00006178    0x34  modbus.o [1]
+  .rodata            const    0x000061ac    0x34  modbus.o [1]
+  .rodata            const    0x000061e0    0x34  modbus.o [1]
+  .rodata            const    0x00006214    0x34  modbus.o [1]
+  .rodata            const    0x00006248    0x30  hello_world.o [1]
+  .rodata            const    0x00006278    0x30  log.o [1]
+  .rodata            const    0x000062a8    0x30  modbus.o [1]
+  .text              ro code  0x000062d8    0x30  copy_init3.o [4]
+  .rodata            const    0x00006308    0x2c  fsl_assert.o [1]
+  .rodata            const    0x00006334    0x2c  modbus.o [1]
+  .text              ro code  0x00006360    0x28  data_init.o [4]
+  .text              ro code  0x00006388    0x26  system_LPC824.o [1]
+  .iar.init_table    const    0x000063b0    0x24  - Linker created -
+  Initializer bytes  const    0x000063d4    0x20  <for RW-1>
+  .text              ro code  0x000063f4    0x1a  cmain.o [4]
+  .text              ro code  0x0000640e     0x8  exit.o [3]
+  .text              ro code  0x00006418     0xa  cexit.o [4]
+  .text              ro code  0x00006424    0x14  exit.o [5]
+  .rodata            const    0x00006438    0x18  modbus.o [1]
+  .rodata            const    0x00006450    0x18  modbus.o [1]
+  .rodata            const    0x00006468    0x14  hello_world.o [1]
+  .rodata            const    0x0000647c    0x14  hello_world.o [1]
+  .rodata            const    0x00006490    0x10  modbus.o [1]
+  .rodata            const    0x000064a0    0x10  modbus.o [1]
+  .rodata            const    0x000064b0    0x10  SEGGER_RTT_printf.o [1]
+  .text              ro code  0x000064c0    0x10  startup_LPC824.o [1]
+  .rodata            const    0x000064d0     0xc  fsl_usart.o [1]
+  .rodata            const    0x000064dc     0xc  hello_world.o [1]
+  .rodata            const    0x000064e8     0xc  hello_world.o [1]
+  .rodata            const    0x000064f4     0xc  modbus.o [1]
+  .rodata            const    0x00006500     0xc  SEGGER_RTT.o [1]
+  .text              ro code  0x0000650c     0xc  startup_LPC824.o [1]
+  .text              ro code  0x00006518     0xc  cstartup_M.o [4]
+  .rodata            const    0x00006524     0x8  fsl_clock.o [1]
+  .rodata            const    0x0000652c     0x8  fsl_reset.o [1]
+  .rodata            const    0x00006534     0x8  fsl_swm.o [1]
+  .rodata            const    0x0000653c     0x8  fsl_usart.o [1]
+  .rodata            const    0x00006544     0x8  SEGGER_RTT.o [1]
+  .rodata            const    0x0000654c     0x8  tasks.o [1]
+  .rodata            const    0x00006554     0x8  timers.o [1]
+  .rodata            const    0x0000655c     0x8  timers.o [1]
+  .text              ro code  0x00006564     0x8  freertos.o [1]
+  .text              ro code  0x0000656c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006574     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000657c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006584     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000658c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006594     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000659c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065a4     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065ac     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065b4     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065bc     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065c4     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065cc     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065d4     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065dc     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065e4     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065ec     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065f4     0x8  startup_LPC824.o [1]
+  .text              ro code  0x000065fc     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006604     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000660c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006614     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000661c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006624     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000662c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006634     0x8  startup_LPC824.o [1]
+  .text              ro code  0x0000663c     0x8  startup_LPC824.o [1]
+  .text              ro code  0x00006644     0x8  startup_LPC824.o [1]
+  .rodata            const    0x0000664c     0x4  fsl_usart.o [1]
+  .rodata            const    0x00006650     0x4  heap_4.o [1]
+                            - 0x00006654  0x6514
+
+"P2-P3", part 1 of 2:                       0x20
+  RW                          0x10000000    0x20  <Block>
+    RW-1                      0x10000000    0x20  <Init block>
+      .data          inited   0x10000000     0x4  port.o [1]
+      .data          inited   0x10000004    0x18  serial.o [1]
+      .data          inited   0x1000001c     0x4  system_LPC824.o [1]
+                            - 0x10000020    0x20
+
+"P2-P3", part 2 of 2:                     0x1e24
+  ZI                          0x10000020  0x1e24  <Block>
+    .bss             zero     0x10000020     0x4  cpu_utils.o [1]
+    .bss             zero     0x10000024     0x4  cpu_utils.o [1]
+    .bss             zero     0x10000028     0x4  cpu_utils.o [1]
+    .bss             zero     0x1000002c     0x4  cpu_utils.o [1]
+    .bss             zero     0x10000030     0x4  cpu_utils.o [1]
+    .bss             zero     0x10000034     0x4  fsl_clock.o [1]
+    .bss             zero     0x10000038     0x4  fsl_clock.o [1]
+    .bss             zero     0x1000003c     0x4  fsl_clock.o [1]
+    .bss             zero     0x10000040    0x10  fsl_debug_console.o [1]
+    .bss             zero     0x10000050  0x1900  heap_4.o [1]
+    .bss             zero     0x10001950     0x8  heap_4.o [1]
+    .bss             zero     0x10001958     0x4  heap_4.o [1]
+    .bss             zero     0x1000195c     0x4  heap_4.o [1]
+    .bss             zero     0x10001960     0x4  heap_4.o [1]
+    .bss             zero     0x10001964     0x4  heap_4.o [1]
+    .bss             zero     0x10001968     0x4  hello_world.o [1]
+    .bss             zero     0x1000196c     0x4  hello_world.o [1]
+    .bss             zero     0x10001970     0x4  hello_world.o [1]
+    .bss             zero     0x10001974     0x4  hello_world.o [1]
+    .bss             zero     0x10001978    0x14  hello_world.o [1]
+    .bss             zero     0x1000198c     0xc  hello_world.o [1]
+    .bss             zero     0x10001998    0x14  hello_world.o [1]
+    .bss             zero     0x100019ac    0x40  queue.o [1]
+    .bss             zero     0x100019ec    0xa8  SEGGER_RTT.o [1]
+    .bss             zero     0x10001a94   0x200  SEGGER_RTT.o [1]
+    .bss             zero     0x10001c94    0x40  SEGGER_RTT.o [1]
+    .bss             zero     0x10001cd4     0x4  serial.o [1]
+    .bss             zero     0x10001cd8     0x4  tasks.o [1]
+    .bss             zero     0x10001cdc    0x8c  tasks.o [1]
+    .bss             zero     0x10001d68    0x14  tasks.o [1]
+    .bss             zero     0x10001d7c    0x14  tasks.o [1]
+    .bss             zero     0x10001d90     0x4  tasks.o [1]
+    .bss             zero     0x10001d94     0x4  tasks.o [1]
+    .bss             zero     0x10001d98    0x14  tasks.o [1]
+    .bss             zero     0x10001dac    0x14  tasks.o [1]
+    .bss             zero     0x10001dc0     0x4  tasks.o [1]
+    .bss             zero     0x10001dc4    0x14  tasks.o [1]
+    .bss             zero     0x10001dd8     0x4  tasks.o [1]
+    .bss             zero     0x10001ddc     0x4  tasks.o [1]
+    .bss             zero     0x10001de0     0x4  tasks.o [1]
+    .bss             zero     0x10001de4     0x4  tasks.o [1]
+    .bss             zero     0x10001de8     0x4  tasks.o [1]
+    .bss             zero     0x10001dec     0x4  tasks.o [1]
+    .bss             zero     0x10001df0     0x4  tasks.o [1]
+    .bss             zero     0x10001df4     0x4  tasks.o [1]
+    .bss             zero     0x10001df8     0x4  tasks.o [1]
+    .bss             zero     0x10001dfc     0x4  tasks.o [1]
+    .bss             zero     0x10001e00     0x4  tasks.o [1]
+    .bss             zero     0x10001e04    0x14  timers.o [1]
+    .bss             zero     0x10001e18    0x14  timers.o [1]
+    .bss             zero     0x10001e2c     0x4  timers.o [1]
+    .bss             zero     0x10001e30     0x4  timers.o [1]
+    .bss             zero     0x10001e34     0x4  timers.o [1]
+    .bss             zero     0x10001e38     0x4  timers.o [1]
+    .bss             zero     0x10001e3c     0x4  timers.o [1]
+    .bss             zero     0x10001e40     0x1  serial.o [1]
+                            - 0x10001e44  0x1e24
+
+"P5":                                      0x100
+  CSTACK                      0x10001f00   0x100  <Block>
+    CSTACK           uninit   0x10001f00   0x100  <Block tail>
+                            - 0x10002000   0x100
+
+
+*******************************************************************************
+*** INIT TABLE
+***
+
+          Address     Size
+          -------     ----
+Zero (__iar_zero_init3)
+    1 destination range, total size 0x1e21:
+          0x10000020  0x1e21
+
+Copy (__iar_copy_init3)
+    1 source range, total size 0x20:
+          0x000063d4    0x20
+    1 destination range, total size 0x20:
+          0x10000000    0x20
+
+
+
+*******************************************************************************
+*** MODULE SUMMARY
+***
+
+    Module                ro code  ro data  rw data
+    ------                -------  -------  -------
+D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj: [1]
+    SEGGER_RTT.o              500       20      744
+    SEGGER_RTT_printf.o     1 040       16
+    clock_config.o            168       80
+    cmsis_os.o                156
+    cpu_utils.o                96                20
+    freertos.o                 12
+    fsl_assert.o               24       44
+    fsl_clock.o               628       80       12
+    fsl_debug_console.o       892                16
+    fsl_reset.o               110       80
+    fsl_swm.o                 112       76
+    fsl_usart.o               528      100
+    heap_4.o                  560        4    6 424
+    hello_world.o             848      996       68
+    list.o                    154
+    log.o                      28       48
+    modbus-rtu.o              928    1 488
+    modbus.o                5 334    2 940
+    modbus_port.o              16
+    pin_mux.o                 116
+    port.o                    268        4        4
+    portasm.o                 124
+    queue.o                 1 542                64
+    serial.o                  492       24       29
+    serial_device.o           970
+    serial_device_port.o       56
+    startup_LPC824.o          448
+    system_LPC824.o            38        4        4
+    tasks.o                 2 308        8      300
+    timers.o                  948       16       60
+    -----------------------------------------------
+    Total:                 19 444    6 028    7 745
+
+command line: [2]
+    -----------------------------------------------
+    Total:
+
+dl6M_tln.a: [3]
+    exit.o                      8
+    low_level_init.o            4
+    -----------------------------------------------
+    Total:                     12
+
+rt6M_tl.a: [4]
+    ABImemcpy.o                92
+    ABImemset.o                80
+    I32DivModFast.o           224
+    IntDivZer.o                 2
+    cexit.o                    10
+    cmain.o                    26
+    copy_init3.o               48
+    cstartup_M.o               12
+    data_init.o                40
+    strcpy.o                   16
+    strlen.o                   16
+    zero_init3.o               64
+    -----------------------------------------------
+    Total:                    630
+
+shb_l.a: [5]
+    exit.o                     20
+    -----------------------------------------------
+    Total:                     20
+
+    Gaps                       14        4
+    Linker created                      36      256
+---------------------------------------------------
+    Grand Total:           20 120    6 068    8 001
+
+
+*******************************************************************************
+*** ENTRY LIST
+***
+
+Entry                      Address    Size  Type      Object
+-----                      -------    ----  ----      ------
+.iar.init_table$$Base   0x000063b0           --   Gb  - Linker created -
+.iar.init_table$$Limit  0x000063d4           --   Gb  - Linker created -
+?main                   0x000063f5          Code  Gb  cmain.o [4]
+BOARD_BootClockPll24M   0x0000242b    0x46  Code  Gb  clock_config.o [1]
+BOARD_InitPins          0x0000239b    0x3e  Code  Gb  pin_mux.o [1]
+CLOCK_DisableClock      0x00002381    0x10  Code  Lc  pin_mux.o [1]
+CLOCK_EnableClock       0x00004831    0x10  Code  Lc  fsl_usart.o [1]
+CLOCK_EnableClock       0x00001619    0x10  Code  Lc  hello_world.o [1]
+CLOCK_EnableClock       0x00002371    0x10  Code  Lc  pin_mux.o [1]
+CLOCK_GetCoreSysClkFreq
+                        0x00003a91    0x12  Code  Lc  fsl_clock.o [1]
+CLOCK_GetExtClkFreq     0x00003abd     0x6  Code  Lc  fsl_clock.o [1]
+CLOCK_GetFreq           0x00003b39    0x46  Code  Gb  fsl_clock.o [1]
+CLOCK_GetIrcFreq        0x00003af1     0x4  Code  Gb  fsl_clock.o [1]
+CLOCK_GetMainClkFreq    0x00003b07    0x32  Code  Gb  fsl_clock.o [1]
+CLOCK_GetSysOscFreq     0x00003af5    0x12  Code  Gb  fsl_clock.o [1]
+CLOCK_GetSystemPLLFreq  0x00003aa3    0x14  Code  Lc  fsl_clock.o [1]
+CLOCK_GetSystemPLLInClockRate
+                        0x00003b7f    0x2e  Code  Gb  fsl_clock.o [1]
+CLOCK_GetWdtOscFreq     0x00003ab7     0x6  Code  Lc  fsl_clock.o [1]
+CLOCK_InitSystemPll     0x00003bd3    0xac  Code  Gb  fsl_clock.o [1]
+CLOCK_Select            0x000023e5    0x10  Code  Lc  clock_config.o [1]
+CLOCK_SetClkDivider     0x00001629    0x10  Code  Lc  hello_world.o [1]
+CLOCK_SetCoreSysClkDiv  0x000023f5    0x2a  Code  Lc  clock_config.o [1]
+CLOCK_SetMainClkSrc     0x00003ca5    0x38  Code  Gb  fsl_clock.o [1]
+CLOCK_UpdateClkSrc      0x00003ac3    0x2e  Code  Lc  fsl_clock.o [1]
+CSTACK$$Base            0x10001f00           --   Gb  - Linker created -
+CSTACK$$Limit           0x10002000           --   Gb  - Linker created -
+DbgConsole_ConvertRadixNumToString
+                        0x0000252b    0x96  Code  Lc  fsl_debug_console.o [1]
+DbgConsole_Getchar      0x000024d1    0x2e  Code  Gb  fsl_debug_console.o [1]
+DbgConsole_Printf       0x0000248d    0x22  Code  Gb  fsl_debug_console.o [1]
+DbgConsole_PrintfFormattedData
+                        0x000025c1   0x248  Code  Lc  fsl_debug_console.o [1]
+DbgConsole_PrintfPaddingCharacter
+                        0x00002509    0x22  Code  Lc  fsl_debug_console.o [1]
+DbgConsole_Putchar      0x000024af    0x22  Code  Gb  fsl_debug_console.o [1]
+EnableIRQ               0x00004ac7    0x1a  Code  Lc  serial.o [1]
+EndIdleMonitor          0x00001f6d    0x2c  Code  Gb  cpu_utils.o [1]
+IOCON_PinMuxSet         0x00002391     0xa  Code  Lc  pin_mux.o [1]
+POWER_DisablePD         0x0000241f     0xc  Code  Lc  clock_config.o [1]
+PendSV_Handler          0x0000417b          Code  Gb  portasm.o [1]
+RESET_ClearPeripheralReset
+                        0x00004a67    0x26  Code  Gb  fsl_reset.o [1]
+RESET_PeripheralReset   0x00004a99    0x16  Code  Gb  fsl_reset.o [1]
+RESET_SetPeripheralReset
+                        0x00004a41    0x26  Code  Gb  fsl_reset.o [1]
+RW$$Base                0x10000000           --   Gb  - Linker created -
+RW$$Limit               0x10000020           --   Gb  - Linker created -
+Region$$Table$$Base     0x000063b0           --   Gb  - Linker created -
+Region$$Table$$Limit    0x000063d4           --   Gb  - Linker created -
+SEGGER_RTT_Init         0x000029f5     0x8  Code  Gb  SEGGER_RTT.o [1]
+SEGGER_RTT_Write        0x000029c1    0x2e  Code  Gb  SEGGER_RTT.o [1]
+SEGGER_RTT_WriteNoLock  0x00002959    0x68  Code  Gb  SEGGER_RTT.o [1]
+SEGGER_RTT_printf       0x00001d65    0x14  Code  Gb  SEGGER_RTT_printf.o [1]
+SEGGER_RTT_vprintf      0x00001b79   0x1ec  Code  Gb  SEGGER_RTT_printf.o [1]
+SERIAL_ENTER_CRITICAL   0x00004209    0x10  Code  Gb  serial_device_port.o [1]
+SERIAL_EXIT_CRITICAL    0x00004219    0x10  Code  Gb  serial_device_port.o [1]
+SVC_Handler             0x000041b9          Code  Gb  portasm.o [1]
+SWM_SetMovablePinSelect
+                        0x00003a09    0x66  Code  Gb  fsl_swm.o [1]
+StartDefaultTask        0x00001669   0x236  Code  Gb  hello_world.o [1]
+StartIdleMonitor        0x00001f55    0x18  Code  Gb  cpu_utils.o [1]
+SysTick_Handler         0x00006565     0x8  Code  Gb  freertos.o [1]
+SystemCoreClock         0x1000001c     0x4  Data  Gb  system_LPC824.o [1]
+SystemInit              0x00006389    0x14  Code  Gb  system_LPC824.o [1]
+USART0_IRQHandler       0x00004c85     0x8  Code  Gb  serial.o [1]
+USART1_IRQHandler       0x00004c8d     0x8  Code  Gb  serial.o [1]
+USART2_IRQHandler       0x00004c95     0x8  Code  Gb  serial.o [1]
+USART_DisableInterrupts
+                        0x00004aed     0x8  Code  Lc  serial.o [1]
+USART_EnableInterrupts  0x00004ae5     0x8  Code  Lc  serial.o [1]
+USART_EnableRx          0x00004865    0x22  Code  Lc  fsl_usart.o [1]
+USART_EnableTx          0x00004841    0x24  Code  Lc  fsl_usart.o [1]
+USART_GetEnabledInterrupts
+                        0x00004af5     0x4  Code  Lc  serial.o [1]
+USART_GetInstance       0x00004887    0x2e  Code  Gb  fsl_usart.o [1]
+USART_GetStatusFlags    0x00004ae1     0x4  Code  Lc  serial.o [1]
+USART_Init              0x000048b5    0xb0  Code  Gb  fsl_usart.o [1]
+USART_ReadByte          0x00004aff     0x6  Code  Lc  serial.o [1]
+USART_SetBaudRate       0x00004971    0xbc  Code  Gb  fsl_usart.o [1]
+USART_WriteByte         0x00004af9     0x6  Code  Lc  serial.o [1]
+ZI$$Base                0x10000020           --   Gb  - Linker created -
+ZI$$Limit               0x10001e44           --   Gb  - Linker created -
+_DoInit                 0x00002809    0x54  Code  Lc  SEGGER_RTT.o [1]
+_GetAvailWriteSpace     0x00002925    0x1a  Code  Lc  SEGGER_RTT.o [1]
+_PrintInt               0x00001a95    0xe4  Code  Lc  SEGGER_RTT_printf.o [1]
+_PrintUnsigned          0x000019ad    0xe2  Code  Lc  SEGGER_RTT_printf.o [1]
+_PrintUnsigned::_aV2C   0x000064b0    0x10  Data  Lc  SEGGER_RTT_printf.o [1]
+_SEGGER_RTT             0x100019ec    0xa8  Data  Gb  SEGGER_RTT.o [1]
+_StoreChar              0x00001969    0x44  Code  Lc  SEGGER_RTT_printf.o [1]
+_WriteBlocking          0x0000285d    0x7a  Code  Lc  SEGGER_RTT.o [1]
+_WriteNoCheck           0x000028d7    0x4e  Code  Lc  SEGGER_RTT.o [1]
+__NVIC_EnableIRQ        0x00004ab1    0x16  Code  Lc  serial.o [1]
+__Vectors               0x00000000           --   Gb  startup_LPC824.o [1]
+__Vectors_End           0x000000c0          Data  Gb  startup_LPC824.o [1]
+__Vectors_Size {Abs}    0x000000c0           --   Gb  startup_LPC824.o [1]
+__aeabi_assert          0x00003a79    0x18  Code  Gb  fsl_assert.o [1]
+__aeabi_idiv            0x00001da5          Code  Gb  I32DivModFast.o [4]
+__aeabi_idiv0           0x00000121          Code  Gb  IntDivZer.o [4]
+__aeabi_idivmod         0x00001da5          Code  Gb  I32DivModFast.o [4]
+__aeabi_memcpy          0x000000c5          Code  Gb  ABImemcpy.o [4]
+__aeabi_memcpy4         0x000000ed          Code  Wk  ABImemcpy.o [4]
+__aeabi_memset          0x00001e69          Code  Gb  ABImemset.o [4]
+__aeabi_uidiv           0x00001dab          Code  Gb  I32DivModFast.o [4]
+__aeabi_uidivmod        0x00001dab          Code  Gb  I32DivModFast.o [4]
+__cmain                 0x000063f5          Code  Gb  cmain.o [4]
+__exit                  0x00006425    0x14  Code  Gb  exit.o [5]
+__iar_Memset4_word      0x00001e89          Code  Gb  ABImemset.o [4]
+__iar_Memset_word       0x00001e75          Code  Gb  ABImemset.o [4]
+__iar_copy_init3        0x000062d9    0x30  Code  Gb  copy_init3.o [4]
+__iar_data_init3        0x00006361    0x28  Code  Gb  data_init.o [4]
+__iar_program_start     0x00006519          Code  Gb  cstartup_M.o [4]
+__iar_systems$$module {Abs}
+                        0x00000001          Data  Gb  command line/config [2]
+__iar_zero_init3        0x00005cb5    0x40  Code  Gb  zero_init3.o [4]
+__low_level_init        0x00000127     0x4  Code  Gb  low_level_init.o [3]
+__vector_table          0x00000000          Data  Gb  startup_LPC824.o [1]
+__vector_table_0x1c     0x0000001c          Data  Gb  startup_LPC824.o [1]
+_acDownBuffer           0x10001c94    0x40  Data  Lc  SEGGER_RTT.o [1]
+_acUpBuffer             0x10001a94   0x200  Data  Lc  SEGGER_RTT.o [1]
+_call_main              0x00006401          Code  Gb  cmain.o [4]
+_exit                   0x00006419          Code  Gb  cexit.o [4]
+_main                   0x0000640b          Code  Gb  cmain.o [4]
+_modbus_init_common     0x00001415    0x24  Code  Gb  modbus.o [1]
+_modbus_receive_msg     0x0000031f   0x18e  Code  Gb  modbus.o [1]
+_modbus_rtu_backend     0x000057cc    0x4c  Data  Gb  modbus-rtu.o [1]
+_modbus_rtu_build_request_basis
+                        0x00001ff7    0x1c  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_build_response_basis
+                        0x00002013     0xc  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_check_integrity
+                        0x00002105    0x7c  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_close       0x000021c1    0x4e  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_connect     0x00002181    0x40  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_flush       0x00002221     0xa  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_free        0x0000223d    0x18  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_pre_check_confirmation
+                        0x000020cd    0x38  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_prepare_response_tid
+                        0x0000204f     0xa  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_receive     0x00002087    0x3c  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_recv        0x000020c3     0xa  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_select      0x0000222b    0x12  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_send        0x0000207d     0xa  Code  Lc  modbus-rtu.o [1]
+_modbus_rtu_send_msg_pre
+                        0x00002059    0x24  Code  Lc  modbus-rtu.o [1]
+_modbus_set_slave       0x00001fd1    0x26  Code  Lc  modbus-rtu.o [1]
+bits                    0x1000198c     0xc  Data  Gb  hello_world.o [1]
+check_confirmation      0x000004f1   0x1e4  Code  Lc  modbus.o [1]
+compute_data_length_after_meta
+                        0x000002cd    0x52  Code  Lc  modbus.o [1]
+compute_meta_length_after_function
+                        0x0000027d    0x50  Code  Lc  modbus.o [1]
+compute_response_length_from_request
+                        0x00000185    0x82  Code  Lc  modbus.o [1]
+cpu_task                0x00001641    0x28  Code  Gb  hello_world.o [1]
+cpu_task_hdl            0x1000196c     0x4  Data  Gb  hello_world.o [1]
+crc16                   0x0000201f    0x30  Code  Lc  modbus-rtu.o [1]
+ctx                     0x10001970     0x4  Data  Gb  hello_world.o [1]
+defaultTaskHandle       0x10001968     0x4  Data  Gb  hello_world.o [1]
+exit                    0x0000640f     0x8  Code  Gb  exit.o [3]
+fifo_flush              0x00003689    0x22  Code  Lc  serial_device.o [1]
+fifo_free_len           0x00003651    0x1e  Code  Lc  serial_device.o [1]
+fifo_get_byte           0x000036ab    0x1c  Code  Lc  serial_device.o [1]
+fifo_init               0x0000363d    0x14  Code  Lc  serial_device.o [1]
+fifo_len                0x0000366f    0x1a  Code  Lc  serial_device.o [1]
+fifo_put_byte           0x000036c7    0x18  Code  Lc  serial_device.o [1]
+findSyestemPllPsel      0x00003bad    0x26  Code  Lc  fsl_clock.o [1]
+g_Ext_Clk_Freq          0x10000034     0x4  Data  Gb  fsl_clock.o [1]
+g_Sys_Pll_Freq          0x1000003c     0x4  Data  Gb  fsl_clock.o [1]
+g_Wdt_Osc_Freq          0x10000038     0x4  Data  Gb  fsl_clock.o [1]
+hal_driver              0x10000004    0x18  Data  Gb  serial.o [1]
+inHandlerMode           0x00001ecd    0x14  Code  Lc  cmsis_os.o [1]
+isr_serial_recv         0x00003995    0x44  Code  Gb  serial_device.o [1]
+isr_serial_send         0x00003953    0x42  Code  Gb  serial_device.o [1]
+log_init                0x00001fb5    0x1c  Code  Gb  log.o [1]
+log_time                0x00001639     0x8  Code  Gb  hello_world.o [1]
+main                    0x0000189f    0x56  Code  Gb  hello_world.o [1]
+makeFreeRtosPriority    0x00001eb9    0x14  Code  Lc  cmsis_os.o [1]
+map                     0x10001974     0x4  Data  Gb  hello_world.o [1]
+modbus_connect          0x0000145d    0x24  Code  Gb  modbus.o [1]
+modbus_flush            0x00000141    0x44  Code  Gb  modbus.o [1]
+modbus_free             0x00001491     0xe  Code  Gb  modbus.o [1]
+modbus_mapping_new      0x000015bd    0x20  Code  Gb  modbus.o [1]
+modbus_mapping_new_start_address
+                        0x0000149f   0x11e  Code  Gb  modbus.o [1]
+modbus_new_rtu          0x00002255    0xee  Code  Gb  modbus-rtu.o [1]
+modbus_read_bits        0x0000108d    0x62  Code  Gb  modbus.o [1]
+modbus_read_input_registers
+                        0x000011ad    0x4c  Code  Gb  modbus.o [1]
+modbus_receive          0x000004b1    0x26  Code  Gb  modbus.o [1]
+modbus_reply            0x0000075d   0x882  Code  Gb  modbus.o [1]
+modbus_set_bits_from_bytes
+                        0x000015dd    0x3a  Code  Gb  modbus.o [1]
+modbus_set_slave        0x00001439    0x24  Code  Gb  modbus.o [1]
+modbus_write_bits       0x00001211   0x114  Code  Gb  modbus.o [1]
+modbus_write_registers  0x00001329    0xc2  Code  Gb  modbus.o [1]
+osCPU_IdleSpentTime     0x1000002c     0x4  Data  Gb  cpu_utils.o [1]
+osCPU_IdleStartTime     0x10000028     0x4  Data  Gb  cpu_utils.o [1]
+osCPU_TotalIdleTime     0x10000030     0x4  Data  Gb  cpu_utils.o [1]
+osCPU_Usage             0x10000024     0x4  Data  Gb  cpu_utils.o [1]
+osDelay                 0x00001f2f    0x16  Code  Gb  cmsis_os.o [1]
+osGetCPUUsage           0x00001f99     0x8  Code  Gb  cpu_utils.o [1]
+osKernelStart           0x00001ee1     0xa  Code  Gb  cmsis_os.o [1]
+osKernelSysTick         0x00001eeb    0x16  Code  Gb  cmsis_os.o [1]
+osSystickHandler        0x00001f45    0x10  Code  Gb  cmsis_os.o [1]
+osThreadCreate          0x00001f01    0x2e  Code  Gb  cmsis_os.o [1]
+port_modbus_free        0x00001e61     0x8  Code  Gb  modbus_port.o [1]
+port_modbus_malloc      0x00001e59     0x8  Code  Gb  modbus_port.o [1]
+port_serial_delay       0x000041f1     0x8  Code  Gb  serial_device_port.o [1]
+port_serial_free        0x00004201     0x8  Code  Gb  serial_device_port.o [1]
+port_serial_malloc      0x000041f9     0x8  Code  Gb  serial_device_port.o [1]
+prvAddCurrentTaskToDelayedList
+                        0x000034b1    0x66  Code  Lc  tasks.o [1]
+prvAddNewTaskToReadyList
+                        0x00002d33    0x8c  Code  Lc  tasks.o [1]
+prvCheckForValidListAndQueue
+                        0x0000410d    0x4c  Code  Lc  timers.o [1]
+prvCheckTasksWaitingTermination
+                        0x000032ad    0x56  Code  Lc  tasks.o [1]
+prvCopyDataFromQueue    0x000046d9    0x2a  Code  Lc  queue.o [1]
+prvCopyDataToQueue      0x00004655    0x84  Code  Lc  queue.o [1]
+prvDeleteTCB            0x00003303    0x12  Code  Lc  tasks.o [1]
+prvGetNextExpireTime    0x00003f1b    0x2a  Code  Lc  timers.o [1]
+prvHeapInit             0x00002b4d    0x66  Code  Lc  heap_4.o [1]
+prvIdleTask             0x00003255    0x14  Code  Lc  tasks.o [1]
+prvInitialiseNewQueue   0x000042df    0x1c  Code  Lc  queue.o [1]
+prvInitialiseNewTask    0x00002c95    0x9e  Code  Lc  tasks.o [1]
+prvInitialiseTaskLists  0x00003269    0x44  Code  Lc  tasks.o [1]
+prvInsertBlockIntoFreeList
+                        0x00002bb3    0x5a  Code  Lc  heap_4.o [1]
+prvInsertTimerInActiveList
+                        0x00003f6d    0x3e  Code  Lc  timers.o [1]
+prvIsQueueEmpty         0x00004771    0x1c  Code  Lc  queue.o [1]
+prvIsQueueFull          0x0000478f    0x1e  Code  Lc  queue.o [1]
+prvProcessExpiredTimer  0x00003e55    0x4e  Code  Lc  timers.o [1]
+prvProcessReceivedCommands
+                        0x00003fbd    0xd8  Code  Lc  timers.o [1]
+prvProcessTimerOrBlockTask
+                        0x00003eb7    0x64  Code  Lc  timers.o [1]
+prvResetNextTaskUnblockTime
+                        0x00003315    0x26  Code  Lc  tasks.o [1]
+prvSampleTimeNow        0x00003f45    0x28  Code  Lc  timers.o [1]
+prvSampleTimeNow::xLastTime
+                        0x10001e3c     0x4  Data  Lc  timers.o [1]
+prvSwitchTimerLists     0x00004095    0x72  Code  Lc  timers.o [1]
+prvTaskExitError        0x0000354d    0x16  Code  Lc  port.o [1]
+prvTimerTask            0x00003ea3    0x14  Code  Lc  timers.o [1]
+prvUnlockQueue          0x00004703    0x6e  Code  Lc  queue.o [1]
+pvPortMalloc            0x000029fd    0xf0  Code  Gb  heap_4.o [1]
+pvTaskIncrementMutexHeldCount
+                        0x00003455    0x1a  Code  Gb  tasks.o [1]
+pxCurrentTCB            0x10001cd8     0x4  Data  Gb  tasks.o [1]
+pxCurrentTimerList      0x10001e2c     0x4  Data  Lc  timers.o [1]
+pxDelayedTaskList       0x10001d90     0x4  Data  Lc  tasks.o [1]
+pxEnd                   0x10001958     0x4  Data  Lc  heap_4.o [1]
+pxOverflowDelayedTaskList
+                        0x10001d94     0x4  Data  Lc  tasks.o [1]
+pxOverflowTimerList     0x10001e30     0x4  Data  Lc  timers.o [1]
+pxPortInitialiseStack   0x00003531    0x1a  Code  Gb  port.o [1]
+pxReadyTasksLists       0x10001cdc    0x8c  Data  Lc  tasks.o [1]
+read_io_status          0x00000ff5    0x98  Code  Lc  modbus.o [1]
+read_registers          0x000010fd    0xa8  Code  Lc  modbus.o [1]
+reg                     0x10001978    0x14  Data  Gb  hello_world.o [1]
+req                     0x10001998    0x14  Data  Gb  hello_world.o [1]
+response_exception      0x0000072f    0x2c  Code  Lc  modbus.o [1]
+response_io_status      0x000006f5    0x3a  Code  Lc  modbus.o [1]
+s_debugConsole          0x10000040    0x10  Data  Lc  fsl_debug_console.o [1]
+s_usartBaseAddrs        0x000064d0     0xc  Data  Lc  fsl_usart.o [1]
+s_usartClock            0x0000012c     0x4  Data  Lc  fsl_usart.o [1]
+s_usartRest             0x0000664c     0x4  Data  Lc  fsl_usart.o [1]
+send_msg                0x00000207    0x68  Code  Lc  modbus.o [1]
+serial                  0x10001cd4     0x4  Data  Gb  serial.o [1]
+serial_close            0x00003881    0x5c  Code  Gb  serial_device.o [1]
+serial_device_create    0x000039d9    0x26  Code  Gb  serial_device.o [1]
+serial_device_destroy   0x000039ff     0x8  Code  Gb  serial_device.o [1]
+serial_flush            0x000037df    0x28  Code  Gb  serial_device.o [1]
+serial_irq_num          0x10001e40     0x1  Data  Gb  serial.o [1]
+serial_isr              0x00004bfd    0x6c  Code  Gb  serial.o [1]
+serial_open             0x00003807    0x7a  Code  Gb  serial_device.o [1]
+serial_read             0x000036df    0x80  Code  Gb  serial_device.o [1]
+serial_register_hal_driver
+                        0x00003907    0x4c  Code  Gb  serial_device.o [1]
+serial_rxne_int_disable
+                        0x00004bef     0xe  Code  Gb  serial.o [1]
+serial_rxne_int_enable  0x00004be1     0xe  Code  Gb  serial.o [1]
+serial_select           0x000038dd    0x2a  Code  Gb  serial_device.o [1]
+serial_txe_int_disable  0x00004bd3     0xe  Code  Gb  serial.o [1]
+serial_txe_int_enable   0x00004bc5     0xe  Code  Gb  serial.o [1]
+serial_write            0x0000375f    0x80  Code  Gb  serial_device.o [1]
+strcpy                  0x00003d15          Code  Gb  strcpy.o [4]
+strlen                  0x00003d05    0x10  Code  Gb  strlen.o [4]
+table_crc_hi            0x00004c9c   0x100  Data  Lc  modbus-rtu.o [1]
+table_crc_lo            0x00004d9c   0x100  Data  Lc  modbus-rtu.o [1]
+uart_init               0x00004b05    0xc0  Code  Gb  serial.o [1]
+ucHeap                  0x10000050  0x1900  Data  Lc  heap_4.o [1]
+ulSetInterruptMaskFromISR
+                        0x000041dd          Code  Gb  portasm.o [1]
+uxCriticalNesting       0x10000000     0x4  Data  Lc  port.o [1]
+uxCurrentNumberOfTasks  0x10001dd8     0x4  Data  Lc  tasks.o [1]
+uxDeletedTasksWaitingCleanUp
+                        0x10001dc0     0x4  Data  Lc  tasks.o [1]
+uxListRemove            0x00003d99    0x28  Code  Gb  list.o [1]
+uxPendedTicks           0x10001de8     0x4  Data  Lc  tasks.o [1]
+uxSchedulerSuspended    0x10001e00     0x4  Data  Lc  tasks.o [1]
+uxTaskNumber            0x10001df4     0x4  Data  Lc  tasks.o [1]
+uxTopReadyPriority      0x10001de0     0x4  Data  Lc  tasks.o [1]
+vApplicationMallocFailedHook
+                        0x00003d25     0x2  Code  Wk  freertos.o [1]
+vApplicationStackOverflowHook
+                        0x00000125     0x2  Code  Wk  freertos.o [1]
+vClearInterruptMaskFromISR
+                        0x000041e5          Code  Gb  portasm.o [1]
+vListInitialise         0x00003d27    0x1e  Code  Gb  list.o [1]
+vListInitialiseItem     0x00003d45     0x6  Code  Gb  list.o [1]
+vListInsert             0x00003d63    0x36  Code  Gb  list.o [1]
+vListInsertEnd          0x00003d4b    0x18  Code  Gb  list.o [1]
+vPortEnterCritical      0x000035a9    0x16  Code  Gb  port.o [1]
+vPortExitCritical       0x000035c1    0x24  Code  Gb  port.o [1]
+vPortFree               0x00002aed    0x60  Code  Gb  heap_4.o [1]
+vPortStartFirstTask     0x000041bb          Code  Gb  portasm.o [1]
+vPortYield              0x00003595    0x12  Code  Gb  port.o [1]
+vQueueAddToRegistry     0x000047af    0x2c  Code  Gb  queue.o [1]
+vQueueWaitForMessageRestricted
+                        0x000047e1    0x4e  Code  Gb  queue.o [1]
+vSetMSP                 0x00004175          Code  Gb  portasm.o [1]
+vTaskDelay              0x00002dc1    0x30  Code  Gb  tasks.o [1]
+vTaskMissedYield        0x00003249     0x8  Code  Gb  tasks.o [1]
+vTaskPlaceOnEventList   0x000030e5    0x20  Code  Gb  tasks.o [1]
+vTaskPlaceOnEventListRestricted
+                        0x00003105    0x2a  Code  Gb  tasks.o [1]
+vTaskPriorityInherit    0x00003369    0x70  Code  Gb  tasks.o [1]
+vTaskSetTimeOutState    0x000031c5    0x18  Code  Gb  tasks.o [1]
+vTaskStartScheduler     0x00002e0d    0x4c  Code  Gb  tasks.o [1]
+vTaskSuspendAll         0x00002e59     0xc  Code  Gb  tasks.o [1]
+vTaskSwitchContext      0x00003049    0x98  Code  Gb  tasks.o [1]
+xActiveTimerList1       0x10001e04    0x14  Data  Lc  timers.o [1]
+xActiveTimerList2       0x10001e18    0x14  Data  Lc  timers.o [1]
+xBlockAllocatedBit      0x10001964     0x4  Data  Lc  heap_4.o [1]
+xDelayedTaskList1       0x10001d68    0x14  Data  Lc  tasks.o [1]
+xDelayedTaskList2       0x10001d7c    0x14  Data  Lc  tasks.o [1]
+xFreeBytesRemaining     0x1000195c     0x4  Data  Lc  heap_4.o [1]
+xHeapStructSize         0x00006650     0x4  Data  Lc  heap_4.o [1]
+xIdleHandle             0x10000020     0x4  Data  Gb  cpu_utils.o [1]
+xIdleTaskHandle         0x10001dfc     0x4  Data  Lc  tasks.o [1]
+xMinimumEverFreeBytesRemaining
+                        0x10001960     0x4  Data  Lc  heap_4.o [1]
+xNextTaskUnblockTime    0x10001df8     0x4  Data  Lc  tasks.o [1]
+xNumOfOverflows         0x10001df0     0x4  Data  Lc  tasks.o [1]
+xPendingReadyList       0x10001d98    0x14  Data  Lc  tasks.o [1]
+xPortStartScheduler     0x00003563    0x30  Code  Gb  port.o [1]
+xPortSysTickHandler     0x000035e5    0x20  Code  Gb  port.o [1]
+xQueueGenericCreate     0x000042a1    0x3e  Code  Gb  queue.o [1]
+xQueueGenericReceive    0x000044e9   0x16a  Code  Gb  queue.o [1]
+xQueueGenericReset      0x00004229    0x78  Code  Gb  queue.o [1]
+xQueueGenericSend       0x000042fd   0x140  Code  Gb  queue.o [1]
+xQueueGenericSendFromISR
+                        0x0000443d    0xaa  Code  Gb  queue.o [1]
+xQueueRegistry          0x100019ac    0x40  Data  Gb  queue.o [1]
+xSchedulerRunning       0x10001de4     0x4  Data  Lc  tasks.o [1]
+xStart                  0x10001950     0x8  Data  Lc  heap_4.o [1]
+xSuspendedTaskList      0x10001dc4    0x14  Data  Lc  tasks.o [1]
+xTaskCheckForTimeOut    0x000031e1    0x68  Code  Gb  tasks.o [1]
+xTaskCreate             0x00002c2d    0x66  Code  Gb  tasks.o [1]
+xTaskGetCurrentTaskHandle
+                        0x0000333b     0x6  Code  Gb  tasks.o [1]
+xTaskGetSchedulerState  0x00003345    0x1e  Code  Gb  tasks.o [1]
+xTaskGetTickCount       0x00002f29     0x6  Code  Gb  tasks.o [1]
+xTaskGetTickCountFromISR
+                        0x00002f35     0x8  Code  Gb  tasks.o [1]
+xTaskIncrementTick      0x00002f51    0xe6  Code  Gb  tasks.o [1]
+xTaskPriorityDisinherit
+                        0x000033e5    0x6c  Code  Gb  tasks.o [1]
+xTaskRemoveFromEventList
+                        0x00003141    0x6a  Code  Gb  tasks.o [1]
+xTaskResumeAll          0x00002e69    0xc0  Code  Gb  tasks.o [1]
+xTasksWaitingTermination
+                        0x10001dac    0x14  Data  Lc  tasks.o [1]
+xTickCount              0x10001ddc     0x4  Data  Lc  tasks.o [1]
+xTimerCreateTimerTask   0x00003dc1    0x34  Code  Gb  timers.o [1]
+xTimerGenericCommand    0x00003df5    0x5e  Code  Gb  timers.o [1]
+xTimerQueue             0x10001e34     0x4  Data  Lc  timers.o [1]
+xTimerTaskHandle        0x10001e38     0x4  Data  Lc  timers.o [1]
+xYieldPending           0x10001dec     0x4  Data  Lc  tasks.o [1]
+
+
+[1] = D:\development\nxp\src_code\LPC824\boards\lpcxpresso824max\demo_apps\freertos_nxp\iar\debug\obj
+[2] = command line
+[3] = dl6M_tln.a
+[4] = rt6M_tl.a
+[5] = shb_l.a
+
+  20 120 bytes of readonly  code memory
+   6 068 bytes of readonly  data memory
+   8 001 bytes of readwrite data memory
+
+Errors: none
+Warnings: none
