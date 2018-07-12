@@ -68,7 +68,8 @@ void BOARD_InitBootClocks(void);
  * Definitions for BOARD_BootClockIRC12M configuration
  ******************************************************************************/
 #define BOARD_BOOTCLOCKIRC12M_CORE_CLOCK 12000000U /*!< Core clock frequency: 12000000Hz */
-
+#define BOARD_BOOTCLOCKPLL24M_CORE_CLOCK 24000000U /*!< Core clock frequency: 24000000Hz */
+#define BOARD_BOOTCLOCKPLL30M_CORE_CLOCK 30000000U /*!< Core clock frequency: 30000000Hz */
 /*******************************************************************************
  * API for BOARD_BootClockIRC12M configuration
  ******************************************************************************/
@@ -81,29 +82,6 @@ extern "C" {
  *
  */
 void BOARD_BootClockIRC12M(void);
-
-#if defined(__cplusplus)
-}
-#endif /* __cplusplus*/
-
-/*******************************************************************************
- ******************** Configuration BOARD_BootClockPll24M **********************
- ******************************************************************************/
-/*******************************************************************************
- * Definitions for BOARD_BootClockPll24M configuration
- ******************************************************************************/
-#define BOARD_BOOTCLOCKPLL24M_CORE_CLOCK 24000000U /*!< Core clock frequency: 24000000Hz */
-/*******************************************************************************
- * API for BOARD_BootClockPll24M configuration
- ******************************************************************************/
-#if defined(__cplusplus)
-extern "C" {
-#endif /* __cplusplus*/
-
-/*!
- * @brief This function executes configuration of clocks.
- *
- */
 void BOARD_BootClockPll24M(void);
 void BOARD_BootClockPll30M(void);
 #if defined(__cplusplus)

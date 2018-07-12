@@ -162,3 +162,26 @@ void BOARD_BootClockPll24M(void)
     /*!< Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKPLL24M_CORE_CLOCK;
 }
+
+void BOARD_BootClockPll30M(void)
+{
+    /*!< Set up the clock sources */
+    /*!< Set up IRC */
+    POWER_DisablePD(kPDRUNCFG_PD_IRC_OUT);                   /*!< Ensure IRC OUT is on  */
+    POWER_DisablePD(kPDRUNCFG_PD_IRC);                   /*!< Ensure IRC is on  */
+    CLOCK_Select(kSYSPLL_From_Irc);                         /*!< set IRC to pll select */
+    clock_sys_pll_t config;
+    config.src = kCLOCK_SysPllSrcIrc;                           /*!< set pll src  */
+    config.targetFreq = 60000000U;                     /*!< set pll target freq */
+    CLOCK_InitSystemPll(&config);                           /*!< set parameters */
+    CLOCK_SetMainClkSrc(kCLOCK_MainClkSrcSysPll);         /*!< select syspll for main clock */
+    POWER_DisablePD(kPDRUNCFG_PD_WDT_OSC);                    /*!< Ensure wwdt osc is on */
+    CLOCK_InitWdtOsc(kCLOCK_WdtAnaFreq600KHZ ,(29+1)*2);
+    CLOCK_Select(kCLKOUT_From_Irc);                         /*!< select IRC for CLKOUT */
+    CLOCK_SetCoreSysClkDiv(2U);
+    CLOCK_SetClkDivider(kCLOCK_DivUsartClk, 1U);     /*!< set UART div */
+    SYSCON->UARTFRGDIV = 0;            /*!> Set UARTFRGDIV */
+    CLOCK_SetUARTFRGMULT(0U);          /*!< Set UARTFRGMULT */
+    /*!< Set SystemCoreClock variable. */
+    SystemCoreClock = BOARD_BOOTCLOCKPLL30M_CORE_CLOCK;
+}

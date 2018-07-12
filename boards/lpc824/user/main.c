@@ -33,7 +33,7 @@
  */
 
 #include "fsl_device_registers.h"
-#include "fsl_debug_console.h"
+#include "fsl_wwdt.h"
 #include "board.h"
 
 #include "pin_mux.h"
@@ -67,18 +67,31 @@ uint8_t req[20];
 
 void cpu_task(void const * argument)
 {
-  while(1){
-  log_warning("cpu: %d.\r\n",osGetCPUUsage());
-  osDelay(1000);
+ wwdt_config_t config;
+ config.enableWwdt = true;
+ config.enableWatchdogReset = true;
+ config.enableWatchdogProtect = false;
+ config.enableLockOscillator = false;
+ config.windowValue = 0xFFFFFFU;
+ config.timeoutValue = 11000;
+ config.warningValue = 0;
+ WWDT_Init(WWDT,&config);
+ WWDT_Enable(WWDT);
+ log_warning("watch dog start...timeout value:%dms.\r\n",1100);
+ 
+ 
+ while(1){
+ WWDT_Refresh(WWDT);
+ log_warning("feed dog ok. cur_cpu: %d%%.\r\n",osGetCPUUsage());
+ osDelay(1000);
   }
 }
 void StartDefaultTask(void const * argument)
 {
   int i=0;
-    //BOARD_InitDebugConsole();
-    log_init();
+  log_init();
     
-  ctx = modbus_new_rtu(0, 115200, 8, 2,&hal_driver);
+  ctx = modbus_new_rtu(0, 115200, 8, 1,&hal_driver);
 
  if(ctx == NULL)
  {
@@ -95,9 +108,17 @@ void StartDefaultTask(void const * argument)
  log_error("map reg err.\r\n");
 goto err;
  }
- 
+   map->tab_input_registers[0]=0x1234;
+   map->tab_input_registers[1]=0xabcd;
+   map->tab_input_registers[2]=0x3344;
+   map->tab_input_registers[3]=3333;
+   map->tab_input_registers[4]=4444;
+   map->tab_input_registers[5]=5555;
+   map->tab_input_registers[6]=6666;
+   map->tab_input_registers[7]=7777;
   for(;;)
   {
+ /*
    i = modbus_read_input_registers(ctx, 0, 10, reg);
    if (i == -1) {
    modbus_flush(ctx);
@@ -130,21 +151,20 @@ goto err;
    }
 
     modbus_flush(ctx);
-   log_debug("start wait for write...\r\n");
+*/
+    
+  log_debug("start wait for write...\r\n");
    
   i = modbus_receive(ctx,req);
   if(i == -1){
   log_error("master reg wait error.\r\n ");
+  goto err;
   }else if(i > 0) {
-   map->tab_input_registers[0]=0x1111;
-   map->tab_input_registers[1]=0x1111;
-   map->tab_input_registers[2]=0x1111;
-   map->tab_input_registers[3]=0x1111;
    modbus_reply(ctx, req, i, map);
    /* Connection closed by the client or error */
   log_info("master reg ok.\r\n ");
    }
-
+  continue;
   err:  
    osDelay(1000);
   }
@@ -166,7 +186,7 @@ int main(void)
     CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);    
 
     BOARD_InitPins();
-    BOARD_BootClockPll24M();
+    BOARD_BootClockPll30M();
 
     
    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
