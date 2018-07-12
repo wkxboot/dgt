@@ -158,7 +158,6 @@ goto err;
  */
 int main(void)
 {
-    char ch;
 
     /* Init board hardware. */
     /* Enable clock of uart0. */
@@ -190,7 +189,5 @@ int main(void)
 
     while (1)
     {
-        ch = GETCHAR();
-        PUTCHAR(ch);
     }
 }
