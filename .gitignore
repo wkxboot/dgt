@@ -1,3 +1,2 @@
-*.o
-*.pbi
-*.xcl
+boards/lpc824/toolchains/
+
