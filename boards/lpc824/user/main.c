@@ -52,7 +52,7 @@ osThreadId cpu_task_hdl;
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-extern serial_hal_driver_t hal_driver;
+extern serial_hal_driver_t modbus_serial_driver;
 
 modbus_t *ctx;
 modbus_mapping_t* map;
@@ -91,8 +91,8 @@ void StartDefaultTask(void const * argument)
   int i=0;
   log_init();
     
-  ctx = modbus_new_rtu(0, 115200, 8, 1,&hal_driver);
-
+  ctx = modbus_new_rtu(0, 115200, 8, 1,&modbus_serial_driver);
+  
  if(ctx == NULL)
  {
  log_error("创建modbus rtu实体失败！\r\n");
@@ -189,7 +189,7 @@ int main(void)
     BOARD_BootClockPll30M();
 
     
-   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
+   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 200);
    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);

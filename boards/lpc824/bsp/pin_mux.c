@@ -130,6 +130,11 @@ void BOARD_InitPins(void)
     /* USART0_RXD connect to P0_18 */
     SWM_SetMovablePinSelect(SWM0, kSWM_USART0_RXD, kSWM_PortPin_P0_18);
 
+    /* USART1_TXD connect to P0_4 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_USART1_TXD, kSWM_PortPin_P0_4);
+
+    /* USART1_RXD connect to P0_0 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_USART1_RXD, kSWM_PortPin_P0_0);
     /* Disable clock for switch matrix. */
     CLOCK_DisableClock(kCLOCK_Swm);
 }
