@@ -1,2 +1,6 @@
-boards/lpc824/toolchains/
+/boards/lpc824/toolchains/
+!/boards/lpc824/toolchains/iar/dgt.ewp
+!/boards/lpc824/toolchains/iar/dgt.ewd
+!/boards/lpc824/toolchains/iar/dgt.eww
+!/boards/lpc824/toolchains/iar/LPC824M201.icf
 
