@@ -28,33 +28,97 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdint.h>
-#include "fsl_common.h"
-#include "clock_config.h"
 #include "board.h"
-#include "fsl_debug_console.h"
-
+#include "log.h"
+#define LOG_MODULE_NAME   "[board_task]"
+#define LOG_MODULE_LEVEL   LOG_LEVEL_DEBUG 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
+spi_master_handle_t ad7190_spi_handle;
+SPI_Type *ad7190_spi=NULL;
 
-/* Clock rate on the CLKIN pin */
-const uint32_t ExtClockIn = BOARD_EXTCLKINRATE;
 
+void bsp_ad7190_spi_write_byte(uint8_t byte);
+uint8_t bsp_ad7190_spi_read_byte();
+void bsp_ad7190_cs_set();
+void bsp_ad7190_cs_clr();
+
+ad7190_io_driver_t ad7190_driver={
+.cs_set = bsp_ad7190_cs_set,
+.cs_clr = bsp_ad7190_cs_clr,
+.write_byte = bsp_ad7190_spi_write_byte,
+.read_byte = bsp_ad7190_spi_read_byte
+}
+;
 /*******************************************************************************
  * Code
  ******************************************************************************/
-/* Initialize debug console. */
-status_t BOARD_InitDebugConsole(void)
+int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq)
 {
-    status_t result;
-    /* Enable clock of uart0. */
-    CLOCK_EnableClock(kCLOCK_Uart0);
-    /* Ser DIV of uart0. */
-    CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U); 
-    RESET_PeripheralReset(BOARD_DEBUG_USART_RST);
-    result = DbgConsole_Init(BOARD_DEBUG_USART_BASEADDR, BOARD_DEBUG_USART_BAUDRATE, BOARD_DEBUG_USART_TYPE,
-                             BOARD_DEBUG_USART_CLK_FREQ);
-    assert(kStatus_Success == result);
-    return result;
+spi_master_config_t config;
+status_t status;
+
+if(spi_port == 1){
+ad7190_spi = SPI1;
+}else{
+ad7190_spi = SPI0;
 }
+
+SPI_MasterGetDefaultConfig(&config);
+
+config.baudRate_Bps = freq;
+status = SPI_MasterInit(ad7190_spi,&config,CLOCK_GetFreq(kCLOCK_CoreSysClk));
+log_assert(status == kStatus_Success);
+status = SPI_MasterTransferCreateHandle(ad7190_spi,&ad7190_spi_handle,NULL,NULL);
+log_assert(status == kStatus_Success);
+SPI_SetDummyData(ad7190_spi,0xffff);
+
+return 0;
+}
+
+
+
+
+void bsp_ad7190_cs_set()
+{
+GPIO_PortSet(BSP_AD7190_CS_GPIO,BSP_AD7190_CS_PORT,BSP_AD7190_CS_PIN);  
+}
+
+void bsp_ad7190_cs_clr()
+{
+GPIO_PortClear(BSP_AD7190_CS_GPIO,BSP_AD7190_CS_PORT,BSP_AD7190_CS_PIN);   
+}
+
+
+
+void bsp_ad7190_spi_write_byte(uint8_t byte)
+{
+spi_transfer_t transfer;
+uint8_t tx_data[1];
+tx_data[0]=byte;
+transfer.rxData = NULL;
+transfer.txData = tx_data;
+transfer.dataSize = 1;
+SPI_MasterTransferBlocking(ad7190_spi,&transfer);
+}
+
+uint8_t bsp_ad7190_spi_read_byte()
+{
+spi_transfer_t receive;
+uint8_t rx_data[1];
+receive.txData = NULL;
+receive.rxData = rx_data;
+receive.dataSize = 1;
+SPI_MasterTransferBlocking(ad7190_spi,&receive);  
+
+return rx_data[0];
+}
+
+
+
+
+
+
+
+
