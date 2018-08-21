@@ -39,6 +39,7 @@
 #include "fsl_usart.h"
 #include "fsl_wwdt.h"
 #include "pin_mux.h"
+#include "serial.h"
 #include "ad7190.h"
 
 /*******************************************************************************

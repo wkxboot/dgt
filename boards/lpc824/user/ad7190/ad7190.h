@@ -140,7 +140,7 @@ int ad7190_internal_full_scale_calibrate();
 int ad7190_system_zero_scale_calibrate();
 int ad7190_system_full_scale_calibrate();
 uint8_t ad7190_is_adc_rdy();
-int ad7190_read_id(uint8_t *id));
+int ad7190_read_id(uint8_t *id);
 int ad7190_pwr_down_switch_close(uint8_t bpdsw);
 int ad7190_read_conversion_result(uint32_t *buffer);
 int ad7190_channel_config(uint8_t chn,uint8_t chop,uint8_t ub,uint8_t gain);

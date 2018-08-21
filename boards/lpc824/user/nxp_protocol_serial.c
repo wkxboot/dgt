@@ -4,32 +4,29 @@
 #include "fsl_clock.h"
 #include "pin_mux.h"
 
-#include "modbus.h"
-
 /*lpc824在IAR freertos下的移植*/
-int nxp_modbus_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit);
-int nxp_modbus_serial_deinit(uint8_t port);
-void nxp_modbus_serial_enable_txe_int();
-void nxp_modbus_serial_disable_txe_int();
-void nxp_modbus_serial_enable_rxne_int();
-void nxp_modbus_serial_disable_rxne_int();
+int nxp_protocol_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit);
+int nxp_protocol_serial_deinit(uint8_t port);
+void nxp_protocol_serial_enable_txe_int();
+void nxp_protocol_serial_disable_txe_int();
+void nxp_protocol_serial_enable_rxne_int();
+void nxp_protocol_serial_disable_rxne_int();
 
-extern  modbus_t *ctx;;
 
-serial_hal_driver_t modbus_serial_driver={
-.init =nxp_modbus_serial_init,
-.deinit = nxp_modbus_serial_deinit,
-.enable_txe_int=nxp_modbus_serial_enable_txe_int,
-.disable_txe_int =nxp_modbus_serial_disable_txe_int,
-.enable_rxne_int =nxp_modbus_serial_enable_rxne_int,
-.disable_rxne_int =nxp_modbus_serial_disable_rxne_int
+serial_hal_driver_t protocol_serial_driver={
+.init =nxp_protocol_serial_init,
+.deinit = nxp_protocol_serial_deinit,
+.enable_txe_int=nxp_protocol_serial_enable_txe_int,
+.disable_txe_int =nxp_protocol_serial_disable_txe_int,
+.enable_rxne_int =nxp_protocol_serial_enable_rxne_int,
+.disable_rxne_int =nxp_protocol_serial_disable_rxne_int
 };
 
 static USART_Type *serial;
 static IRQn_Type  serial_irq_num;
+static int protocol_serial_handle;
 
-
-int nxp_modbus_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit)
+int nxp_protocol_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit)
 {
     status_t status;
     usart_config_t config;
@@ -76,30 +73,30 @@ int nxp_modbus_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t 
   EnableIRQ(serial_irq_num);
   return 0;
 }
-int nxp_modbus_serial_deinit(uint8_t port)
+int nxp_protocol_serial_deinit(uint8_t port)
 {
   return 0;
 }
-void nxp_modbus_serial_enable_txe_int()
+void nxp_protocol_serial_enable_txe_int()
 {
  USART_EnableInterrupts(serial,USART_INTENSET_TXRDYEN_MASK);
 }
-void nxp_modbus_serial_disable_txe_int()
+void nxp_protocol_serial_disable_txe_int()
 {
   USART_DisableInterrupts(serial,USART_INTENSET_TXRDYEN_MASK);  
 }
 
-void nxp_modbus_serial_enable_rxne_int()
+void nxp_protocol_serial_enable_rxne_int()
 {
  USART_EnableInterrupts(serial,USART_INTENSET_RXRDYEN_MASK);
 }
-void nxp_modbus_serial_disable_rxne_int()
+void nxp_protocol_serial_disable_rxne_int()
 {
  USART_DisableInterrupts(serial,USART_INTENSET_RXRDYEN_MASK);
 }
 
 
-void nxp_modbus_serial_isr()
+void nxp_protocol_serial_isr()
 {
   int result;
   uint32_t tmp_flag = 0, tmp_it_source = 0; 
@@ -111,12 +108,12 @@ void nxp_modbus_serial_isr()
  /*接收中断处理*/
   if((tmp_flag & USART_INTENSET_RXRDYEN_MASK) && (tmp_it_source & USART_STAT_RXRDY_MASK)){
       recv_byte=USART_ReadByte(serial);
-      isr_serial_put_byte_from_recv(ctx->s,recv_byte);
+      isr_serial_put_byte_from_recv(protocol_serial_handle,recv_byte);
 
   }
  /*发送中断处理*/
   if((tmp_flag & USART_INTENSET_TXRDYEN_MASK) && (tmp_it_source & USART_STAT_TXRDY_MASK)){
-  	 result =isr_serial_get_byte_to_send(ctx->s,&send_byte);
+  	 result =isr_serial_get_byte_to_send(protocol_serial_handle,&send_byte);
     if(result == 1) {
      USART_WriteByte(serial, send_byte);
      }
@@ -128,5 +125,5 @@ void nxp_modbus_serial_isr()
 
 void USART0_IRQHandler()
 {
-  nxp_modbus_serial_isr();
+  nxp_protocol_serial_isr();
 }
