@@ -254,10 +254,17 @@ ad7190.comm_reg.rs=CR_REG_SELECT_STATUS;
 ad7190_writes((uint8_t *)&ad7190.comm_reg,1);
 ad7190_reads((uint8_t *)&ad7190.status_reg,1); 
 
-if(ad7190.noref == SR_NOREF_ERR ||ad7190.SR_ERR == SR_ERR_NO){
-return -1;
-}
 return 0;
+}
+
+
+uint8_t ad7190_is_adc_err()
+{
+ if(ad7190.status.noref  == SR_NOREF_ERR || \
+    ad7190.status.SR_ERR == SR_ERR){ 
+   return TRUE;
+}
+return FALSE;
 }
 
 

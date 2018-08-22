@@ -2,6 +2,8 @@
 #define  __PROTOCOL_H__
 
 
+extern osThreadId   protocol_task_hdl;
+extern osMessageQId protocol_task_msg_q_id;
 
 #define  PROTOCOL_TASK_SERIAL_PORT                 0
 #define  PROTOCOL_TASK_SERIAL_BAUDRATES            115200
@@ -18,8 +20,8 @@
 #define  PROTOCOL_TASK_FRAME_TIMEOUT_VALUE         osWaitForever
 #define  PROTOCOL_TASK_CHARACTER_TIMEOUT_VALUE     3
 
-#define  PROTOCOL_TASK_CALIBRATE_TIMEOUT_VALUE            500
-#define  PROTOCOL_TASK_REMOVE_TAR_WEIGHT_TIMEOUT_VALUE    500
+#define  PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE       5
+#define  PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE      800
 
 
 /*协议定义*/
@@ -36,7 +38,7 @@
 #define  PROTOCOL_TASK_SUCCESS_VALUE               0x00
 #define  PROTOCOL_TASK_FAILURE_VALUE               0x01
 
-
+#define  PROTOCOL_TASK_WEIGHT_ERR_VALUE            0x7FFF
 
 
 #define  PROTOCOL_TASK_READ_NET_WEIGHT_FRAME_LEN      5

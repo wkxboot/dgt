@@ -1,6 +1,8 @@
 #include "board.h"
 #include "cmsis_os.h"
 #include "serial.h"
+#include "task_msg.h"
+#include "scale_task.h"
 #include "protocol_task.h"
 #include "log.h"
 #define LOG_MODULE_NAME   "[protocol]"
@@ -102,6 +104,139 @@ send_buffer[length_to_write++] = crc_calculated >> 8;
 
 return length_to_write;
 }
+
+
+static int16_t protocol_get_net_weight()
+{
+ osStatus status;
+ osEvent  os_msg;
+ task_msg_t *msg;
+ task_msg_t scale_msg;
+ int16_t net_weight =0;
+ 
+ scale_msg.type = REQ_NET_WEIGHT;
+ status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+ log_assert(status == osOK);
+ while(1){
+ os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+ if(os_msg.status == osEventMessage){
+ msg =  (task_msg_t *)os_msg.value.v;
+ if(msg->type == RESPONSE_NET_WEIGHT){
+   net_weight = msg->net_weight;
+   break;
+  }  
+ }
+ }
+ return net_weight;
+}
+
+
+static int protocol_remove_tar_weight()
+{
+ osStatus status;
+ osEvent  os_msg;
+ task_msg_t *msg;
+ task_msg_t scale_msg;
+ int        result = -1;
+ 
+ scale_msg.type = REQ_REMOVE_TAR_WEIGHT;
+ status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+ log_assert(status == osOK);
+ while(1){
+ os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+ if(os_msg.status == osEventMessage){
+ msg = (task_msg_t *)os_msg.value.v;
+ if(msg->type == RESPONSE_REMOVE_TAR_WEIGHT){
+   if( msg->result == SCALE_TASK_SUCCESS){
+     result = 0;
+   }else{
+     result = -1;
+   }  
+  break;
+  }
+ }
+ }
+ return result;
+}
+
+static int protocol_calibrate_weight(int16_t weight)
+{
+ osStatus status;
+ osEvent  os_msg;
+ task_msg_t *msg;
+ task_msg_t scale_msg;
+ int        result = -1;
+ 
+ scale_msg.type = REQ_CALIBRATE_ZERO;
+ scale_msg.calibrate_weight = weight;
+ status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+ log_assert(status == osOK);
+ while(1){
+ os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+ if(os_msg.status == osEventMessage){
+ msg = (task_msg_t *)os_msg.value.v;
+ if(msg->type == RESPONSE_CALIBRATE_ZERO){
+   if( msg->result == SCALE_TASK_SUCCESS){
+     result = 0;
+   }else{
+     result = -1;
+   }  
+  break;
+  }
+ }
+ }
+ return result;
+}
+
+static uint8_t protocol_get_sensor_id()
+{
+ osStatus status;
+ osEvent  os_msg;
+ task_msg_t *msg;
+ task_msg_t scale_msg;
+ uint8_t sensor_id = 0;
+ 
+ scale_msg.type = REQ_SENSOR_ID;
+ status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+ log_assert(status == osOK);
+ while(1){
+ os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+ if(os_msg.status == osEventMessage){
+ msg =  (task_msg_t *)os_msg.value.v;
+ if(msg->type == RESPONSE_SENSOR_ID){
+   sensor_id = msg->sensor_id;
+   break;
+  }  
+ }
+ }
+ return sensor_id;
+}
+
+static uint16_t protocol_get_fireware_version()
+{
+ osStatus status;
+ osEvent  os_msg;
+ task_msg_t *msg;
+ task_msg_t scale_msg;
+ uint16_t   version = 0;
+ 
+ scale_msg.type = REQ_VERSION;
+ status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+ log_assert(status == osOK);
+ while(1){
+ os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+ if(os_msg.status == osEventMessage){
+ msg =  (task_msg_t *)os_msg.value.v;
+ if(msg->type == RESPONSE_VERSION){
+   version = msg->sensor_id;
+   break;
+  }  
+ }
+ }
+ return version;
+}
+
+
 void protocol_task(void const * argument)
 {
  int rc; 
@@ -114,11 +249,12 @@ void protocol_task(void const * argument)
  int16_t  calibrate_weight;
  int16_t  net_weight;
  uint16_t version;
- uint16_t sensor_id;
+ uint8_t sensor_id;
  protocol_step_t step;
  
  uint8_t recv_buffer[PROTOCOL_TASK_FRAME_SIZE_MAX];
  uint8_t send_buffer[PROTOCOL_TASK_FRAME_SIZE_MAX];
+ 
  rc = serial_create(&protocol_serial_handle,PROTOCOL_TASK_RX_BUFFER_SIZE,PROTOCOL_TASK_TX_BUFFER_SIZE);
  log_assert(rc == 0);
  rc = serial_register_hal_driver(protocol_serial_handle,&nxp_protocol_serial_driver);
@@ -131,7 +267,8 @@ void protocol_task(void const * argument)
                   PROTOCOL_TASK_SERIAL_STOPBITS);
  
  log_assert(rc == 0); 
- 
+ /*等待scale_task启动完毕*/
+ osDelay(1000);
  serial_flush(protocol_serial_handle);
  
  while(1){
@@ -197,7 +334,10 @@ protocol_parse_start:
        if(recv_buffer[4] == PROTOCOL_TASK_FUNC_READ_NET_WEIGHT && \
           read_length == PROTOCOL_TASK_READ_NET_WEIGHT_FRAME_LEN){
             
-          net_weight = scale_get_net_weight();
+          net_weight = protocol_get_net_weight();
+          if(net_weight == SCALE_TASK_WEIGHT_ERR_VALUE){
+          net_weight = PROTOCOL_TASK_WEIGHT_ERR_VALUE;
+          }
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_NET_WEIGHT;
           send_buffer[length_to_write++] = net_weight & 0xff;
           send_buffer[length_to_write++] = net_weight >> 8;        
@@ -211,7 +351,7 @@ protocol_parse_start:
             
          send_buffer[length_to_write++]=PROTOCOL_TASK_FUNC_REMOVE_TAR_WEIGHT;
          /*执行去皮*/
-         rc = scale_remove_tar_weight(PROTOCOL_TASK_REMOVE_TAR_WEIGHT_TIMEOUT_VALUE);
+         rc = protocol_remove_tar_weight();
          if(rc == 0){
           result = PROTOCOL_TASK_SUCCESS_VALUE;                
          }else{
@@ -235,7 +375,7 @@ protocol_parse_start:
           }
          send_buffer[length_to_write++]=PROTOCOL_TASK_FUNC_CALIBRATE_ZERO;
          /*执行0点量程校准*/
-         rc = scale_calibrate(calibrate_weight,PROTOCOL_TASK_CALIBRATE_TIMEOUT_VALUE);
+         rc = protocol_calibrate_weight(calibrate_weight);
          if(rc == 0){
           result = PROTOCOL_TASK_SUCCESS_VALUE;                
          }else{
@@ -261,7 +401,7 @@ protocol_parse_start:
          /*填充操作码*/
          send_buffer[length_to_write++]=PROTOCOL_TASK_FUNC_CALIBRATE_FULL;  
          /*执行满量程校准*/
-         rc = scale_calibrate(calibrate_weight,PROTOCOL_TASK_CALIBRATE_TIMEOUT_VALUE);
+         rc = protocol_calibrate_weight(calibrate_weight);
          if(rc == 0){
           result = PROTOCOL_TASK_SUCCESS_VALUE;                
          }else{
@@ -279,7 +419,7 @@ protocol_parse_start:
           read_length == PROTOCOL_TASK_READ_SENSOR_ID_FRAME_LEN){
           
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_SENSOR_ID;
-          sensor_id = scale_get_sensor_id();
+          sensor_id = protocol_get_sensor_id();
           send_buffer[length_to_write++] = sensor_id;
           length_to_write = protocol_task_prepare_crc16(send_buffer,length_to_write); 
           break;               
@@ -288,7 +428,7 @@ protocol_parse_start:
       /*如果是读取固件版本号*/
        if(recv_buffer[4] == PROTOCOL_TASK_FUNC_READ_VERSION && \
           read_length == PROTOCOL_TASK_READ_VERSION_FRAME_LEN){
-          version = scale_get_version();
+          version = protocol_get_fireware_version();
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_VERSION;
           
           send_buffer[length_to_write++] = version & 0xff;

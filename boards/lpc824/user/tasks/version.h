@@ -2,11 +2,11 @@
 #define  __VERSION_H__
 
 
-#define  MAJOR_VERSION                   1
-#define  MINOR_VERSION                   0
+#define  FIRMWARE_MAJOR_VERSION                 1
+#define  FIRMWARE_MINOR_VERSION                 0
 
-#define  MAKE_VERSION(x,y)               ((x)<<8|(y))
-#define  FIRMWARE_VERSION                MAKE_VERSION(MAJOR_VERSION,MAJOR_VERSION)
+#define  MAKE_FIRMWARE_VERSION(x,y)             ((x)<<8|(y))
+#define  FIRMWARE_VERSION                       MAKE_FIRMWARE_VERSION(FIRMWARE_MAJOR_VERSION,FIRMWARE_MINOR_VERSION)
 
 
 

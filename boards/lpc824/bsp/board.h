@@ -36,6 +36,7 @@
 #include "fsl_common.h"
 #include "fsl_gpio.h"
 #include "fsl_spi.h"
+#include "fsl_i2c.h"
 #include "fsl_usart.h"
 #include "fsl_wwdt.h"
 #include "pin_mux.h"
