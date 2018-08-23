@@ -49,12 +49,14 @@
 /*! @brief The board name */
 #define BOARD_NAME "LPCXPRESSO54114"
 
-
+#define  BSP_AD7190_SPI_PORT           1
+#define  BSP_AD7190_SPI_FREQ           1000000
+   
 #define  BSP_AD7190_CS_GPIO            GPIO
 #define  BSP_AD7190_CS_PORT            0
-#define  BSP_AD7190_CS_PIN             2
+#define  BSP_AD7190_CS_PIN             1
 
-
+int board_init();
 
 
 #if defined(__cplusplus)

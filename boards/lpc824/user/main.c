@@ -31,14 +31,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "board.h"
 #include "cmsis_os.h"
+#include "board.h"
+#include "adc_task.h"
+#include "cpu_task.h"
+#include "scale_task.h"
+#include "protocol_task.h"
+
 #include "log.h"
 #define LOG_MODULE_NAME   "[main]"
 #define LOG_MODULE_LEVEL   LOG_LEVEL_DEBUG  
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
+
 
 
 /*******************************************************************************
@@ -57,25 +60,25 @@ return osKernelSysTick();
  * @brief Main function
  */
 int main(void)
-{
-
-    /* Init board hardware. */
-    /* Enable clock of uart0. */
-    CLOCK_EnableClock(kCLOCK_Uart0);
-    /* Ser DIV of uart0. */
-    CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);    
-
-    BOARD_InitPins();
-    BOARD_BootClockPll30M();
-    
+{ 
+    int result;
+    result = board_init();
+    if(result != 0){
+    while(1);
+    }
     log_init();
-    
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 200);
-    defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);
+    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 200);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
 
+    osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 200);
+    adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
+
+    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 300);
+    scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
+
+    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 200);
+    protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
+    
 
 
   /* Start scheduler */

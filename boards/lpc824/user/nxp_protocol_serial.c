@@ -24,7 +24,7 @@ serial_hal_driver_t protocol_serial_driver={
 
 static USART_Type *serial;
 static IRQn_Type  serial_irq_num;
-static int protocol_serial_handle;
+int protocol_serial_handle;
 
 int nxp_protocol_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit)
 {
@@ -67,7 +67,7 @@ int nxp_protocol_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_
     /* Initialize the USART with configuration. */
     status=USART_Init(serial, &config, CLOCK_GetFreq(kCLOCK_MainClk));
  
-  if (status != 0){
+  if (status != kStatus_Success){
     return -1;
   } 
   EnableIRQ(serial_irq_num);

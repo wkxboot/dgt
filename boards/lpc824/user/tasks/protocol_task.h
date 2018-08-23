@@ -4,6 +4,8 @@
 
 extern osThreadId   protocol_task_hdl;
 extern osMessageQId protocol_task_msg_q_id;
+void protocol_task(void const * argument);
+
 
 #define  PROTOCOL_TASK_SERIAL_PORT                 0
 #define  PROTOCOL_TASK_SERIAL_BAUDRATES            115200
@@ -14,8 +16,8 @@ extern osMessageQId protocol_task_msg_q_id;
 #define  PROTOCOL_TASK_RX_BUFFER_SIZE              32
 #define  PROTOCOL_TASK_TX_BUFFER_SIZE              32
 
-#define  PROTOCOL_TASK_FRAME_SIZE_MAX              7
-#define  PROTOCOL_TASK_ADU_SIZE_MAX                3
+#define  PROTOCOL_TASK_FRAME_SIZE_MAX              10
+#define  PROTOCOL_TASK_ADU_SIZE_MAX                4
 
 #define  PROTOCOL_TASK_FRAME_TIMEOUT_VALUE         osWaitForever
 #define  PROTOCOL_TASK_CHARACTER_TIMEOUT_VALUE     3
@@ -34,6 +36,7 @@ extern osMessageQId protocol_task_msg_q_id;
 #define  PROTOCOL_TASK_FUNC_CALIBRATE_FULL         0x03
 #define  PROTOCOL_TASK_FUNC_READ_SENSOR_ID         0x04
 #define  PROTOCOL_TASK_FUNC_READ_VERSION           0x05
+#define  PROTOCOL_TASK_FUNC_SET_ADDR               0x06
 
 #define  PROTOCOL_TASK_SUCCESS_VALUE               0x00
 #define  PROTOCOL_TASK_FAILURE_VALUE               0x01
@@ -41,13 +44,13 @@ extern osMessageQId protocol_task_msg_q_id;
 #define  PROTOCOL_TASK_WEIGHT_ERR_VALUE            0x7FFF
 
 
-#define  PROTOCOL_TASK_READ_NET_WEIGHT_FRAME_LEN      5
-#define  PROTOCOL_TASK_REMOVE_TAR_WEIGHT_FRAME_LEN    5
-#define  PROTOCOL_TASK_CALIBRATE_ZERO_FRAME_LEN       7
-#define  PROTOCOL_TASK_CALIBRATE_FULL_FRAME_LEN       7
-#define  PROTOCOL_TASK_READ_SENSOR_ID_FRAME_LEN       5
-#define  PROTOCOL_TASK_READ_VERSION_FRAME_LEN         5
-
+#define  PROTOCOL_TASK_READ_NET_WEIGHT_FRAME_LEN      8
+#define  PROTOCOL_TASK_REMOVE_TAR_WEIGHT_FRAME_LEN    8
+#define  PROTOCOL_TASK_CALIBRATE_ZERO_FRAME_LEN       10
+#define  PROTOCOL_TASK_CALIBRATE_FULL_FRAME_LEN       10
+#define  PROTOCOL_TASK_READ_SENSOR_ID_FRAME_LEN       8
+#define  PROTOCOL_TASK_READ_VERSION_FRAME_LEN         8
+#define  PROTOCOL_TASK_FUNC_SET_ADDR_FRAME_LEN        9
 
 
 #endif

@@ -4,7 +4,7 @@
 #include "fsl_clock.h"
 #include "pin_mux.h"
 
-#include "modbus.h"
+
 
 /*lpc824在IAR freertos下的移植*/
 int nxp_log_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit);
@@ -70,7 +70,7 @@ int nxp_log_serial_init(uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t sto
     /* Initialize the USART with configuration. */
     status=USART_Init(serial, &config, CLOCK_GetFreq(kCLOCK_MainClk));
  
-  if (status != 0){
+  if (status != kStatus_Success){
     return -1;
   } 
   EnableIRQ(serial_irq_num);

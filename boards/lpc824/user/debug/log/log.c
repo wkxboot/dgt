@@ -13,7 +13,7 @@ SEGGER_RTT_Init();
 log_serial_init();
 #endif
 
-log_debug("log init done.\r\n");
+//log_debug("log init done.\r\n");
 }
 
 

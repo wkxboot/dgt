@@ -196,7 +196,7 @@ int log_serial_printf(const char *format, ...)
    va_start( args, format );
    
    cnt = print(&p, format, args );
-   free_size = serial_complete(log_serial_handle,0);
+   free_size = serial_avail(log_serial_handle);
    if(free_size >= cnt){
    serial_write(log_serial_handle,(uint8_t *)buffer,cnt);
    }else{

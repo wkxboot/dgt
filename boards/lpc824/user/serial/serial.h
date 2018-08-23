@@ -40,6 +40,7 @@ int serial_open(int handle,uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t 
 int serial_close(int handle);
 int serial_select(int handle,uint32_t timeout);
 int serial_complete(int handle,uint32_t timeout);
+int serial_avail(int handle);
 
 int serial_create(int *handle,uint16_t rx_size,uint16_t tx_size);
 int serial_destroy(int handle);

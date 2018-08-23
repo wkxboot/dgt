@@ -9,6 +9,8 @@
 
 
 extern ad7190_io_driver_t ad7190_driver;
+osThreadId adc_task_hdl;
+
 
 static uint32_t sample_sum;
 static uint32_t sample_average;

@@ -1,6 +1,8 @@
 #include "serial.h"
 #include "cmsis_os.h"
 #include "comm_utils.h"
+
+
 typedef struct
 {
 uint8_t     *pbuffer;
@@ -234,7 +236,7 @@ int serial_select(int handle,uint32_t timeout)
  
  return size;
 }
-/*阻塞模式等待发送*/
+/*阻塞模式等待发送完毕*/
 int serial_complete(int handle,uint32_t timeout)
 {
  int size;
@@ -249,6 +251,22 @@ int serial_complete(int handle,uint32_t timeout)
  }
  SERIAL_ENTER_CRITICAL();  
  size=fifo_used_size(&s->send);
+ SERIAL_EXIT_CRITICAL(); 
+ return size;
+}
+
+/*当前可使用的发送空间*/
+int serial_avail(int handle)
+{
+ int size;
+ serial_t *s;
+ ASSERT_HANDLE(handle);
+ s =(serial_t *)handle;	 
+ if(s->port == -1){
+  return -1;
+ }  
+ SERIAL_ENTER_CRITICAL();  
+ size=fifo_free_size(&s->send);
  SERIAL_EXIT_CRITICAL(); 
  return size;
 }

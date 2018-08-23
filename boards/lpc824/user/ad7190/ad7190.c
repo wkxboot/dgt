@@ -260,8 +260,8 @@ return 0;
 
 uint8_t ad7190_is_adc_err()
 {
- if(ad7190.status.noref  == SR_NOREF_ERR || \
-    ad7190.status.SR_ERR == SR_ERR){ 
+ if(ad7190.status_reg.noref  == SR_NOREF_ERR || \
+    ad7190.status_reg.err == SR_ERR){ 
    return TRUE;
 }
 return FALSE;
