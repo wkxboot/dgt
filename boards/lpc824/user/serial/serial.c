@@ -158,6 +158,8 @@ int serial_flush(int handle)
  SERIAL_ENTER_CRITICAL();
  s->complete = true;
  s->full = false;
+ s->rxne_int_enable=true;
+ s->driver->enable_rxne_int();
  fifo_flush(&s->send);
  size = fifo_flush(&s->recv);
  SERIAL_EXIT_CRITICAL();

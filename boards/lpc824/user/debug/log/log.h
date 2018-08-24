@@ -19,7 +19,7 @@ extern "C" {
 
 #define LOG_GLOBAL_LEVEL       LOG_LEVEL_DEBUG 
 #define LOG_USE_RTT            1
-#define LOG_USE_SERIAL         1
+#define LOG_USE_SERIAL         0
 #define LOG_USE_COLORS         1
 #define LOG_USE_TIMESTAMP      1   
 

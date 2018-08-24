@@ -67,16 +67,16 @@ int main(void)
     while(1);
     }
     log_init();
-    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 200);
+    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
 
-    osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 200);
+    osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 128);
     adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
 
-    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 300);
+    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 128);
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
 
-    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 200);
+    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 128);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
     
 

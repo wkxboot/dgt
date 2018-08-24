@@ -66,10 +66,9 @@ void scale_task(void const *argument)
  
  /*查看保存的地址是否有效*/
  nv_result = nv_read(SCALE_TASK_NV_SCALE_ADDR_VALID_REGION_ADDR,&scale.nv_addr_valid,sizeof(scale.nv_addr_valid));
- log_assert(nv_result == 0);
  
  nv_result = nv_read(SCALE_TASK_NV_SCALE_ADDR_REGION_ADDR,&scale.nv_addr,sizeof(scale.nv_addr));
- log_assert(nv_result == 0);
+
  
  if(scale.nv_addr_valid != SCALE_TASK_NV_VALID){
    scale.nv_addr_valid = SCALE_TASK_NV_VALID;
@@ -78,12 +77,10 @@ void scale_task(void const *argument)
  }
  
  nv_result = nv_read(SCALE_TASK_NV_PARAM_VALID_REGION_ADDR,(uint8_t*)&scale.nv_param_valid,sizeof(scale.nv_param_valid));
- log_assert(nv_result == 0);
  
  /*如果上次断电后保存的数据是有效的*/
  if(scale.nv_param_valid == SCALE_TASK_NV_VALID){
  nv_result = nv_read(SCALE_TASK_NV_PARAM_REGION_ADDR,(uint8_t*)&scale.nv_param,sizeof(scale.nv_param));
- log_assert(nv_result == 0);
  }else{
  scale.nv_param_valid = SCALE_TASK_NV_INVALID;
  }

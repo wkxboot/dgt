@@ -21,12 +21,12 @@ void cpu_task(void const * argument)
  config.windowValue = 0xFFFFFFU;
  config.timeoutValue = CPU_TASK_WTG_TIMEOUT_VALUE;
  config.warningValue = 0;
- //WWDT_Init(WWDT,&config);
- //WWDT_Enable(WWDT);
+ WWDT_Init(WWDT,&config);
+ WWDT_Enable(WWDT);
  log_warning("watch dog start...timeout value:%dms.\r\n",110);
  
  while(1){
- //WWDT_Refresh(WWDT);
+ WWDT_Refresh(WWDT);
  log_one_line("feed dog ok.cpu: %d%%.",osGetCPUUsage());
  osDelay(CPU_TASK_INTERVAL_VALUE);
  }

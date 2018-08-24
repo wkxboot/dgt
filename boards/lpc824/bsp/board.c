@@ -32,7 +32,7 @@
 
 
 int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq);
-
+int nv_init();
    
 int board_init()
 {
@@ -43,6 +43,10 @@ int board_init()
  if(result != 0){
  return -1; 
  }
+result = nv_init();
+if(result != 0){
+return -1; 
+}
 
 return 0;
 }
