@@ -59,7 +59,7 @@
 
 /*! @brief Timeout times for waiting flag. */
 #ifndef I2C_WAIT_TIMEOUT
-#define I2C_WAIT_TIMEOUT 10000U /* Define to zero means keep waiting until the flag is assert/deassert. */
+#define I2C_WAIT_TIMEOUT 1000U /* Define to zero means keep waiting until the flag is assert/deassert. */
 #endif
 
 /* definitions for MSTCODE bits in I2C Status register STAT */

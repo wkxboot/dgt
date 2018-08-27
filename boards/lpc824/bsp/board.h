@@ -50,7 +50,7 @@
 #define BOARD_NAME "LPCXPRESSO54114"
 
 #define  BSP_AD7190_SPI_PORT           1
-#define  BSP_AD7190_SPI_FREQ           1000000
+#define  BSP_AD7190_SPI_FREQ           500000
    
 #define  BSP_AD7190_CS_GPIO            GPIO
 #define  BSP_AD7190_CS_PORT            0

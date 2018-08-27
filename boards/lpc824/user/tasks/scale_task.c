@@ -65,9 +65,9 @@ void scale_task(void const *argument)
  log_assert(scale_task_msg_q_id);  
  
  /*查看保存的地址是否有效*/
- nv_result = nv_read(SCALE_TASK_NV_SCALE_ADDR_VALID_REGION_ADDR,&scale.nv_addr_valid,sizeof(scale.nv_addr_valid));
+ nv_read(SCALE_TASK_NV_SCALE_ADDR_VALID_REGION_ADDR,&scale.nv_addr_valid,sizeof(scale.nv_addr_valid));
  
- nv_result = nv_read(SCALE_TASK_NV_SCALE_ADDR_REGION_ADDR,&scale.nv_addr,sizeof(scale.nv_addr));
+ nv_read(SCALE_TASK_NV_SCALE_ADDR_REGION_ADDR,&scale.nv_addr,sizeof(scale.nv_addr));
 
  
  if(scale.nv_addr_valid != SCALE_TASK_NV_VALID){
@@ -76,11 +76,11 @@ void scale_task(void const *argument)
    scale.nv_addr = SCALE_ADDR_DEFAULT;   
  }
  
- nv_result = nv_read(SCALE_TASK_NV_PARAM_VALID_REGION_ADDR,(uint8_t*)&scale.nv_param_valid,sizeof(scale.nv_param_valid));
+ nv_read(SCALE_TASK_NV_PARAM_VALID_REGION_ADDR,(uint8_t*)&scale.nv_param_valid,sizeof(scale.nv_param_valid));
  
  /*如果上次断电后保存的数据是有效的*/
  if(scale.nv_param_valid == SCALE_TASK_NV_VALID){
- nv_result = nv_read(SCALE_TASK_NV_PARAM_REGION_ADDR,(uint8_t*)&scale.nv_param,sizeof(scale.nv_param));
+ nv_read(SCALE_TASK_NV_PARAM_REGION_ADDR,(uint8_t*)&scale.nv_param,sizeof(scale.nv_param));
  }else{
  scale.nv_param_valid = SCALE_TASK_NV_INVALID;
  }
@@ -263,7 +263,7 @@ calibrate_full_msg_handle:
     log_info("remove tar weight success.nv a:%f b:%f.\r\n",scale.nv_param.a,scale.nv_param.b);
    
 remove_tar_weight_msg_handle:
-    protocol_msg.type = RESPONSE_CALIBRATE_FULL;
+    protocol_msg.type = RESPONSE_REMOVE_TAR_WEIGHT;
     protocol_msg.result = result;
     status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
     log_assert(status == osOK);

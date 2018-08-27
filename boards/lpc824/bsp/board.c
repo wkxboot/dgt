@@ -37,6 +37,7 @@ int nv_init();
 int board_init()
 {
  int result;
+
  BOARD_InitPins();
  BOARD_BootClockPll30M();
  result = bsp_ad7190_spi_int(BSP_AD7190_SPI_PORT,BSP_AD7190_SPI_FREQ);

@@ -30,7 +30,7 @@ ad7190_spi = SPI0;
 
 SPI_MasterGetDefaultConfig(&config);
 config.baudRate_Bps = freq;
-status = SPI_MasterInit(ad7190_spi,&config,CLOCK_GetFreq(kCLOCK_CoreSysClk));
+status = SPI_MasterInit(ad7190_spi,&config,CLOCK_GetFreq(kCLOCK_MainClk));
 if(status != kStatus_Success){
 return -1;
 }

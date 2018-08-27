@@ -21,7 +21,6 @@ bool                complete;
 bool                full;
 bool                txe_int_enable;
 bool                rxne_int_enable;
-bool                valid; 
 serial_hal_driver_t *driver;
 fifo_t              recv;
 fifo_t              send;
@@ -36,21 +35,6 @@ fifo_t              send;
 } 
 
 
-
-static int fifo_free_size(fifo_t *fifo)
-{
-  int len;
-  len = fifo->size - (fifo->write-fifo->read); 
-  return len;
-}
-
-static int fifo_used_size(fifo_t *fifo)
-{
-  int len;
-  len = fifo->write - fifo->read; 
-  return len;
-}
-
 static int fifo_flush(fifo_t *fifo)
 {
   int len;	
@@ -64,8 +48,8 @@ static int fifo_get(fifo_t *fifo,uint8_t *pbuffer,uint16_t size)
 {
  uint16_t cpy_cnt,pos;
 
- for(cpy_cnt=0;cpy_cnt<size;cpy_cnt++){
- if(fifo_used_size(fifo) > 0){
+ for(cpy_cnt = 0;cpy_cnt < size;cpy_cnt++){
+ if(fifo->read < fifo->write){
  pos = fifo->read % fifo->size;
  *pbuffer=fifo->pbuffer[pos];
  fifo->read++;
@@ -81,8 +65,8 @@ static int fifo_put(fifo_t *fifo,uint8_t const *pbuffer,uint16_t size)
 {
  uint16_t cpy_cnt,pos;
 
- for(cpy_cnt=0;cpy_cnt<size;cpy_cnt++){
- if(fifo_free_size(fifo) > 0){
+ for(cpy_cnt = 0;cpy_cnt < size;cpy_cnt++){
+ if(fifo->write - fifo->read < fifo->size){
  pos = fifo->write % fifo->size;
  fifo->pbuffer[pos]=*pbuffer;
  fifo->write++;
@@ -106,14 +90,14 @@ int serial_read(int handle,uint8_t *pbuffer,int size)
   ASSERT_NULL_POINTER(pbuffer);
   
   if(size < 0){
-   return -1;
+  return -1;
   }
   if(s->port == -1){
   return -1;
- } 
+  } 
   SERIAL_ENTER_CRITICAL();
   read = fifo_get(&s->recv,pbuffer,size); 
-  if(s->full == true){
+  if(read > 0 && s->full == true){
   s->full = false;
   s->rxne_int_enable = true;
   s->driver->enable_rxne_int();
@@ -132,14 +116,14 @@ int serial_write(int handle,uint8_t const *pbuffer,int size)
   ASSERT_NULL_POINTER(pbuffer);
   s=(serial_t *)handle; 
   if(size < 0){
-   return -1;
+  return -1;
   }
   if(s->port == -1){
   return -1;
   } 
   SERIAL_ENTER_CRITICAL();
   write = fifo_put(&s->send,pbuffer,size);
-  if(s->complete == true){
+  if(write > 0 && s->complete == true){
    s->complete = false;
    s->txe_int_enable = true;
    s->driver->enable_txe_int();
@@ -218,15 +202,18 @@ int serial_select(int handle,uint32_t timeout)
 {
  int size;
  serial_t *s;
+ fifo_t *fifo;
  
- s=(serial_t *)handle;	 
+ ASSERT_HANDLE(handle);
+ s=(serial_t *)handle;	
+ fifo = &s->recv; 
  if(s->port == -1){
   return -1;
  } 
- ASSERT_HANDLE(handle);
+
  while(1){
  SERIAL_ENTER_CRITICAL(); 
- size=fifo_used_size(&s->recv);
+ size=fifo->write -fifo->read;
  SERIAL_EXIT_CRITICAL(); 
  if(size == 0 && timeout > 0){
   osDelay(1);
@@ -243,8 +230,12 @@ int serial_complete(int handle,uint32_t timeout)
 {
  int size;
  serial_t *s;
+ fifo_t *fifo;
+ 
  ASSERT_HANDLE(handle);
+ 
  s =(serial_t *)handle;	 
+ fifo = &s->send;
  if(s->port == -1){
   return -1;
  }  
@@ -252,7 +243,7 @@ int serial_complete(int handle,uint32_t timeout)
  osDelay(1);
  }
  SERIAL_ENTER_CRITICAL();  
- size=fifo_used_size(&s->send);
+ size=fifo->write - fifo->read;
  SERIAL_EXIT_CRITICAL(); 
  return size;
 }
@@ -262,13 +253,17 @@ int serial_avail(int handle)
 {
  int size;
  serial_t *s;
+ fifo_t *fifo;
+ 
  ASSERT_HANDLE(handle);
+ 
  s =(serial_t *)handle;	 
+ fifo = &s->send;
  if(s->port == -1){
   return -1;
  }  
  SERIAL_ENTER_CRITICAL();  
- size=fifo_free_size(&s->send);
+ size=fifo->size - (fifo->write - fifo->read);
  SERIAL_EXIT_CRITICAL(); 
  return size;
 }
