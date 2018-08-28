@@ -57,21 +57,30 @@ GPIO_PortClear(BSP_AD7190_CS_GPIO,BSP_AD7190_CS_PORT,BSP_AD7190_CS_PIN);
 void bsp_ad7190_spi_write_byte(uint8_t byte)
 {
 spi_transfer_t transfer;
+
 uint8_t tx_data[1];
+uint8_t rx_data[1];
+
 tx_data[0]=byte;
-transfer.rxData = NULL;
+
 transfer.txData = tx_data;
+transfer.rxData = rx_data;
 transfer.dataSize = 1;
+transfer.configFlags = kSPI_EndOfTransfer | kSPI_EndOfFrame;
 SPI_MasterTransferBlocking(ad7190_spi,&transfer);
 }
 
 uint8_t bsp_ad7190_spi_read_byte()
 {
 spi_transfer_t receive;
+
 uint8_t rx_data[1];
-receive.txData = NULL;
+uint8_t tx_data[1];
+
+receive.txData = tx_data;
 receive.rxData = rx_data;
 receive.dataSize = 1;
+receive.configFlags = kSPI_EndOfTransfer | kSPI_EndOfFrame;
 SPI_MasterTransferBlocking(ad7190_spi,&receive);  
 
 return rx_data[0];

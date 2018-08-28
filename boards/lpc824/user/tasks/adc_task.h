@@ -7,7 +7,7 @@ extern osMessageQId adc_task_msg_q_id;
 void adc_task(void const * argument);
 
 
-#define  ADC_TASK_INTERVAL_VALUE             1    /*任务运行间隔*/
+#define  ADC_TASK_INTERVAL_VALUE             10    /*任务运行间隔*/
 #define  ADC_TASK_MSG_PUT_TIMEOUT_VALUE      5    /*发送消息超时时间*/
 #define  ADC_TASK_SIGNAL_WAIT_TIMEOUT_VALUE  2000 /*等待scale task 回应处理完成的时间*/
 
@@ -23,9 +23,9 @@ void adc_task(void const * argument);
 
 
 
-#define  ADC_TASK_AD_MODE                    MR_MODE_CONTINUE
+#define  ADC_TASK_AD_MODE                    MR_MODE_SINGLE
 #define  ADC_TASK_AD_SYNC                    GENERAL_ENABLE
-#define  ADC_TASK_AD_RATE                    500
+#define  ADC_TASK_AD_RATE                    125
 
 #define  ADC_TASK_CHNNEL                     CR_CHNEL_AIN1_2
 #define  ADC_TASK_CHOP                       GENERAL_ENABLE

@@ -11,11 +11,57 @@
 extern ad7190_io_driver_t ad7190_driver;
 osThreadId adc_task_hdl;
 
+typedef struct
+{
+uint32_t adc[ADC_TASK_SAMPLE_CNT_MAX];
+uint32_t sum;
+uint32_t average;
+uint32_t average_pre;
+uint16_t err_cnt;
+uint16_t cnt;
+uint16_t cnt_max;
+uint16_t timeout;
 
-static uint32_t sample_sum;
-static uint32_t sample_average;
-static uint32_t sample_average_pre;
-static uint8_t  sample_changed = FALSE;
+bool     changed;
+bool     err;
+}adc_sample_t;
+
+adc_sample_t sample = {
+.sum = 0,
+.average =0,
+.average_pre =0,
+.err_cnt =0,
+.timeout =0,
+.err = false,
+.changed = false,
+.cnt = 0,
+.cnt_max = ADC_TASK_SAMPLE_CNT_MAX
+};
+
+
+
+static void adc_moving_average_filter(uint32_t adc)
+{
+  uint16_t pos;
+  pos = sample.cnt % sample.cnt_max;
+  
+  if(sample.cnt < sample.cnt_max ){
+  sample.adc[pos] = adc;
+  sample.sum+=sample.adc[pos];
+  }else{
+  sample.sum -= sample.adc[pos];
+  sample.adc[pos] = adc;
+  sample.sum += sample.adc[pos];
+  sample.average = sample.sum / sample.cnt_max;
+  if(sample.average_pre !=sample.average){
+  sample.average_pre = sample.average;
+  sample.changed =true;
+  }
+  }
+  sample.cnt++;
+}
+
+
 
 static task_msg_t   scale_msg;
 
@@ -25,85 +71,91 @@ void adc_task(void const * argument)
  uint8_t ad7190_id;
  uint8_t ready; 
  uint32_t adc; 
- uint16_t sample_cnt;
- uint16_t sample_err_cnt;
- uint16_t sample_timeout;
  
  result = ad7190_register_io_driver(&ad7190_driver); 
  log_assert(result == 0);
  
 adc_task_restart: 
- sample_sum = 0;
- sample_cnt = 0;
+ sample.sum = 0;
+ sample.cnt = 0;
  result = ad7190_init();
- log_assert(result == 0);
+ if(result != 0){
+ log_error("ad7190 init err.\r\n");
+ }
  
  result = ad7190_pwr_down_switch_close(GENERAL_ENABLE);
- log_assert(result == 0);
+ if(result != 0){
+ log_error("ad7190 pwr dwn sw err.\r\n");
+ }
  result = ad7190_channel_config(ADC_TASK_CHNNEL,ADC_TASK_CHOP,ADC_TASK_UB,ADC_TASK_GAIN);
- log_assert(result == 0);
+ if(result != 0){
+ log_error("ad7190 chn config err.\r\n");
+ }
  result = ad7190_internal_zero_scale_calibrate();
- log_assert(result == 0);
+ if(result != 0){
+ log_error("ad7190 calibrate zero err.\r\n");
+ }
  result = ad7190_internal_full_scale_calibrate();
- log_assert(result == 0);
-  
+ if(result != 0){
+ log_error("ad7190 calibrate full err.\r\n");
+ }
  result = ad7190_read_id(&ad7190_id);
- log_assert(result == 0); 
+ if(result != 0){
+ log_error("ad7190 read id err.\r\n");
+ }else{
  log_debug("ad7190 id :%d.\r\n",ad7190_id);
- 
- result = ad7190_convert_start(ADC_TASK_AD_MODE,ADC_TASK_AD_SYNC,ADC_TASK_AD_RATE);
- log_assert(result == 0); 
+ }
+
  
  while(1){
+ result = ad7190_convert_start(ADC_TASK_AD_MODE,ADC_TASK_AD_SYNC,ADC_TASK_AD_RATE);
+ if(result != 0){
+ log_error("ad7190 start err.\r\n");
+ }
  osDelay(ADC_TASK_INTERVAL_VALUE);
  ready = ad7190_is_adc_rdy();
  if(ready == TRUE){
   if(ad7190_is_adc_err() == FALSE){
   ad7190_read_conversion_result(&adc);
-  sample_err_cnt = 0;
-  sample_timeout = 0;
-  sample_sum+= adc;
-  sample_cnt++;
-  if(sample_cnt >= ADC_TASK_SAMPLE_CNT_MAX){
-   sample_average = sample_sum / sample_cnt;
-   log_one_line("sample over.cnt:%d value:%d.",sample_cnt,sample_average);
-   sample_sum = 0;
-   sample_cnt = 0;  
-   if(sample_average != sample_average_pre){
-    sample_changed = TRUE; 
-    sample_average_pre = sample_average;
-    }  
-    }
+  sample.err_cnt = 0;
+  sample.timeout = 0;
+  sample.err = false;
+  
+  /*滑动平均滤波*/
+  adc_moving_average_filter(adc);
+  
   }else{
-  sample_err_cnt++; 
+  sample.err_cnt++; 
   }
  }else{
- sample_timeout+=ADC_TASK_INTERVAL_VALUE;    
+ sample.timeout+=ADC_TASK_INTERVAL_VALUE;    
  }
- 
- if(sample_err_cnt >= ADC_TASK_SAMPLE_ERR_CNT_MAX || sample_timeout >= ADC_TASK_SAMPLE_TIMEOUT_VALUE){
-   sample_average = ADC_TASK_SAMPLE_ERR_VALUE;
-   if(sample_average != sample_average_pre){
-   sample_changed = TRUE;
-   sample_average_pre = sample_average;
-   log_error("sample error.err_cnt:%d timeout:%d.\r\n",sample_err_cnt,sample_timeout);
+  
+ if(sample.err_cnt >= ADC_TASK_SAMPLE_ERR_CNT_MAX || sample.timeout >= ADC_TASK_SAMPLE_TIMEOUT_VALUE){
+   sample.average = ADC_TASK_SAMPLE_ERR_VALUE;
+   sample.err =true;
+   if(sample.average != sample.average_pre){
+   sample.changed = true;
+   sample.average_pre = sample.average;
+   log_error("sample error.err_cnt:%d timeout:%d.\r\n",sample.err_cnt,sample.timeout);
    }
-   sample_err_cnt = 0;
-   sample_timeout = 0;
+   sample.err_cnt = 0;
+   sample.timeout = 0;
  }
  
- if(sample_changed == TRUE){
-  sample_changed = FALSE;
+ if(sample.changed == true){
+  sample.changed = false;
   scale_msg.type = ADC_SAMPLE_COMPLETED;
-  scale_msg.adc = sample_average;
+  scale_msg.adc = sample.average;
   osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
   
   /*等待scale 发出restart信号*/
   osSignalWait(ADC_TASK_RESTART_SIGNAL,ADC_TASK_SIGNAL_WAIT_TIMEOUT_VALUE); 
  }
  
- if(sample_average == ADC_TASK_SAMPLE_ERR_VALUE){
- goto adc_task_restart;
+ if(sample.err == true){
+   sample.err =false;
+   goto adc_task_restart;
  }
  } 
 }

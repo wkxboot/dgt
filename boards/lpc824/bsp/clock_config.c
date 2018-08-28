@@ -180,8 +180,8 @@ void BOARD_BootClockPll30M(void)
     CLOCK_Select(kCLKOUT_From_Irc);                         /*!< select IRC for CLKOUT */
     CLOCK_SetCoreSysClkDiv(2U);
     CLOCK_SetClkDivider(kCLOCK_DivUsartClk, 1U);     /*!< set UART div */
-    SYSCON->UARTFRGDIV = 0;            /*!> Set UARTFRGDIV */
-    CLOCK_SetUARTFRGMULT(0U);          /*!< Set UARTFRGMULT */
+    SYSCON->UARTFRGDIV = SYSCON_UARTFRGDIV_DIV_MASK;            /*!> Set UARTFRGDIV */
+    CLOCK_SetUARTFRGMULT(0U);                       /*!< Set UARTFRGMULT */
     /*!< Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKPLL30M_CORE_CLOCK;
 }
