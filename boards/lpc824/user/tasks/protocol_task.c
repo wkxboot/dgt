@@ -374,42 +374,42 @@ protocol_parse_start:
      switch(step){
      /*接收到了协议头和数据长度域*/
      case PROTOCOL_TASK_ADU_STEP:
-     if(recv_buffer[0] == PROTOCOL_TASK_HEADER0_VALUE &&
-        recv_buffer[1] == PROTOCOL_TASK_HEADER1_VALUE){
+     if(recv_buffer[PROTOCOL_TASK_HEADER0_OFFSET] == PROTOCOL_TASK_HEADER0_VALUE &&
+        recv_buffer[PROTOCOL_TASK_HEADER1_OFFSET] == PROTOCOL_TASK_HEADER1_VALUE){
          
-        length_to_read = recv_buffer[3] << 8 |recv_buffer[2];
-        if(length_to_read < PROTOCOL_TASK_ADU_SIZE_MIN + 2 || length_to_read > PROTOCOL_TASK_ADU_SIZE_MAX + 2){
+        length_to_read =*(int16_t*)&recv_buffer[PROTOCOL_TASK_SIZE_OFFSET];
+        if(length_to_read < PROTOCOL_TASK_ADU_SIZE_MIN + PROTOCOL_TASK_CRC_SIZE || length_to_read > PROTOCOL_TASK_ADU_SIZE_MAX + PROTOCOL_TASK_CRC_SIZE){
         log_error("protocol err in adu size.\r\n");
         goto protocol_parse_start;
         }
         step = PROTOCOL_TASK_CRC_STEP;      
-        send_buffer[0]=PROTOCOL_TASK_HEADER0_VALUE;
-        send_buffer[1]=PROTOCOL_TASK_HEADER1_VALUE;
-        length_to_write+=2;
+        send_buffer[PROTOCOL_TASK_HEADER0_OFFSET]=PROTOCOL_TASK_HEADER0_VALUE;
+        send_buffer[PROTOCOL_TASK_HEADER1_OFFSET]=PROTOCOL_TASK_HEADER1_VALUE;
+        length_to_write+=PROTOCOL_TASK_HEADER_SIZE;
         }else{
-        log_error("protocol err in header value.%d %d\r\n",recv_buffer[0],recv_buffer[1]);
+        log_error("protocol err in header value.%d %d\r\n",recv_buffer[PROTOCOL_TASK_HEADER0_OFFSET],recv_buffer[PROTOCOL_TASK_HEADER1_OFFSET]);
         goto protocol_parse_start;
         }
      break;
      /*接收完成了全部的数据*/
      case PROTOCOL_TASK_CRC_STEP:
-       crc_calculated = protocol_task_crc16(recv_buffer,read_length - 2);
+       crc_calculated = protocol_task_crc16(recv_buffer,read_length - PROTOCOL_TASK_CRC_SIZE);
        crc_received = recv_buffer[read_length-1]<< 8 | recv_buffer[read_length-2];
        if(crc_calculated != crc_received){
           log_error("protocol err in crc.recv:%d calculate:%d.\r\n",crc_received,crc_calculated);
           goto protocol_parse_start;
        }
        
-       if(recv_buffer[4] != scale_addr ){
-        log_error("protocol err in addr.recv:%d legacy:%d.\r\n",recv_buffer[4],scale_addr);
+       if(recv_buffer[PROTOCOL_TASK_ADU_ADDR_OFFSET] != scale_addr ){
+        log_error("protocol err in addr.recv:%d legacy:%d.\r\n",recv_buffer[PROTOCOL_TASK_ADU_ADDR_OFFSET],scale_addr);
         goto protocol_parse_start;  
        }
 
        /*如果是读取净重值*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_READ_NET_WEIGHT && \
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_READ_NET_WEIGHT && \
           read_length == PROTOCOL_TASK_READ_NET_WEIGHT_FRAME_LEN){
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_NET_WEIGHT_FRAME_LEN -4);
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_NET_WEIGHT_FRAME_LEN -4) >> 8;
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_NET_WEIGHT_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_NET_WEIGHT_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8;
           send_buffer[length_to_write++] = scale_addr;  
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_NET_WEIGHT;
           
@@ -425,10 +425,10 @@ protocol_parse_start:
        }
        
        /*如果是去皮*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_REMOVE_TAR_WEIGHT && \
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_REMOVE_TAR_WEIGHT && \
           read_length == PROTOCOL_TASK_REMOVE_TAR_WEIGHT_FRAME_LEN){
-         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_REMOVE_TAR_WEIGHT_FRAME_LEN -4);
-         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_REMOVE_TAR_WEIGHT_FRAME_LEN -4) >> 8; 
+         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_REMOVE_TAR_WEIGHT_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_REMOVE_TAR_WEIGHT_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
          send_buffer[length_to_write++] = scale_addr;
          send_buffer[length_to_write++]=PROTOCOL_TASK_FUNC_REMOVE_TAR_WEIGHT;
          
@@ -447,14 +447,14 @@ protocol_parse_start:
        }
        
         /*如果是0点校准*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_CALIBRATE_ZERO &&
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_CALIBRATE_ZERO &&
           read_length == PROTOCOL_TASK_CALIBRATE_ZERO_FRAME_LEN){
-         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_ZERO_FRAME_LEN -4);
-         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_ZERO_FRAME_LEN -4) >> 8; 
+         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_ZERO_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_ZERO_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
          send_buffer[length_to_write++] = scale_addr;  
          send_buffer[length_to_write++]=PROTOCOL_TASK_FUNC_CALIBRATE_ZERO;
          
-         calibrate_weight = recv_buffer[7]<< 8 | recv_buffer[6];     
+         calibrate_weight = *(int16_t *)&recv_buffer[PROTOCOL_TASK_ADU_PAYLOAD_OFFSET];     
          if(calibrate_weight != 0){
            log_error("protocol err in calibrate zero weight.weight:%d.\r\n",calibrate_weight); 
            goto protocol_parse_start;;
@@ -476,14 +476,14 @@ protocol_parse_start:
      
        
        /*如果是full量程校准*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_CALIBRATE_FULL &&
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_CALIBRATE_FULL &&
           read_length == PROTOCOL_TASK_CALIBRATE_FULL_FRAME_LEN){
-         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_FULL_FRAME_LEN -4);
-         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_FULL_FRAME_LEN -4) >> 8; 
+         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_FULL_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+         send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_CALIBRATE_FULL_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
          send_buffer[length_to_write++] = scale_addr;  
          send_buffer[length_to_write++]=PROTOCOL_TASK_FUNC_CALIBRATE_FULL;  
          
-         calibrate_weight = recv_buffer[7]<< 8 | recv_buffer[6];
+         calibrate_weight = *(int16_t *)&recv_buffer[PROTOCOL_TASK_ADU_PAYLOAD_OFFSET];;
          if(calibrate_weight <= 0){
          log_error("protocol err in calibrate full weight.weight:%d.\r\n",calibrate_weight); 
          goto protocol_parse_start; ;
@@ -504,11 +504,11 @@ protocol_parse_start:
        }
        
        /*如果是读取传感器厂家ID*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_READ_SENSOR_ID && \
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_READ_SENSOR_ID && \
           read_length == PROTOCOL_TASK_READ_SENSOR_ID_FRAME_LEN){
             
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_SENSOR_ID_FRAME_LEN -4);
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_SENSOR_ID_FRAME_LEN -4) >> 8; 
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_SENSOR_ID_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_SENSOR_ID_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
           send_buffer[length_to_write++] = scale_addr;           
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_SENSOR_ID;
           
@@ -520,11 +520,11 @@ protocol_parse_start:
        }
       
       /*如果是读取固件版本号*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_READ_VERSION && \
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_READ_VERSION && \
           read_length == PROTOCOL_TASK_READ_VERSION_FRAME_LEN){
             
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_VERSION_FRAME_LEN -4);
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_VERSION_FRAME_LEN -4) >> 8; 
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_VERSION_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_VERSION_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
           send_buffer[length_to_write++] = scale_addr;  
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_VERSION;
           
@@ -536,15 +536,15 @@ protocol_parse_start:
       }
       
        /*如果是设置地址值*/
-       if(recv_buffer[5] == PROTOCOL_TASK_FUNC_SET_ADDR && \
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_SET_ADDR && \
           read_length == PROTOCOL_TASK_SET_ADDR_FRAME_LEN){
             
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_SET_ADDR_FRAME_LEN -4);
-          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_SET_ADDR_FRAME_LEN -4) >> 8; 
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_SET_ADDR_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_SET_ADDR_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
           send_buffer[length_to_write++] = scale_addr;   
           send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_SET_ADDR;
           
-          scale_set_addr = recv_buffer[6];
+          scale_set_addr = recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET];
           rc = protocol_set_scale_addr(scale_set_addr);
 
           if(rc == 0){
@@ -560,7 +560,7 @@ protocol_parse_start:
       }
      
      default :
-     log_error("protocol err in  func:%d.\r\n",recv_buffer[4]); 
+     log_error("protocol err in  func:%d.\r\n",recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET]); 
      goto protocol_parse_start;
      break;
      }
