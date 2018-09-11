@@ -33,7 +33,8 @@
 
 int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq);
 int nv_init();
-   
+
+/*板级初始化*/
 int board_init()
 {
  int result;
@@ -52,7 +53,31 @@ return -1;
 return 0;
 }
 
-
+/*半双工485使能读*/
+void bsp_485_enable_read()
+{
+GPIO_PortSet(BOARD_INITPINS_RWE_485_CTRL_GPIO,BOARD_INITPINS_RWE_485_CTRL_PORT,BOARD_INITPINS_RWE_485_CTRL_PIN);   
+}
+/*半双工485使能写*/
+void bsp_485_enable_write()
+{
+GPIO_PortClear(BOARD_INITPINS_RWE_485_CTRL_GPIO,BOARD_INITPINS_RWE_485_CTRL_PORT,BOARD_INITPINS_RWE_485_CTRL_PIN);   
+}
+/*led指示灯点亮*/
+void bsp_sys_led_turn_on()
+{
+ GPIO_PortSet(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,BOARD_INITPINS_LED_CTRL_PIN);  
+}
+/*led指示灯关闭*/
+void bsp_sys_led_turn_off()
+{
+ GPIO_PortClear(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,BOARD_INITPINS_LED_CTRL_PIN);  
+}
+/*led指示灯取反状态*/
+void bsp_sys_led_toggle()
+{
+ GPIO_PortToggle(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,BOARD_INITPINS_LED_CTRL_PIN);
+}
 
 
 

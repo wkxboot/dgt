@@ -1,6 +1,5 @@
 #include "board.h"
 #include "cmsis_os.h"
-#include "serial.h"
 #include "task_msg.h"
 #include "scale_task.h"
 #include "protocol_task.h"
@@ -299,7 +298,7 @@ void protocol_task(void const * argument)
  static uint8_t scale_addr;
  int rc; 
  int length_to_read,read_length=0;
- int length_to_write,write_length;
+ int length_to_write,write_length,remain_length;
  uint8_t  result;
  uint32_t timeout;
  uint16_t crc_calculated;
@@ -340,7 +339,8 @@ void protocol_task(void const * argument)
  
  while(1){
 protocol_parse_start:
-  //serial_flush(protocol_serial_handle);
+  /*使能485接收*/
+  bsp_485_enable_read();
   timeout = PROTOCOL_TASK_FRAME_TIMEOUT_VALUE;
   length_to_read = 4;
   read_length =0;
@@ -571,14 +571,22 @@ protocol_parse_start:
    }       
   }  
  
-    /*解析完毕 回应操作结果*/      
+    /*解析完毕 回应操作结果*/  
+    /*使能485发送*/
+    bsp_485_enable_write();
     write_length = serial_write(protocol_serial_handle,send_buffer,length_to_write);
     for (int i=0; i < write_length; i++){
     log_array("[%2X]\r\n", send_buffer[i]);
     }
     if(write_length != length_to_write){
-    log_error("protocol err in  serial send. expect:%d send:%d.\r\n",length_to_write,rc); 
+    log_error("protocol err in  serial buffer write. expect:%d write:%d.\r\n",length_to_write,write_length); 
     goto protocol_parse_start;      
+    }
+    
+    remain_length = serial_complete(protocol_serial_handle,PROTOCOL_TASK_SEND_TIMEOUT);
+    if(remain_length != 0){
+    log_error("protocol err in  serial send timeout.\r\n",); 
+    goto protocol_parse_start;  
     }
      
 }

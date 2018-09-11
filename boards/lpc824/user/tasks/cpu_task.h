@@ -7,7 +7,7 @@ void cpu_task(void const * argument);
 
 
 #define  CPU_TASK_WTG_TIMEOUT_VALUE            11000
-#define  CPU_TASK_INTERVAL_VALUE               1000
+#define  CPU_TASK_INTERVAL_VALUE               500
 
 
 

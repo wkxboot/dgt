@@ -37,6 +37,66 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
+/*! @name PIO0_1 (number 12), AD_SYNC
+  @{ */
+#define BOARD_INITPINS_AD_SYNC_CTRL_PERIPHERAL GPIO                    /*!<@brief Device name: GPIO */
+#define BOARD_INITPINS_AD_SYNC_CTRL_SIGNAL PIO0                        /*!<@brief GPIO signal: PIO0 */
+#define BOARD_INITPINS_AD_SYNC_CTRL_GPIO GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_INITPINS_AD_SYNC_CTRL_GPIO_PIN 1U                        /*!<@brief PIO0 pin index: 1 */
+#define BOARD_INITPINS_AD_SYNC_CTRL_PORT 0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_INITPINS_AD_SYNC_CTRL_PIN 1U                             /*!<@brief 0U pin index: 1 */
+#define BOARD_INITPINS_AD_SYNC_CTRL_CHANNEL 1                          /*!<@brief GPIO PIO0 channel: 1 */
+#define BOARD_INITPINS_AD_SYNC_CTRL_PIN_NAME PIO0_1                    /*!<@brief Pin name */
+#define BOARD_INITPINS_AD_SYNC_CTRL_LABEL "AD_SYNC"                    /*!<@brief Label */
+#define BOARD_INITPINS_AD_SYNC_CTRL_NAME "AD_SYNC_CTRL"                /*!<@brief Identifier name */
+#define BOARD_INITPINS_AD_SYNC_CTRL_DIRECTION kPIN_MUX_DirectionOutput /*!<@brief Direction */
+                                                                       /* @} */
+
+/*! @name PIO0_23 (number 1), LED
+  @{ */
+#define BOARD_INITPINS_LED_CTRL_PERIPHERAL GPIO                    /*!<@brief Device name: GPIO */
+#define BOARD_INITPINS_LED_CTRL_SIGNAL PIO0                        /*!<@brief GPIO signal: PIO0 */
+#define BOARD_INITPINS_LED_CTRL_GPIO GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_INITPINS_LED_CTRL_GPIO_PIN 23U                       /*!<@brief PIO0 pin index: 23 */
+#define BOARD_INITPINS_LED_CTRL_PORT 0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_INITPINS_LED_CTRL_PIN 23U                            /*!<@brief 0U pin index: 23 */
+#define BOARD_INITPINS_LED_CTRL_CHANNEL 23                         /*!<@brief GPIO PIO0 channel: 23 */
+#define BOARD_INITPINS_LED_CTRL_PIN_NAME PIO0_23                   /*!<@brief Pin name */
+#define BOARD_INITPINS_LED_CTRL_LABEL "LED"                        /*!<@brief Label */
+#define BOARD_INITPINS_LED_CTRL_NAME "LED_CTRL"                    /*!<@brief Identifier name */
+#define BOARD_INITPINS_LED_CTRL_DIRECTION kPIN_MUX_DirectionOutput /*!<@brief Direction */
+                                                                   /* @} */
+
+/*! @name PIO0_17 (number 2), RWE_485
+  @{ */
+#define BOARD_INITPINS_RWE_485_CTRL_PERIPHERAL GPIO                    /*!<@brief Device name: GPIO */
+#define BOARD_INITPINS_RWE_485_CTRL_SIGNAL PIO0                        /*!<@brief GPIO signal: PIO0 */
+#define BOARD_INITPINS_RWE_485_CTRL_GPIO GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_INITPINS_RWE_485_CTRL_GPIO_PIN 17U                       /*!<@brief PIO0 pin index: 17 */
+#define BOARD_INITPINS_RWE_485_CTRL_PORT 0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_INITPINS_RWE_485_CTRL_PIN 17U                            /*!<@brief 0U pin index: 17 */
+#define BOARD_INITPINS_RWE_485_CTRL_CHANNEL 17                         /*!<@brief GPIO PIO0 channel: 17 */
+#define BOARD_INITPINS_RWE_485_CTRL_PIN_NAME PIO0_17                   /*!<@brief Pin name */
+#define BOARD_INITPINS_RWE_485_CTRL_LABEL "RWE_485"                    /*!<@brief Label */
+#define BOARD_INITPINS_RWE_485_CTRL_NAME "RWE_485_CTRL"                /*!<@brief Identifier name */
+#define BOARD_INITPINS_RWE_485_CTRL_DIRECTION kPIN_MUX_DirectionOutput /*!<@brief Direction */
+                                                                       /* @} */
+
+/*! @name PIO0_15 (number 11), AD_SPI_CS
+  @{ */
+#define BOARD_INITPINS_AD_SPI_CS_PERIPHERAL GPIO                    /*!<@brief Device name: GPIO */
+#define BOARD_INITPINS_AD_SPI_CS_SIGNAL PIO0                        /*!<@brief GPIO signal: PIO0 */
+#define BOARD_INITPINS_AD_SPI_CS_GPIO GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_INITPINS_AD_SPI_CS_GPIO_PIN 15U                       /*!<@brief PIO0 pin index: 15 */
+#define BOARD_INITPINS_AD_SPI_CS_PORT 0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_INITPINS_AD_SPI_CS_PIN 15U                            /*!<@brief 0U pin index: 15 */
+#define BOARD_INITPINS_AD_SPI_CS_CHANNEL 15                         /*!<@brief GPIO PIO0 channel: 15 */
+#define BOARD_INITPINS_AD_SPI_CS_PIN_NAME PIO0_15                   /*!<@brief Pin name */
+#define BOARD_INITPINS_AD_SPI_CS_LABEL "AD_SPI_CS"                  /*!<@brief Label */
+#define BOARD_INITPINS_AD_SPI_CS_NAME "AD_SPI_CS"                   /*!<@brief Identifier name */
+#define BOARD_INITPINS_AD_SPI_CS_DIRECTION kPIN_MUX_DirectionOutput /*!<@brief Direction */
+                                                                    /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

@@ -2,7 +2,7 @@
 #define  __NV_H__
 
 
-#define  NV_DEVICE_I2C                       I2C0
+#define  NV_DEVICE_I2C                       I2C1
 #define  NV_DEVICE_ADDR                      0xC0
 #define  NV_DEVICE_BAUDRATE                  100000
 #define  NV_DEVICE_PAGE_SIZE                 8

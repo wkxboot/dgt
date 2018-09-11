@@ -12,6 +12,7 @@ void protocol_task(void const * argument);
 #define  PROTOCOL_TASK_SERIAL_DATABITS             8
 #define  PROTOCOL_TASK_SERIAL_STOPBITS             1
 
+#define  PROTOCOL_TASK_SEND_TIMEOUT                5
 
 #define  PROTOCOL_TASK_RX_BUFFER_SIZE              32
 #define  PROTOCOL_TASK_TX_BUFFER_SIZE              32

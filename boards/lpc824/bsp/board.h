@@ -43,21 +43,19 @@
 #include "serial.h"
 #include "ad7190.h"
 
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-/*! @brief The board name */
-#define BOARD_NAME "LPCXPRESSO54114"
-
-#define  BSP_AD7190_SPI_PORT           1
+#define  BSP_AD7190_SPI_PORT           0
 #define  BSP_AD7190_SPI_FREQ           500000
-   
-#define  BSP_AD7190_CS_GPIO            GPIO
-#define  BSP_AD7190_CS_PORT            0
-#define  BSP_AD7190_CS_PIN             1
 
 int board_init();
-
+void bsp_sys_led_turn_on();
+void bsp_sys_led_turn_off();
+void bsp_sys_led_toggle();
+void bsp_485_enable_read();
+void bsp_485_enable_write();
 
 #if defined(__cplusplus)
 }

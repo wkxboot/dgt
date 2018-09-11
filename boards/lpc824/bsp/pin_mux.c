@@ -12,6 +12,20 @@ processor: LPC824
 package_id: LPC824M201JDH20
 mcu_data: ksdk2_0
 processor_version: 4.0.1
+pin_labels:
+- {pin_num: '1', pin_signal: PIO0_23/ADC_3/ACMP_I4, label: LED, identifier: LED_CTRL}
+- {pin_num: '2', pin_signal: PIO0_17/ADC_9, label: RWE_485, identifier: RWE_485_CTRL}
+- {pin_num: '3', pin_signal: PIO0_13/ADC_10, label: DEBUG_RX}
+- {pin_num: '20', pin_signal: PIO0_14/ACMP_I3/ADC_2, label: DEBUG_TX}
+- {pin_num: '4', pin_signal: PIO0_12, label: AD_SPI_DI}
+- {pin_num: '6', pin_signal: PIO0_4/ADC_11, label: TX_485}
+- {pin_num: '19', pin_signal: PIO0_0/ACMP_I1, label: RX_485}
+- {pin_num: '12', pin_signal: PIO0_1/ACMP_I2/CLKIN, label: AD_SYNC, identifier: AD_SYNC_CTRL}
+- {pin_num: '9', pin_signal: PIO0_11/I2C0_SDA, label: AD_SPI_DO}
+- {pin_num: '10', pin_signal: PIO0_10/I2C0_SCL, label: AD_SPI_CLK}
+- {pin_num: '11', pin_signal: PIO0_15, label: AD_SPI_CS, identifier: AD_SPI_CS}
+- {pin_num: '13', pin_signal: PIO0_9/XTALOUT, label: EEPROM_SDA}
+- {pin_num: '14', pin_signal: PIO0_8/XTALIN, label: EEPROM_SCL}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -41,15 +55,17 @@ BOARD_InitPins:
   - {pin_num: '20', peripheral: USART0, signal: TXD, pin_signal: PIO0_14/ACMP_I3/ADC_2}
   - {pin_num: '19', peripheral: USART1, signal: RXD, pin_signal: PIO0_0/ACMP_I1}
   - {pin_num: '6', peripheral: USART1, signal: TXD, pin_signal: PIO0_4/ADC_11}
-  - {pin_num: '4', peripheral: SPI1, signal: MISO, pin_signal: PIO0_12}
-  - {pin_num: '9', peripheral: SPI1, signal: MOSI, pin_signal: PIO0_11/I2C0_SDA}
-  - {pin_num: '10', peripheral: SPI1, signal: SCK, pin_signal: PIO0_10/I2C0_SCL}
-  - {pin_num: '11', peripheral: SPI1, signal: SSEL0, pin_signal: PIO0_15}
-  - {pin_num: '12', peripheral: GPIO, signal: 'PIO0, 1', pin_signal: PIO0_1/ACMP_I2/CLKIN}
+  - {pin_num: '12', peripheral: GPIO, signal: 'PIO0, 1', pin_signal: PIO0_1/ACMP_I2/CLKIN, direction: OUTPUT, gpio_init_state: 'false'}
   - {pin_num: '8', peripheral: SWD, signal: SWDIO, pin_signal: SWDIO/PIO0_2}
   - {pin_num: '7', peripheral: SWD, signal: SWCLK, pin_signal: SWCLK/PIO0_3}
-  - {pin_num: '10', peripheral: I2C0, signal: SCL, pin_signal: PIO0_10/I2C0_SCL}
-  - {pin_num: '9', peripheral: I2C0, signal: SDA, pin_signal: PIO0_11/I2C0_SDA}
+  - {pin_num: '1', peripheral: GPIO, signal: 'PIO0, 23', pin_signal: PIO0_23/ADC_3/ACMP_I4, direction: OUTPUT, gpio_init_state: 'false'}
+  - {pin_num: '2', peripheral: GPIO, signal: 'PIO0, 17', pin_signal: PIO0_17/ADC_9, direction: OUTPUT, gpio_init_state: 'false'}
+  - {pin_num: '4', peripheral: SPI0, signal: MISO, pin_signal: PIO0_12}
+  - {pin_num: '9', peripheral: SPI0, signal: MOSI, pin_signal: PIO0_11/I2C0_SDA}
+  - {pin_num: '10', peripheral: SPI0, signal: SCK, pin_signal: PIO0_10/I2C0_SCL}
+  - {pin_num: '13', peripheral: I2C1, signal: SDA, pin_signal: PIO0_9/XTALOUT}
+  - {pin_num: '14', peripheral: I2C1, signal: SCL, pin_signal: PIO0_8/XTALIN}
+  - {pin_num: '11', peripheral: GPIO, signal: 'PIO0, 15', pin_signal: PIO0_15, direction: OUTPUT, gpio_init_state: 'false'}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -66,6 +82,22 @@ void BOARD_InitPins(void)
     /* Enables clock for switch matrix.: 0x01u */
     CLOCK_EnableClock(kCLOCK_Swm);
 
+    GPIO->CLR[0] = ((GPIO->CLR[0] &
+                     /* Mask bits to zero which are setting */
+                     (~(GPIO_CLR_CLRP_MASK)))
+
+                    /* Clear output bits (bit 0 = PIOn_0, bit 1 = PIOn_1, etc.). Supported pins depends on the specific
+                     * device and package. 0 = No operation. 1 = Clear output bit.: 0x828002u */
+                    | GPIO_CLR_CLRP(0x828002u));
+
+    GPIO->DIR[0] = ((GPIO->DIR[0] &
+                     /* Mask bits to zero which are setting */
+                     (~(GPIO_DIR_DIRP_MASK)))
+
+                    /* Selects pin direction for pin PIOm_n (bit 0 = PIOn_0, bit 1 = PIOn_1, etc.). Supported pins
+                     * depends on the specific device and package. 0 = input. 1 = output.: 0x828002u */
+                    | GPIO_DIR_DIRP(0x828002u));
+
     /* USART0_TXD connect to P0_14 */
     SWM_SetMovablePinSelect(SWM0, kSWM_USART0_TXD, kSWM_PortPin_P0_14);
 
@@ -78,29 +110,26 @@ void BOARD_InitPins(void)
     /* USART1_RXD connect to P0_0 */
     SWM_SetMovablePinSelect(SWM0, kSWM_USART1_RXD, kSWM_PortPin_P0_0);
 
-    /* SPI1_SCK connect to P0_10 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_SCK, kSWM_PortPin_P0_10);
+    /* SPI0_SCK connect to P0_10 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_SCK, kSWM_PortPin_P0_10);
 
-    /* SPI1_MOSI connect to P0_11 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MOSI, kSWM_PortPin_P0_11);
+    /* SPI0_MOSI connect to P0_11 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MOSI, kSWM_PortPin_P0_11);
 
-    /* SPI1_MISO connect to P0_12 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MISO, kSWM_PortPin_P0_12);
+    /* SPI0_MISO connect to P0_12 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MISO, kSWM_PortPin_P0_12);
 
-    /* SPI1_SSEL0 connect to P0_15 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_SSEL0, kSWM_PortPin_P0_15);
+    /* I2C1_SDA connect to P0_9 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_9);
+
+    /* I2C1_SCL connect to P0_8 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SCL, kSWM_PortPin_P0_8);
 
     /* SWCLK connect to P0_3 */
     SWM_SetFixedPinSelect(SWM0, kSWM_SWCLK, true);
 
     /* SWDIO connect to P0_2 */
     SWM_SetFixedPinSelect(SWM0, kSWM_SWDIO, true);
-
-    /* I2C0_SDA connect to P0_11 */
-    SWM_SetFixedPinSelect(SWM0, kSWM_I2C0_SDA, true);
-
-    /* I2C0_SCL connect to P0_10 */
-    SWM_SetFixedPinSelect(SWM0, kSWM_I2C0_SCL, true);
 
     /* Disable clock for switch matrix. */
     CLOCK_DisableClock(kCLOCK_Swm);
