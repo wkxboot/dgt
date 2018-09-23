@@ -5,7 +5,7 @@
 #define  NV_DEVICE_I2C                       I2C1
 #define  NV_DEVICE_ADDR                      0xC0
 #define  NV_DEVICE_BAUDRATE                  100000
-#define  NV_DEVICE_PAGE_SIZE                 8
+#define  NV_DEVICE_PAGE_SIZE                 16
 
 
 

@@ -5,8 +5,10 @@ SPI_Type *ad7190_spi=NULL;
 
 void bsp_ad7190_spi_write_byte(uint8_t byte);
 uint8_t bsp_ad7190_spi_read_byte();
+void bsp_ad7190_cs_init();
 void bsp_ad7190_cs_set();
 void bsp_ad7190_cs_clr();
+void bsp_ad7190_sync_init();
 
 ad7190_io_driver_t ad7190_driver={
 .cs_set = bsp_ad7190_cs_set,
@@ -21,13 +23,14 @@ int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq)
 {
 spi_master_config_t config;
 status_t status;
+bsp_ad7190_sync_init();
+bsp_ad7190_cs_init();
 
 if(spi_port == 1){
 ad7190_spi = SPI1;
 }else{
 ad7190_spi = SPI0;
 }
-
 SPI_MasterGetDefaultConfig(&config);
 config.baudRate_Bps = freq;
 status = SPI_MasterInit(ad7190_spi,&config,CLOCK_GetFreq(kCLOCK_MainClk));
@@ -40,16 +43,34 @@ return 0;
 }
 
 
+void bsp_ad7190_cs_init()
+{
+  gpio_pin_config_t config = {
+  kGPIO_DigitalOutput, 0,
+  };
+ GPIO_PortInit(BOARD_INITPINS_AD_SPI_CS_GPIO, BOARD_INITPINS_AD_SPI_CS_PORT);
+ GPIO_PinInit(BOARD_INITPINS_AD_SPI_CS_GPIO, BOARD_INITPINS_AD_SPI_CS_PORT, BOARD_INITPINS_AD_SPI_CS_PIN ,&config);
+ 
+}
 
+void bsp_ad7190_sync_init()
+{
+  gpio_pin_config_t config = {
+  kGPIO_DigitalOutput, 1,
+  };
+ GPIO_PortInit(BOARD_INITPINS_AD_SYNC_CTRL_GPIO, BOARD_INITPINS_AD_SYNC_CTRL_PORT);
+ GPIO_PinInit(BOARD_INITPINS_AD_SYNC_CTRL_GPIO, BOARD_INITPINS_AD_SYNC_CTRL_PORT, BOARD_INITPINS_AD_SYNC_CTRL_PIN ,&config);
+ 
+}
 
 void bsp_ad7190_cs_set()
 {
-GPIO_PortSet(BOARD_INITPINS_AD_SPI_CS_GPIO,BOARD_INITPINS_AD_SPI_CS_PORT,BOARD_INITPINS_AD_SPI_CS_PIN);  
+GPIO_PortSet(BOARD_INITPINS_AD_SPI_CS_GPIO,BOARD_INITPINS_AD_SPI_CS_PORT,(1<<BOARD_INITPINS_AD_SPI_CS_PIN));  
 }
 
 void bsp_ad7190_cs_clr()
 {
-GPIO_PortClear(BOARD_INITPINS_AD_SPI_CS_GPIO,BOARD_INITPINS_AD_SPI_CS_PORT,BOARD_INITPINS_AD_SPI_CS_PIN);   
+GPIO_PortClear(BOARD_INITPINS_AD_SPI_CS_GPIO,BOARD_INITPINS_AD_SPI_CS_PORT,(1<<BOARD_INITPINS_AD_SPI_CS_PIN));   
 }
 
 

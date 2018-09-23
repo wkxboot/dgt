@@ -60,12 +60,12 @@ BOARD_InitPins:
   - {pin_num: '7', peripheral: SWD, signal: SWCLK, pin_signal: SWCLK/PIO0_3}
   - {pin_num: '1', peripheral: GPIO, signal: 'PIO0, 23', pin_signal: PIO0_23/ADC_3/ACMP_I4, direction: OUTPUT, gpio_init_state: 'false'}
   - {pin_num: '2', peripheral: GPIO, signal: 'PIO0, 17', pin_signal: PIO0_17/ADC_9, direction: OUTPUT, gpio_init_state: 'false'}
-  - {pin_num: '4', peripheral: SPI0, signal: MISO, pin_signal: PIO0_12}
-  - {pin_num: '9', peripheral: SPI0, signal: MOSI, pin_signal: PIO0_11/I2C0_SDA}
-  - {pin_num: '10', peripheral: SPI0, signal: SCK, pin_signal: PIO0_10/I2C0_SCL}
+  - {pin_num: '10', peripheral: SPI0, signal: SCK, pin_signal: PIO0_10/I2C0_SCL, i2cmode: no_init}
   - {pin_num: '13', peripheral: I2C1, signal: SDA, pin_signal: PIO0_9/XTALOUT}
   - {pin_num: '14', peripheral: I2C1, signal: SCL, pin_signal: PIO0_8/XTALIN}
   - {pin_num: '11', peripheral: GPIO, signal: 'PIO0, 15', pin_signal: PIO0_15, direction: OUTPUT, gpio_init_state: 'false'}
+  - {pin_num: '4', peripheral: SPI0, signal: MOSI, pin_signal: PIO0_12}
+  - {pin_num: '9', peripheral: SPI0, signal: MISO, pin_signal: PIO0_11/I2C0_SDA, i2cmode: no_init}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -113,11 +113,11 @@ void BOARD_InitPins(void)
     /* SPI0_SCK connect to P0_10 */
     SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_SCK, kSWM_PortPin_P0_10);
 
-    /* SPI0_MOSI connect to P0_11 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MOSI, kSWM_PortPin_P0_11);
+    /* SPI0_MOSI connect to P0_12 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MOSI, kSWM_PortPin_P0_12);
 
-    /* SPI0_MISO connect to P0_12 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MISO, kSWM_PortPin_P0_12);
+    /* SPI0_MISO connect to P0_11 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MISO, kSWM_PortPin_P0_11);
 
     /* I2C1_SDA connect to P0_9 */
     SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_9);

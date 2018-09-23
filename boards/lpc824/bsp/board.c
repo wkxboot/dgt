@@ -30,7 +30,8 @@
 
 #include "board.h"
 
-
+static void bsp_485_ctrl_pin_init();
+static void bsp_sys_led_ctrl_pin_init();
 int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq);
 int nv_init();
 
@@ -41,6 +42,9 @@ int board_init()
 
  BOARD_InitPins();
  BOARD_BootClockPll30M();
+ bsp_485_ctrl_pin_init();
+ bsp_sys_led_ctrl_pin_init();
+
  result = bsp_ad7190_spi_int(BSP_AD7190_SPI_PORT,BSP_AD7190_SPI_FREQ);
  if(result != 0){
  return -1; 
@@ -53,30 +57,49 @@ return -1;
 return 0;
 }
 
+static void bsp_485_ctrl_pin_init()
+{
+  gpio_pin_config_t config = {
+  kGPIO_DigitalOutput, 0,
+  };
+ GPIO_PortInit(BOARD_INITPINS_RWE_485_CTRL_GPIO, BOARD_INITPINS_RWE_485_CTRL_PORT);
+ GPIO_PinInit(BOARD_INITPINS_RWE_485_CTRL_GPIO, BOARD_INITPINS_RWE_485_CTRL_PORT, BOARD_INITPINS_RWE_485_CTRL_PIN, &config);
+}
+
+static void bsp_sys_led_ctrl_pin_init()
+{
+  gpio_pin_config_t config = {
+  kGPIO_DigitalOutput, 0,
+  };
+ GPIO_PortInit(BOARD_INITPINS_LED_CTRL_GPIO, BOARD_INITPINS_LED_CTRL_PORT);
+ GPIO_PinInit(BOARD_INITPINS_LED_CTRL_GPIO, BOARD_INITPINS_LED_CTRL_PORT, BOARD_INITPINS_LED_CTRL_PIN ,&config);
+}
+
 /*半双工485使能读*/
 void bsp_485_enable_read()
 {
-GPIO_PortSet(BOARD_INITPINS_RWE_485_CTRL_GPIO,BOARD_INITPINS_RWE_485_CTRL_PORT,BOARD_INITPINS_RWE_485_CTRL_PIN);   
+GPIO_PortSet(BOARD_INITPINS_RWE_485_CTRL_GPIO,BOARD_INITPINS_RWE_485_CTRL_PORT,(1<<BOARD_INITPINS_RWE_485_CTRL_PIN));   
 }
 /*半双工485使能写*/
 void bsp_485_enable_write()
 {
-GPIO_PortClear(BOARD_INITPINS_RWE_485_CTRL_GPIO,BOARD_INITPINS_RWE_485_CTRL_PORT,BOARD_INITPINS_RWE_485_CTRL_PIN);   
+GPIO_PortClear(BOARD_INITPINS_RWE_485_CTRL_GPIO,BOARD_INITPINS_RWE_485_CTRL_PORT,(1<<BOARD_INITPINS_RWE_485_CTRL_PIN));   
 }
+
 /*led指示灯点亮*/
 void bsp_sys_led_turn_on()
 {
- GPIO_PortSet(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,BOARD_INITPINS_LED_CTRL_PIN);  
+ GPIO_PortSet(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,(1<<BOARD_INITPINS_LED_CTRL_PIN));  
 }
 /*led指示灯关闭*/
 void bsp_sys_led_turn_off()
 {
- GPIO_PortClear(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,BOARD_INITPINS_LED_CTRL_PIN);  
+ GPIO_PortClear(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,(1<<BOARD_INITPINS_LED_CTRL_PIN));
 }
 /*led指示灯取反状态*/
 void bsp_sys_led_toggle()
 {
- GPIO_PortToggle(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,BOARD_INITPINS_LED_CTRL_PIN);
+ GPIO_PortToggle(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,(1<<BOARD_INITPINS_LED_CTRL_PIN));
 }
 
 

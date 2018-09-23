@@ -363,7 +363,7 @@ return 0;
 int ad7190_init()
 {
 int result;
-
+io->cs_set();
 /*cs 一直保持低电平*/
 io->cs_clr();
 
@@ -376,7 +376,7 @@ ad7190.con_reg.refsel = CR_REF_SELECT_1P_1N;
 ad7190.con_reg.buff = GENERAL_ENABLE;
 ad7190.con_reg.refdet = GENERAL_ENABLE;
 
-ad7190.mode_reg.clk = MR_CLK_SELECT_EC_MCLK12;
+ad7190.mode_reg.clk = MR_CLK_SELECT_IC492MHZ_NONE;
 ad7190.mode_reg.single = GENERAL_DISABLE;
 ad7190.mode_reg.rej60 = GENERAL_ENABLE;
 ad7190.mode_reg.enpar = GENERAL_DISABLE;

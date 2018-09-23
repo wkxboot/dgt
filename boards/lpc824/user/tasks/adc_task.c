@@ -5,7 +5,7 @@
 #include "adc_task.h"
 #include "log.h"
 #define LOG_MODULE_NAME   "[adc_task]"
-#define LOG_MODULE_LEVEL   LOG_LEVEL_OFF 
+#define LOG_MODULE_LEVEL   LOG_LEVEL_ERROR 
 
 
 extern ad7190_io_driver_t ad7190_driver;
