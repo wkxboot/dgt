@@ -26,13 +26,18 @@ status_t status;
 bsp_ad7190_sync_init();
 bsp_ad7190_cs_init();
 
+
+ 
 if(spi_port == 1){
 ad7190_spi = SPI1;
 }else{
 ad7190_spi = SPI0;
 }
+
 SPI_MasterGetDefaultConfig(&config);
 config.baudRate_Bps = freq;
+config.delayConfig.frameDelay = 0xf;
+config.clockPhase = kSPI_ClockPhaseFirstEdge;
 status = SPI_MasterInit(ad7190_spi,&config,CLOCK_GetFreq(kCLOCK_MainClk));
 if(status != kStatus_Success){
 return -1;

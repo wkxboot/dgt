@@ -123,7 +123,7 @@ void nxp_protocol_serial_isr()
 
 /*串口中断处理*/
 
-void USART0_IRQHandler()
+void USART1_IRQHandler()
 {
   nxp_protocol_serial_isr();
 }

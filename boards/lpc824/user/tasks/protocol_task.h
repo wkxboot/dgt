@@ -7,7 +7,7 @@ extern osMessageQId protocol_task_msg_q_id;
 void protocol_task(void const * argument);
 
 
-#define  PROTOCOL_TASK_SERIAL_PORT                 0
+#define  PROTOCOL_TASK_SERIAL_PORT                 1
 #define  PROTOCOL_TASK_SERIAL_BAUDRATES            115200
 #define  PROTOCOL_TASK_SERIAL_DATABITS             8
 #define  PROTOCOL_TASK_SERIAL_STOPBITS             1

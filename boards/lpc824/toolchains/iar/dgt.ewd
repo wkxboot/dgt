@@ -44,7 +44,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state></state>
+                    <state>$TOOLKIT_DIR$\CONFIG\debugger\NXP\LPC824M201.ddf</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>
@@ -112,7 +112,7 @@
                 </option>
                 <option>
                     <name>FlashLoadersV3</name>
-                    <state>$TOOLKIT_DIR$\config\flashloader\</state>
+                    <state>$TOOLKIT_DIR$\config\flashloader\NXP\FlashLPC800_32KRAM8K.board</state>
                 </option>
                 <option>
                     <name>OCImagesSuppressCheck1</name>
@@ -729,7 +729,7 @@
                 <debug>1</debug>
                 <option>
                     <name>JLinkSpeed</name>
-                    <state>1000</state>
+                    <state>4000</state>
                 </option>
                 <option>
                     <name>CCJLinkDoLogfile</name>
@@ -777,7 +777,7 @@
                 </option>
                 <option>
                     <name>CCJLinkSpeedRadioV2</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCUSBDevice</name>
@@ -826,7 +826,7 @@
                 </option>
                 <option>
                     <name>CCJLinkInterfaceRadio</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCJLinkResetList</name>

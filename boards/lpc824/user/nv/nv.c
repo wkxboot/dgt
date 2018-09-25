@@ -8,6 +8,7 @@ I2C_Type *nv_i2c =NV_DEVICE_I2C;
 
 int nv_init()
 {
+
  i2c_master_config_t masterConfig;
  I2C_MasterGetDefaultConfig(&masterConfig);
  masterConfig.baudRate_Bps = NV_DEVICE_BAUDRATE;
@@ -35,7 +36,7 @@ byte_addr = addr & (NV_DEVICE_PAGE_SIZE -1 );
 
 transfer.flags = kI2C_TransferDefaultFlag;
 transfer.direction = kI2C_Read;
-transfer.slaveAddress = NV_DEVICE_ADDR;
+transfer.slaveAddress = NV_DEVICE_ADDR ;
 transfer.subaddressSize = 1;
 
 for(uint8_t cnt = 0;cnt <= page_cnt;cnt++){

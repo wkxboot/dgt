@@ -39,9 +39,19 @@ int nv_init();
 int board_init()
 {
  int result;
-
+  /* Enable clock of usart1. */   
+ CLOCK_EnableClock(kCLOCK_Uart1);
+ /* Ser DIV of uart0. */
+ CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);  
+    
+ /* Enable clock of spi1. */   
+ CLOCK_EnableClock(kCLOCK_Spi1);
+ 
+  /* Enable clock of i2c1. */   
+ CLOCK_EnableClock(kCLOCK_I2c1);
+ 
  BOARD_InitPins();
- BOARD_BootClockPll30M();
+ BOARD_BootClockPll24M();
  bsp_485_ctrl_pin_init();
  bsp_sys_led_ctrl_pin_init();
 
