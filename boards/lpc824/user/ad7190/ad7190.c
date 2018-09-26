@@ -258,6 +258,11 @@ return 0;
 }
 
 
+uint8_t ad7190_get_channel()
+{
+ return  ad7190.status_reg.chd;
+}
+
 uint8_t ad7190_is_adc_err()
 {
  if(ad7190.status_reg.noref  == SR_NOREF_ERR || \

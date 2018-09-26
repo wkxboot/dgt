@@ -169,7 +169,11 @@ static int protocol_calibrate_weight(int16_t weight)
  task_msg_t scale_msg;
  int        result = -1;
  
+ if(weight == 0){
  scale_msg.type = REQ_CALIBRATE_ZERO;
+ }else{
+ scale_msg.type = REQ_CALIBRATE_FULL; 
+ } 
  scale_msg.calibrate_weight = weight;
  status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
  log_assert(status == osOK);
@@ -177,7 +181,7 @@ static int protocol_calibrate_weight(int16_t weight)
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
  msg = (task_msg_t *)os_msg.value.v;
- if(msg->type == RESPONSE_CALIBRATE_ZERO){
+ if(msg->type == RESPONSE_CALIBRATE_ZERO || msg->type == RESPONSE_CALIBRATE_FULL){
    if( msg->result == SCALE_TASK_SUCCESS){
      result = 0;
    }else{

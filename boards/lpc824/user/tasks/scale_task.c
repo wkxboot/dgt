@@ -32,6 +32,7 @@ int16_t   zero_weight;
 int16_t   full_weight;
 uint32_t  zero_adc;
 uint32_t  full_adc;
+int16_t   tar_weight;
 }scale_nv_param_t;
 
 typedef struct
@@ -41,7 +42,6 @@ uint8_t          nv_addr_valid;
 uint8_t          nv_param_valid;
 scale_nv_param_t nv_param;
 uint32_t         cur_adc;
-int16_t          tar_weight;
 int16_t          net_weight;
 int16_t          gross_weight;
 }scale_t;
@@ -107,7 +107,7 @@ void scale_task(void const *argument)
      scale.net_weight = SCALE_TASK_WEIGHT_ERR_VALUE;     
    }else{
      scale.gross_weight = (int16_t)weight;
-     scale.net_weight =  scale.gross_weight - scale.tar_weight; 
+     scale.net_weight =  scale.gross_weight - scale.nv_param.tar_weight; 
    }
   }  
   /*向adc_task回应处理结果*/
@@ -231,8 +231,8 @@ calibrate_full_msg_handle:
      log_error("remove tar weight fail.weight err.\r\n"); 
      goto remove_tar_weight_msg_handle;
    }
-   scale.tar_weight = scale.gross_weight;
-   scale.nv_param.b = (float)scale.gross_weight - scale.nv_param.a * scale.cur_adc; 
+   scale.nv_param.tar_weight = scale.gross_weight;
+   //scale.nv_param.b = (float)scale.gross_weight - scale.nv_param.a * scale.cur_adc; 
    
    /*使校准值无效*/
     valid = SCALE_TASK_NV_INVALID;
