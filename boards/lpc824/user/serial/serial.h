@@ -19,7 +19,7 @@
 
 SERIAL_BEGIN
 
-#define   LOG_SERIAL_MAX_INTERRUPT_PRIORITY         (5 << (8-4))
+#define   SERIAL_MAX_INTERRUPT_PRIORITY         (5 << (8-4))
 
 
 typedef struct 
@@ -72,14 +72,14 @@ int isr_serial_put_byte_from_recv(int handle,uint8_t byte);
     __set_PRIMASK(pri_mask);                                   \
     }
   #elif ((defined (__ARM7EM__) && (__CORE__ == __ARM7EM__)) || (defined (__ARM7M__) && (__CORE__ == __ARM7M__)))
-   #ifndef  LOG_SERIAL_MAX_INTERRUPT_PRIORITY
-   #define  LOG_SERIAL_MAX_INTERRUPT_PRIORITY                 (0x50)
+   #ifndef  SERIAL_MAX_INTERRUPT_PRIORITY
+   #define  SERIAL_MAX_INTERRUPT_PRIORITY                 (0x50)
    #endif
    #define SERIAL_ENTER_CRITICAL()                             \
    {                                                           \
    unsigned int base_pri;                                      \
    base_pri = __get_BASEPRI();                                 \
-   __set_BASEPRI(LOG_SERIAL_MAX_INTERRUPT_PRIORITY);   
+   __set_BASEPRI(SERIAL_MAX_INTERRUPT_PRIORITY);   
 
    #define SERIAL_EXIT_CRITICAL()                              \
    __set_BASEPRI(base_pri);                                    \
@@ -104,15 +104,15 @@ int isr_serial_put_byte_from_recv(int handle,uint8_t byte);
      __schedule_barrier();                                      \
     }
   #elif (defined(__TARGET_ARCH_7_M) || defined(__TARGET_ARCH_7E_M))
-    #ifndef  LOG_SERIAL_MAX_INTERRUPT_PRIORITY
-    #define  LOG_SERIAL_MAX_INTERRUPT_PRIORITY                (0x50)
+    #ifndef  SERIAL_MAX_INTERRUPT_PRIORITY
+    #define  SERIAL_MAX_INTERRUPT_PRIORITY                (0x50)
     #endif
     #define SERIAL_ENTER_CRITICAL()                             \
     {                                                           \
      unsigned int base_pri;                                     \
      register unsigned char BASEPRI __asm( "basepri");          \
       base_pri = BASEPRI;                                       \
-      BASEPRI = LOG_SERIAL_MAX_INTERRUPT_PRIORITY;              \
+      BASEPRI = SERIAL_MAX_INTERRUPT_PRIORITY;              \
       __schedule_barrier();
 
     #define SERIAL_EXIT_CRITICAL()                              \
