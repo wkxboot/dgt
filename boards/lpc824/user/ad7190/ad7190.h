@@ -139,6 +139,7 @@ int ad7190_internal_zero_scale_calibrate();
 int ad7190_internal_full_scale_calibrate();
 int ad7190_system_zero_scale_calibrate();
 int ad7190_system_full_scale_calibrate();
+int ad7190_read_status();
 uint8_t ad7190_is_adc_rdy();
 uint8_t ad7190_is_adc_err();
 uint8_t ad7190_get_channel();

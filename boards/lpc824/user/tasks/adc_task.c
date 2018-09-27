@@ -5,7 +5,7 @@
 #include "adc_task.h"
 #include "log.h"
 #define LOG_MODULE_NAME   "[adc_task]"
-#define LOG_MODULE_LEVEL   LOG_LEVEL_ERROR 
+#define LOG_MODULE_LEVEL   LOG_LEVEL_INFO 
 
 
 extern ad7190_io_driver_t ad7190_driver;
@@ -52,30 +52,30 @@ typedef struct
  bool     is_ch2_valid;
 }channel_ctrl_t;
 
-#if ADC_TASK_SAMPLE_CHANEL_CNT == 1
+#if ADC_TASK_SAMPLE_CHANNEL_CNT == 1
 channel_ctrl_t channel_ctrl={
-.channel1 = ADC_TASK_CHANNEL_1,
+.channel1 = ADC_TASK_CHANNEL1_VALUE,
 .is_ch1_valid = true,
 .is_ch1_done = false,
 .adc1 = 0,
-.channel2 = ADC_TASK_CHANNEL_2,
+.channel2 = 0,
 .is_ch2_valid = false,
 .is_ch2_done = true,
 .adc2 = 0
 };
-#elif ADC_TASK_SAMPLE_CHANEL_CNT == 2
+#elif ADC_TASK_SAMPLE_CHANNEL_CNT == 2
 channel_ctrl_t channel_ctrl={
-.channel1 = ADC_TASK_CHANNEL_1,
+.channel1 = ADC_TASK_CHANNEL1_VALUE,
 .is_ch1_valid = true,
 .is_ch1_done = false,
 .adc1 = 0,
-.channel2 = ADC_TASK_CHANNEL_2,
+.channel2 = ADC_TASK_CHANNEL2_VALUE,
 .is_ch2_valid = true,
 .is_ch2_done = false,
 .adc2 = 0
 };
 #else
-#error "ADC_TASK_SAMPLE_CHANEL_CNT must be 1 or 2."
+#error "ADC_TASK_SAMPLE_CHANNEL_CNT must be 1 or 2."
 #endif
 
 
@@ -109,7 +109,6 @@ void adc_task(void const * argument)
  int result;
  uint8_t channel;
  uint8_t ad7190_id;
- uint8_t ready; 
  uint32_t adc; 
  
  result = ad7190_register_io_driver(&ad7190_driver); 
@@ -122,23 +121,32 @@ adc_task_restart:
  if(result != 0){
  log_error("ad7190 init err.\r\n");
  }
- 
+ osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
  result = ad7190_pwr_down_switch_close(GENERAL_ENABLE);
  if(result != 0){
  log_error("ad7190 pwr dwn sw err.\r\n");
  }
- result = ad7190_channel_config(ADC_TASK_CHNNEL,ADC_TASK_CHOP,ADC_TASK_UB,ADC_TASK_GAIN);
+ osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
+ result = ad7190_channel_config(ADC_TASK_CHANNEL_SELECT,ADC_TASK_CHOP,ADC_TASK_UB,ADC_TASK_GAIN);
  if(result != 0){
  log_error("ad7190 chn config err.\r\n");
  }
+ osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
+ 
+ /*暂时不需要内部校准功能*/
+ /*
  result = ad7190_internal_zero_scale_calibrate();
  if(result != 0){
  log_error("ad7190 calibrate zero err.\r\n");
  }
+ osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
  result = ad7190_internal_full_scale_calibrate();
  if(result != 0){
  log_error("ad7190 calibrate full err.\r\n");
  }
+ osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
+*/
+ 
  result = ad7190_read_id(&ad7190_id);
  if(result != 0){
  log_error("ad7190 read id err.\r\n");
@@ -149,14 +157,14 @@ adc_task_restart:
  result = ad7190_convert_start(ADC_TASK_AD_MODE,ADC_TASK_AD_SYNC,ADC_TASK_AD_RATE);
  if(result != 0){
  log_error("ad7190 start err.\r\n");
- osDelay(1000);
+ osDelay(ADC_TASK_RETRY_DELAY_TIMEOUT_VALUE);
  goto adc_task_restart;
  }
  
  while(1){
  osDelay(ADC_TASK_INTERVAL_VALUE);
- ready = ad7190_is_adc_rdy();
- if(ready == TRUE){
+ ad7190_read_status();
+ if(ad7190_is_adc_rdy() == TRUE){
   if(ad7190_is_adc_err() == FALSE){
   channel = ad7190_get_channel();
   if(channel_ctrl.is_ch1_valid == true && channel == channel_ctrl.channel1){
@@ -179,7 +187,7 @@ adc_task_restart:
     channel_ctrl.is_ch1_done = false;
   }
   if(channel_ctrl.is_ch2_valid == true){
-    channel_ctrl.is_ch1_done = false;
+    channel_ctrl.is_ch2_done = false;
   }  
   }
   

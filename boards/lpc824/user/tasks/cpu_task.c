@@ -33,7 +33,7 @@ void cpu_task(void const * argument)
  bsp_sys_led_turn_on();
  while(1){
  //WWDT_Refresh(WWDT);
- log_one_line("feed dog ok.cpu: %d%%.",osGetCPUUsage());
+ //log_one_line("feed dog ok.cpu: %d%%. weight:%dg.",osGetCPUUsage());
  osDelay(CPU_TASK_INTERVAL_VALUE);
  bsp_sys_led_toggle();
  

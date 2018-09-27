@@ -246,7 +246,7 @@ return -1;
 return 0;
 }
 
-static int ad7190_read_status()
+int ad7190_read_status()
 {
 ad7190.comm_reg.rw=CR_RW_READ;
 ad7190.comm_reg.rs=CR_REG_SELECT_STATUS;
@@ -275,13 +275,6 @@ return FALSE;
 
 uint8_t ad7190_is_adc_rdy()
 {
-int result;
-result = ad7190_read_status();
-
-if(result != 0 ){
-return FALSE;
-}
-
 if(ad7190.status_reg.rdy == SR_RDY){
 return TRUE;
 }
