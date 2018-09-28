@@ -57,7 +57,7 @@ uint32_t burn:1;
 uint32_t chn:8;
 uint32_t reserved16_19:4;
 uint32_t refsel:1;
-uint32_t reserved21_22:4;
+uint32_t reserved21_22:2;
 uint32_t chop:1;
 uint32_t reserved24_31:8;
 }con_reg;

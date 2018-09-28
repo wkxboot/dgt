@@ -244,7 +244,7 @@ calibrate_zero_msg_handle:
     log_info("calibrate full success.nv a:%f b:%f.\r\n",scale.nv_param.a,scale.nv_param.b);
     
 calibrate_full_msg_handle:
-    if(result != 0){
+    if(result != SCALE_TASK_SUCCESS){
     /*恢复先前参数*/
     scale.nv_param = pre_nv_param ;
     }

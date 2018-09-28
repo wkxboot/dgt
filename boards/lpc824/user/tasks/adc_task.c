@@ -140,6 +140,7 @@ adc_task_restart:
  log_error("ad7190 calibrate zero err.\r\n");
  }
  osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
+
  result = ad7190_internal_full_scale_calibrate();
  if(result != 0){
  log_error("ad7190 calibrate full err.\r\n");
@@ -166,6 +167,7 @@ adc_task_restart:
  ad7190_read_status();
  if(ad7190_is_adc_rdy() == TRUE){
   if(ad7190_is_adc_err() == FALSE){
+  log_info(".\r\n");
   channel = ad7190_get_channel();
   if(channel_ctrl.is_ch1_valid == true && channel == channel_ctrl.channel1){
   ad7190_read_conversion_result(&adc);

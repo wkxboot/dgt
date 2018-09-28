@@ -32,13 +32,13 @@ i2c_master_transfer_t transfer;
 page_cnt = size / NV_DEVICE_PAGE_SIZE;
 byte_remain = size % NV_DEVICE_PAGE_SIZE;
 
-transfer.subaddress =addr & (~(NV_DEVICE_PAGE_SIZE -1 ));
+transfer.subaddress =addr;
 transfer.data = buffer;
 
 transfer.flags = kI2C_TransferDefaultFlag;
 transfer.direction = kI2C_Read;
 transfer.slaveAddress = NV_DEVICE_ADDR ;
-transfer.subaddressSize = 1;
+transfer.subaddressSize = NV_DEVICE_SUB_ADDR_SIZE;
 
 for(uint8_t cnt = 0;cnt < page_cnt;cnt++){
 transfer.dataSize =NV_DEVICE_PAGE_SIZE;
@@ -80,13 +80,13 @@ uint8_t  read_buffer[24];
 page_cnt = size / NV_DEVICE_PAGE_SIZE;
 byte_remain = size % NV_DEVICE_PAGE_SIZE;
 
-transfer.subaddress = addr & (~(NV_DEVICE_PAGE_SIZE -1 ));
+transfer.subaddress = addr;
 transfer.data = buffer;
 
 transfer.flags = kI2C_TransferDefaultFlag;
 transfer.direction = kI2C_Write;
 transfer.slaveAddress = NV_DEVICE_ADDR;
-transfer.subaddressSize = 1;
+transfer.subaddressSize = NV_DEVICE_SUB_ADDR_SIZE;
 
 for(uint8_t cnt = 0;cnt < page_cnt;cnt++){
 transfer.dataSize =NV_DEVICE_PAGE_SIZE;
