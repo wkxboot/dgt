@@ -13,10 +13,9 @@ void scale_task(void const *argument);
 #define  SCALE_TASK_NV_INVALID                      0x55
 #define  SCALE_TASK_NV_VALID                        0xaa
 
-#define  SCALE_TASK_NV_PARAM_REGION_ADDR            0x00
-#define  SCALE_TASK_NV_PARAM_VALID_REGION_ADDR      0x20
-#define  SCALE_TASK_NV_SCALE_ADDR_REGION_ADDR       0x30
-#define  SCALE_TASK_NV_SCALE_ADDR_VALID_REGION_ADDR 0x40
+#define  SCALE_TASK_NV_ADDR_ADDR                    0x00
+#define  SCALE_TASK_SCALE_1_NV_PARAM_ADDR           0x10
+#define  SCALE_TASK_SCALE_2_NV_PARAM_ADDR           0x30
 
 
 #define  SCALE_TASK_ADDR_VALUE_MAX                  0xFE

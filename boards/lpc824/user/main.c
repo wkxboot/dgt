@@ -37,6 +37,7 @@
 #include "cpu_task.h"
 #include "scale_task.h"
 #include "protocol_task.h"
+#include "version.h"
 
 #include "log.h"
 #define LOG_MODULE_NAME   "[main]"
@@ -67,6 +68,8 @@ int main(void)
     while(1);
     }
     log_init();
+    log_info("firmware version:%d.%d.\r\n",FIRMWARE_VERSION >> 8,FIRMWARE_VERSION & 0xff);
+    
     osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
 

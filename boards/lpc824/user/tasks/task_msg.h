@@ -29,7 +29,8 @@ RESPONSE_ADDR
 typedef struct
 {
 msg_type_t   type;
-struct{
+uint8_t      channel;
+union{
 uint32_t     adc;
 int16_t      net_weight;
 int16_t      calibrate_weight;
