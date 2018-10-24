@@ -27,7 +27,7 @@ void adc_task(void const * argument);
 #define  ADC_TASK_SAMPLE_TIMEOUT_VALUE       500  /*ADC取样超时时间*/
 #define  ADC_TASK_SAMPLE_ERR_CNT_MAX         500  /*ADC取样错误次数最大值*/
 
-#define  ADC_TASK_SAMPLE_CNT_MAX             30   /*ADC取样平均值*/
+#define  ADC_TASK_SAMPLE_CNT_MAX             25   /*ADC取样平均值*/
 #define  ADC_TASK_SAMPLE_ERR_VALUE           0xFFFFFFFFUL  /*ADC取样错误码*/
 
 
@@ -40,10 +40,10 @@ void adc_task(void const * argument);
 
 #if      ADC_TASK_SAMPLE_CHANNEL_CNT == 1
 #define  ADC_TASK_CHANNEL_SELECT             ADC_TASK_CHANNEL_1
-#define  ADC_TASK_AD_RATE                    80 
+#define  ADC_TASK_AD_RATE                    100 
 #elif    ADC_TASK_SAMPLE_CHANNEL_CNT == 2
 #define  ADC_TASK_CHANNEL_SELECT             ADC_TASK_CHANNEL_1 | ADC_TASK_CHANNEL_2
-#define  ADC_TASK_AD_RATE                    80 * 4
+#define  ADC_TASK_AD_RATE                    100 * 4
 #endif
 
 #define  ADC_TASK_CHOP                       GENERAL_ENABLE

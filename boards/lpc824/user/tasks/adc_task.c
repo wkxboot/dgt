@@ -48,7 +48,7 @@ static scale_sensor_t scale_sensor;
 
 
 
-
+/*任务参数初始化*/
 static void adc_task_param_init()
 {
 uint8_t i=0;
@@ -63,13 +63,23 @@ scale_sensor.channel[i].sample.cnt =0;
 scale_sensor.channel[i].err = false;
 scale_sensor.channel[i].id = channel[i];
 }
-
-
-
 }
 
+/*一阶滞后滤波*/
+/*
+static void adc_one_order_lag_filter(adc_sample_t *sample,uint32_t adc)
+{
+ static float a = 0.5;
+ sample->average =(uint32_t) (sample->average_pre * a+ (1-a) * adc ); 
+ sample->average_pre = sample->average;
+ if(sample->average != sample->average_pre){
+ sample->changed = true;   
+ }
+}
+*/
 
-
+/*滑动平均滤波*/
+/*
 static void adc_moving_average_filter(adc_sample_t *sample,uint32_t adc)
 {
   uint16_t pos;
@@ -92,8 +102,33 @@ static void adc_moving_average_filter(adc_sample_t *sample,uint32_t adc)
   }
   sample->cnt++;
 }
+*/
 
-
+/*一阶滞后+滑动平均滤波*/
+static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,uint32_t adc)
+{
+  uint16_t pos;
+  static float a = 0.878;
+  log_assert(sample);
+  pos = sample->cnt % sample->cnt_max;
+  
+  if(sample->cnt < sample->cnt_max ){
+  sample->adc[pos] = adc;
+  sample->sum+=sample->adc[pos];
+  }else{
+  sample->sum -= sample->adc[pos];
+  sample->adc[pos] = adc;
+  sample->sum += sample->adc[pos];
+  sample->average = sample->sum / sample->cnt_max;
+  
+  sample->average =(uint32_t) (sample->average_pre * a + (1 - a)*sample->average);
+  if(sample->average_pre !=sample->average){
+  sample->average_pre = sample->average;
+  sample->changed =true;
+  }
+  }
+  sample->cnt++;
+}
 
 static task_msg_t   scale_msg;
 
@@ -172,7 +207,12 @@ adc_task_restart:
   scale_sensor.channel[i].timeout = 0; 
 
   /*滑动平均滤波*/
-  adc_moving_average_filter(&scale_sensor.channel[i].sample,adc);
+  //adc_moving_average_filter(&scale_sensor.channel[i].sample,adc);
+  /*一阶滞后滤波*/
+  //adc_one_order_lag_filter(&scale_sensor.channel[i].sample,adc);
+  /*滑动平均 + 一阶滞后滤波*/
+  adc_moving_average_plus_one_order_flag_filter(&scale_sensor.channel[i].sample,adc);
+  
   scale_sensor.channel[i].is_done = true;
   } else{
   scale_sensor.channel[i].err_cnt++; 
