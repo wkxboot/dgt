@@ -62,8 +62,8 @@ int16_t          all_net_weight;
 }digital_scale_t;
 
 
-static task_msg_t *msg;
-static task_msg_t protocol_msg;
+static task_message_t *msg;
+static task_message_t protocol_msg;
 
 static digital_scale_t digital_scale;
 
@@ -239,7 +239,7 @@ void scale_task(void const *argument)
  while(1){
  os_msg = osMessageGet(scale_task_msg_q_id,SCALE_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg = (task_msg_t*)os_msg.value.v;
+ msg = (task_message_t*)os_msg.value.v;
  
  /*实时计算毛重和净重*/
  if(msg->type ==  ADC_SAMPLE_COMPLETED){
@@ -289,7 +289,7 @@ void scale_task(void const *argument)
    if(rc == 0){
     //log_debug("variance:%d.",(int)(move_sample.variance*100) );
     variance = move_sample.variance;
-    log_one_line("net weight:%d g. v:%d.",all_net_weight,(int32_t)(variance*100000));
+    log_one_line("net weight:%d g. v:%d.cpu:%d%%.",all_net_weight,(int32_t)(variance*100000) ,osGetCPUUsage());
     
     if(net_weight.status == STABLE_STATUS_IDEL_WAIT_START && \
     variance >= EVALUATE_TASK_VARIANCE_MAX){
@@ -305,7 +305,11 @@ void scale_task(void const *argument)
     net_weight.change_value = net_weight.change_stop_value -net_weight.change_start_value;
     net_weight.variance = variance;    
     net_weight.status = STABLE_STATUS_IDEL_WAIT_START;
-    log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n",net_weight.change_stop_time,net_weight.change_stop_value,net_weight.change_time,net_weight.change_value);  
+    log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n"
+              ,net_weight.change_stop_time
+              ,net_weight.change_stop_value
+              ,net_weight.change_time
+              ,net_weight.change_value);  
    } 
    }
    }
@@ -327,6 +331,22 @@ void scale_task(void const *argument)
   status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
   }
  
+  /*向protocol_task回应0点校准重量值*/
+  if(msg->type ==  REQ_CALIBRATE_ZERO_VALUE){
+  protocol_msg.type = RESPONSE_CALIBRATE_ZERO_VALUE;
+  protocol_msg.calibrate_weight = digital_scale.scale[0].nv_param.zero_weight;
+  
+  status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
+  }
+  
+   /*向protocol_task回应增益校准重量值*/
+  if(msg->type ==  REQ_CALIBRATE_FULL_VALUE){
+  protocol_msg.type = RESPONSE_CALIBRATE_FULL_VALUE;
+  protocol_msg.calibrate_weight = digital_scale.scale[0].nv_param.full_weight;;
+
+  status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
+  }
+  
  
   /*向protocol_task回应0点校准结果*/
   if(msg->type ==  REQ_CALIBRATE_ZERO){
@@ -440,7 +460,7 @@ remove_tar_weight_msg_handle:
  
   /*向protocol_task回应设置地址结果*/
   if(msg->type ==  REQ_SET_ADDR){
-   if(msg->scale_addr > SCALE_TASK_ADDR_VALUE_MAX){
+   if(msg->scale_addr > SCALE_TASK_ADDR_VALUE_MAX || msg->scale_addr == 0){
      log_error("set addr fail.addr:%d.\r\n",msg->scale_addr); 
      result = SCALE_TASK_FAILURE ;
      goto set_addr_msg_handle;

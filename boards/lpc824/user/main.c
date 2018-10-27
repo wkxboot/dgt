@@ -79,7 +79,7 @@ int main(void)
     osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 180);
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
 
-    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 128);
+    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 160);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
     
 

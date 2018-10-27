@@ -360,6 +360,7 @@
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/comm_utils</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/nv</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/modbus</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/CPU</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/SEGGER_RTT_V612j/RTT</state>
@@ -2211,6 +2212,15 @@
             </group>
         </group>
         <group>
+            <name>modbus</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\modbus\modbus-rtu.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\modbus\modbus.c</name>
+            </file>
+        </group>
+        <group>
             <name>nv</name>
             <file>
                 <name>$PROJ_DIR$\..\..\user\nv\nv.c</name>
@@ -2247,7 +2257,7 @@
             <name>$PROJ_DIR$\..\..\user\nxp_ad7190_spi.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\user\nxp_protocol_serial.c</name>
+            <name>$PROJ_DIR$\..\..\user\nxp_modbus_serial.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\devices\LPC824\system_LPC824.c</name>

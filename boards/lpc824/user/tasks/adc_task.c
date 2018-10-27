@@ -130,7 +130,7 @@ static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,u
   sample->cnt++;
 }
 
-static task_msg_t   scale_msg;
+static task_message_t   scale_msg;
 
 void adc_task(void const * argument)
 {

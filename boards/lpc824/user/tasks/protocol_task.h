@@ -8,10 +8,10 @@ void protocol_task(void const * argument);
 
 #define  PROTOCOL_TASK_START_DELAY_TIME_VALUE      1000
 
-#define  PROTOCOL_TASK_SERIAL_PORT                 1
-#define  PROTOCOL_TASK_SERIAL_BAUDRATES            115200
-#define  PROTOCOL_TASK_SERIAL_DATABITS             8
-#define  PROTOCOL_TASK_SERIAL_STOPBITS             1
+#define  PROTOCOL_TASK_MODBUS_SERIAL_PORT                 1
+#define  PROTOCOL_TASK_MODBUS_SERIAL_BAUDRATES            115200
+#define  PROTOCOL_TASK_MODBUS_SERIAL_DATABITS             8
+#define  PROTOCOL_TASK_MODBUS_SERIAL_STOPBITS             1
 
 #define  PROTOCOL_TASK_SEND_TIMEOUT                5
 
