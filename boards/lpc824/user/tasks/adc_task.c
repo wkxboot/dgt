@@ -108,7 +108,7 @@ static void adc_moving_average_filter(adc_sample_t *sample,uint32_t adc)
 static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,uint32_t adc)
 {
   uint16_t pos;
-  static float a = 0.878;
+  static float a = 0.849;
   log_assert(sample);
   pos = sample->cnt % sample->cnt_max;
   
@@ -175,7 +175,7 @@ adc_task_restart:
  log_error("ad7190 calibrate full err.\r\n");
  }
  osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
-*/
+ */
  
  result = ad7190_read_id(&ad7190_id);
  if(result != 0){

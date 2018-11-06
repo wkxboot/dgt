@@ -58,6 +58,7 @@ scale_nv_addr_t  nv_addr;
 uint8_t          nv_addr_addr;
 uint8_t          scale_cnt;
 scale_t          scale[ADC_TASK_SAMPLE_CHANNEL_CNT]; 
+bool             is_done[ADC_TASK_SAMPLE_CHANNEL_CNT]; 
 int16_t          all_net_weight;
 }digital_scale_t;
 
@@ -88,7 +89,7 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT            25
+#define  MOVE_SAMPLE_CNT            20
 
 typedef struct
 {
@@ -123,9 +124,9 @@ stable_status_t status;
 stable_t net_weight;
 
 /*定义启动变化阈值 值越小灵敏度要高 */
-#define  EVALUATE_TASK_VARIANCE_MAX      3
+#define  EVALUATE_TASK_VARIANCE_MAX      1.5
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      0.6
+#define  EVALUATE_TASK_VARIANCE_MIN      0.0
 
 /*计算方差*/
 static  int caculate_variance(move_sample_t *ms)
@@ -245,6 +246,7 @@ void scale_task(void const *argument)
  if(msg->type ==  ADC_SAMPLE_COMPLETED){
   scale_idx = msg->channel;
   digital_scale.scale[scale_idx].cur_adc = msg->adc;
+  digital_scale.is_done[scale_idx] = true;
   /*如果ADC取样是错误值 或者nv保存的参数无效*/
   if(digital_scale.scale[scale_idx].cur_adc == ADC_TASK_SAMPLE_ERR_VALUE ){
   digital_scale.scale[scale_idx].gross_weight = SCALE_TASK_WEIGHT_ERR_VALUE;
@@ -261,6 +263,17 @@ void scale_task(void const *argument)
       digital_scale.scale[scale_idx].net_weight =   digital_scale.scale[scale_idx].gross_weight -  digital_scale.scale[scale_idx].nv_param.tar_weight; 
    }
   }
+  /*检验是否全部处理*/
+  for(uint8_t i =0;i< digital_scale.scale_cnt;i++){
+    if(digital_scale.is_done[i] == false) {
+    goto ignore_all_net_weight;
+    }
+  }
+  /*标记为未处理*/
+  for(uint8_t i =0;i< digital_scale.scale_cnt;i++){
+  digital_scale.is_done[i] = false; 
+  }
+  /*计算全部净重*/    
   all_net_weight = 0;
   for(uint8_t i=0;i< digital_scale.scale_cnt;i++){
   if(digital_scale.scale[i].net_weight == SCALE_TASK_WEIGHT_ERR_VALUE){
@@ -270,6 +283,7 @@ void scale_task(void const *argument)
   all_net_weight +=  digital_scale.scale[i].net_weight; 
   }
   digital_scale.all_net_weight = all_net_weight;
+ ignore_all_net_weight:
   /*向adc_task回应处理结果*/
   osSignalSet(adc_task_hdl,ADC_TASK_RESTART_SIGNAL);
  }
@@ -289,7 +303,7 @@ void scale_task(void const *argument)
    if(rc == 0){
     //log_debug("variance:%d.",(int)(move_sample.variance*100) );
     variance = move_sample.variance;
-    log_one_line("net weight:%d g. v:%d.cpu:%d%%.",all_net_weight,(int32_t)(variance*100000) ,osGetCPUUsage());
+    //log_one_line("net weight:%d g. v:%d.cpu:%d%%.",all_net_weight,(int32_t)(variance*100000) ,osGetCPUUsage());
     
     if(net_weight.status == STABLE_STATUS_IDEL_WAIT_START && \
     variance >= EVALUATE_TASK_VARIANCE_MAX){
