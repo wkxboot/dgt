@@ -65,7 +65,7 @@ static int16_t protocol_get_net_weight()
  if(os_msg.status == osEventMessage){
  msg =  (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_NET_WEIGHT){
-   net_weight = msg->net_weight;
+   net_weight = (int16_t)msg->net_weight;
    break;
   }  
  }

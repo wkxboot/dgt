@@ -36,7 +36,7 @@ message_type_t   type;
 uint8_t      channel;
 union{
 uint32_t     adc;
-int16_t      net_weight;
+float        net_weight;
 int16_t      calibrate_weight;
 uint8_t      result;
 uint8_t      sensor_id;

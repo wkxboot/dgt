@@ -34,7 +34,7 @@ int16_t   zero_weight;
 int16_t   full_weight;
 uint32_t  zero_adc;
 uint32_t  full_adc;
-int16_t   tar_weight;
+float     tar_weight;
 }scale_nv_param_t;
 
 typedef struct
@@ -42,8 +42,8 @@ typedef struct
 uint16_t         nv_param_addr;
 scale_nv_param_t nv_param;
 uint32_t         cur_adc;
-int16_t          net_weight;
-int16_t          gross_weight;
+float            net_weight;
+float            gross_weight;
 }scale_t;
 
 typedef struct
@@ -59,7 +59,7 @@ uint8_t          nv_addr_addr;
 uint8_t          scale_cnt;
 scale_t          scale[ADC_TASK_SAMPLE_CHANNEL_CNT]; 
 bool             is_done[ADC_TASK_SAMPLE_CHANNEL_CNT]; 
-int16_t          all_net_weight;
+float            all_net_weight;
 }digital_scale_t;
 
 
@@ -89,18 +89,22 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT            20
+#define  MOVE_SAMPLE_CNT                 10
+/*定义启动变化阈值 值越小灵敏度要高 1.2大约10g起跳*/
+#define  EVALUATE_TASK_VARIANCE_MAX      1.2 
+/*定义停止变化阈值 值越小稳定时间越长，值越精确 */
+#define  EVALUATE_TASK_VARIANCE_MIN      0.02
 
 typedef struct
 {
 uint8_t  expired;
 uint32_t wr_pos;
-int16_t  *buffer;
-double   variance;
-int16_t  value;
+float    sample[MOVE_SAMPLE_CNT];  
+float    variance;
+float    value;
 }move_sample_t;
 
-static int16_t sample[MOVE_SAMPLE_CNT]={0};  
+
 static move_sample_t move_sample;
 
 typedef enum
@@ -111,60 +115,52 @@ STABLE_STATUS_START_WAIT_IDEL
 
 typedef struct
 {
-int16_t         change_start_value;
-int16_t         change_stop_value;
-int16_t         change_value;
-uint32_t        change_start_time;
-uint32_t        change_stop_time;
-uint32_t        change_time;
-float           variance;
+float         change_start_value;
+float         change_stop_value;
+float         change_value;
+uint32_t      change_start_time;
+uint32_t      change_stop_time;
+uint32_t      change_time;
+float         variance;
 stable_status_t status;
 }stable_t;
 
 stable_t net_weight;
 
-/*定义启动变化阈值 值越小灵敏度要高 */
-#define  EVALUATE_TASK_VARIANCE_MAX      1.5
-/*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      0.0
-
 /*计算方差*/
 static  int caculate_variance(move_sample_t *ms)
 {
 uint8_t i;
-double sum;
-double average;
-double variance;
+float sum;
+float average;
+float variance;
 
-int16_t *buffer;
 uint8_t cnt;
 
-buffer = ms->buffer;
 cnt = ms->expired;
 sum=0;
 
 for(i=0;i<cnt;i++){
-sum+=(double)buffer[i];
+sum+=ms->sample[i];
 }
 average = sum / (double)cnt;
 
 sum =0;
 for(i=0;i<cnt;i++){
-sum += pow(((double)buffer[i] - average),2);
+sum += pow((ms->sample[i] - average),2);
 }
 variance = sum / (double)cnt;
-ms->value =(int16_t) average;
+ms->value = average;
 ms->variance =variance;
 
 return 0;
 }
 
 /*取样数据*/
-static int move_sample_put(int16_t value,move_sample_t *ms)
+static int move_sample_put(float value,move_sample_t *ms)
 {
- int16_t *buffer;
- buffer = ms->buffer;
- buffer[ms->wr_pos % ms->expired] = value;
+
+ ms->sample[ms->wr_pos % ms->expired] = value;
  ms->wr_pos++;
  if(ms->wr_pos >= ms->expired){
   return 0;
@@ -173,13 +169,12 @@ static int move_sample_put(int16_t value,move_sample_t *ms)
 }
 
 /*取样复位*/
-static int move_sample_reset(move_sample_t *ms,uint8_t expired,int16_t *buffer)
+static int move_sample_reset(move_sample_t *ms)
 {
  ms->wr_pos =0;
  ms->variance =0;
  ms->value =0;
- ms->expired = expired;
- ms->buffer = buffer;
+ ms->expired = MOVE_SAMPLE_CNT;
  return 0;
 }
 
@@ -193,7 +188,7 @@ void scale_task(void const *argument)
  osEvent  os_msg;
  uint8_t  result;
  uint8_t  scale_idx;
- uint32_t all_net_weight;
+ float    all_net_weight;
  int      nv_result;
  float    weight;
  scale_nv_param_t  pre_nv_param;
@@ -207,7 +202,7 @@ void scale_task(void const *argument)
  scale_task_param_init();
  
 #if SCALE_TASK_CALCULATE_VARIANCE > 0
- move_sample_reset(&move_sample,MOVE_SAMPLE_CNT,sample);
+ move_sample_reset(&move_sample);
 #endif
  
  /*查看保存的地址是否有效*/
@@ -259,20 +254,24 @@ void scale_task(void const *argument)
       digital_scale.scale[scale_idx].gross_weight = SCALE_TASK_WEIGHT_ERR_VALUE;
       digital_scale.scale[scale_idx].net_weight = SCALE_TASK_WEIGHT_ERR_VALUE;      
    }else{
-      digital_scale.scale[scale_idx].gross_weight = (int16_t)weight;
+      digital_scale.scale[scale_idx].gross_weight = weight;
       digital_scale.scale[scale_idx].net_weight =   digital_scale.scale[scale_idx].gross_weight -  digital_scale.scale[scale_idx].nv_param.tar_weight; 
    }
   }
   /*检验是否全部处理*/
+  
   for(uint8_t i =0;i< digital_scale.scale_cnt;i++){
     if(digital_scale.is_done[i] == false) {
     goto ignore_all_net_weight;
     }
   }
+
   /*标记为未处理*/
+  
   for(uint8_t i =0;i< digital_scale.scale_cnt;i++){
   digital_scale.is_done[i] = false; 
   }
+
   /*计算全部净重*/    
   all_net_weight = 0;
   for(uint8_t i=0;i< digital_scale.scale_cnt;i++){
@@ -283,7 +282,7 @@ void scale_task(void const *argument)
   all_net_weight +=  digital_scale.scale[i].net_weight; 
   }
   digital_scale.all_net_weight = all_net_weight;
- ignore_all_net_weight:
+ignore_all_net_weight:
   /*向adc_task回应处理结果*/
   osSignalSet(adc_task_hdl,ADC_TASK_RESTART_SIGNAL);
  }
@@ -291,10 +290,10 @@ void scale_task(void const *argument)
   /*计算稳定时间*/
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
    int rc;
-   double variance;
+   float variance;
 
    if(all_net_weight == SCALE_TASK_WEIGHT_ERR_VALUE){
-   move_sample_reset(&move_sample,MOVE_SAMPLE_CNT,sample);
+   move_sample_reset(&move_sample);
    log_error("sample err.\r\n");
    }else{
    rc = move_sample_put(all_net_weight,&move_sample);
@@ -321,9 +320,9 @@ void scale_task(void const *argument)
     net_weight.status = STABLE_STATUS_IDEL_WAIT_START;
     log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n"
               ,net_weight.change_stop_time
-              ,net_weight.change_stop_value
-              ,net_weight.change_time
-              ,net_weight.change_value);  
+              ,(int16_t)net_weight.change_stop_value
+              ,net_weight.change_time 
+              ,(int16_t)net_weight.change_value);  
    } 
    }
    }

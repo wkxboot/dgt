@@ -29,7 +29,7 @@ void cpu_task(void const * argument)
  config.warningValue = 0;
  //WWDT_Init(WWDT,&config);
  //WWDT_Enable(WWDT);
- log_warning("watch dog start...timeout value:%dms.\r\n",CPU_TASK_WTG_TIMEOUT_VALUE/10);
+ //log_warning("watch dog start...timeout value:%dms.\r\n",CPU_TASK_WTG_TIMEOUT_VALUE/10);
  bsp_sys_led_turn_on();
  while(1){
  //WWDT_Refresh(WWDT);
