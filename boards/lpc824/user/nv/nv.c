@@ -74,7 +74,7 @@ uint8_t page_cnt;
 uint8_t byte_remain;
 
 i2c_master_transfer_t transfer;
-uint8_t  read_buffer[24];
+uint8_t  read_buffer[0x40];
 
 
 page_cnt = size / NV_DEVICE_PAGE_SIZE;
@@ -113,19 +113,20 @@ return -1;
 osDelay(5);
 }
 
-
+/*读回校验是否保存成功*/
+/*
 result = nv_read(addr,read_buffer,size);
 if(result !=0 ){
 return -1;
 }
 
-/*读回校验是否保存成功*/
+
 for(uint16_t i=0;i<size;i++){
   if(read_buffer[i] != buffer[i]){
     return -1;
   }
 }
-
+*/
 return 0;
 }
 
