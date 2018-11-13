@@ -70,7 +70,7 @@ int main(void)
     log_init();
     log_info("firmware version:%d.%d.\r\n",FIRMWARE_VERSION >> 8,FIRMWARE_VERSION & 0xff);
     
-    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);
+    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 140);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
 
     osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 128);

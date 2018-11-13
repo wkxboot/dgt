@@ -13,7 +13,7 @@ extern serial_hal_driver_t protocol_serial_driver;
 osThreadId protocol_task_hdl;
 osMessageQId protocol_task_msg_q_id;
 
-task_msg_t scale_msg;
+task_message_t scale_msg;
 
 typedef enum
 {
@@ -113,7 +113,7 @@ static int16_t protocol_get_net_weight()
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  int16_t net_weight =0;
  
  scale_msg.type = REQ_NET_WEIGHT;
@@ -122,9 +122,9 @@ static int16_t protocol_get_net_weight()
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg =  (task_msg_t *)os_msg.value.v;
+ msg =  (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_NET_WEIGHT){
-   net_weight = msg->net_weight;
+   net_weight = (int16_t)msg->net_weight;
    break;
   }  
  }
@@ -137,7 +137,7 @@ static int protocol_remove_tar_weight()
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  int        result = -1;
  
  scale_msg.type = REQ_REMOVE_TAR_WEIGHT;
@@ -146,7 +146,7 @@ static int protocol_remove_tar_weight()
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg = (task_msg_t *)os_msg.value.v;
+ msg = (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_REMOVE_TAR_WEIGHT){
    if( msg->result == SCALE_TASK_SUCCESS){
      result = 0;
@@ -164,7 +164,7 @@ static int protocol_calibrate_weight(int16_t weight)
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  int        result = -1;
  
  if(weight == 0){
@@ -178,7 +178,7 @@ static int protocol_calibrate_weight(int16_t weight)
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg = (task_msg_t *)os_msg.value.v;
+ msg = (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_CALIBRATE_ZERO || msg->type == RESPONSE_CALIBRATE_FULL){
    if( msg->result == SCALE_TASK_SUCCESS){
      result = 0;
@@ -196,7 +196,7 @@ static uint8_t protocol_get_sensor_id()
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  uint8_t sensor_id = 0;
  
  scale_msg.type = REQ_SENSOR_ID;
@@ -205,7 +205,7 @@ static uint8_t protocol_get_sensor_id()
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg =  (task_msg_t *)os_msg.value.v;
+ msg =  (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_SENSOR_ID){
    sensor_id = msg->sensor_id;
    break;
@@ -219,7 +219,7 @@ static uint16_t protocol_get_fireware_version()
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  uint16_t   version = 0;
  
  scale_msg.type = REQ_VERSION;
@@ -228,7 +228,7 @@ static uint16_t protocol_get_fireware_version()
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg =  (task_msg_t *)os_msg.value.v;
+ msg =  (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_VERSION){
    version = msg->version;
    break;
@@ -242,7 +242,7 @@ static uint8_t protocol_get_scale_addr()
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  uint16_t   addr = 0;
  
  scale_msg.type = REQ_ADDR;
@@ -251,7 +251,7 @@ static uint8_t protocol_get_scale_addr()
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg =  (task_msg_t *)os_msg.value.v;
+ msg =  (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_ADDR){
    addr = msg->scale_addr;
    break;
@@ -265,7 +265,7 @@ int protocol_set_scale_addr(uint8_t addr)
 {
  osStatus status;
  osEvent  os_msg;
- task_msg_t *msg;
+ task_message_t *msg;
  int        result = -1;
  
  scale_msg.type = REQ_SET_ADDR;
@@ -275,7 +275,7 @@ int protocol_set_scale_addr(uint8_t addr)
  while(1){
  os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
  if(os_msg.status == osEventMessage){
- msg = (task_msg_t *)os_msg.value.v;
+ msg = (task_message_t *)os_msg.value.v;
  if(msg->type == RESPONSE_SET_ADDR){
    if( msg->result == SCALE_TASK_SUCCESS){
      result = 0;

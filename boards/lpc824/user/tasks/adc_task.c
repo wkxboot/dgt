@@ -20,6 +20,7 @@ static const uint8_t channel[2] = {ADC_TASK_CHANNEL1_VALUE, ADC_TASK_CHANNEL2_VA
 
 typedef struct
 {
+uint32_t adc_pre;
 uint32_t adc[ADC_TASK_SAMPLE_CNT_MAX];
 uint32_t sum;
 uint32_t average;
@@ -108,8 +109,12 @@ static void adc_moving_average_filter(adc_sample_t *sample,uint32_t adc)
 static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,uint32_t adc)
 {
   uint16_t pos;
-  static float a = 0.878;
+  static float a = 0.6666;
+  
   log_assert(sample);
+  adc =(uint32_t)( (float)sample->adc_pre * a + (1 - a)*(float)adc);
+  sample->adc_pre = adc;
+  
   pos = sample->cnt % sample->cnt_max;
   
   if(sample->cnt < sample->cnt_max ){
@@ -121,7 +126,7 @@ static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,u
   sample->sum += sample->adc[pos];
   sample->average = sample->sum / sample->cnt_max;
   
-  sample->average =(uint32_t) (sample->average_pre * a + (1 - a)*sample->average);
+  //sample->average =(uint32_t) (sample->average_pre * a + (1 - a)*sample->average);
   if(sample->average_pre !=sample->average){
   sample->average_pre = sample->average;
   sample->changed =true;
@@ -130,7 +135,7 @@ static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,u
   sample->cnt++;
 }
 
-static task_msg_t   scale_msg;
+static task_message_t   scale_msg;
 
 void adc_task(void const * argument)
 {
@@ -175,7 +180,7 @@ adc_task_restart:
  log_error("ad7190 calibrate full err.\r\n");
  }
  osDelay(ADC_TASK_START_CONFIG_TIME_VALUE);
-*/
+ */
  
  result = ad7190_read_id(&ad7190_id);
  if(result != 0){
