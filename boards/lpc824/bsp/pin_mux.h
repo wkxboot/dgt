@@ -94,53 +94,13 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_RWE_485_CTRL_NAME "RWE_485_CTRL"                /*!<@brief Identifier name */
 #define BOARD_INITPINS_RWE_485_CTRL_DIRECTION kPIN_MUX_DirectionOutput /*!<@brief Direction */
                                                                        /* @} */
+#define  BOARD_HX711_DOUT_GPIO       GPIO                                  
+#define  BOARD_HX711_DOUT_PORT       0U    
+#define  BOARD_HX711_DOUT_PIN        11      
 
-/*! @name PIO0_15 (number 11), AD_SPI_CS
-  @{ */
-#define BOARD_INITPINS_AD_SPI_CS_PERIPHERAL GPIO   /*!<@brief Device name: GPIO */
-#define BOARD_INITPINS_AD_SPI_CS_SIGNAL PIO0       /*!<@brief GPIO signal: PIO0 */
-#define BOARD_INITPINS_AD_SPI_CS_GPIO GPIO         /*!<@brief GPIO device name: GPIO */
-#define BOARD_INITPINS_AD_SPI_CS_GPIO_PIN 15U      /*!<@brief PIO0 pin index: 15 */
-#define BOARD_INITPINS_AD_SPI_CS_PORT 0U           /*!<@brief PORT device name: 0U */
-#define BOARD_INITPINS_AD_SPI_CS_PIN 15U           /*!<@brief 0U pin index: 15 */
-#define BOARD_INITPINS_AD_SPI_CS_CHANNEL 15        /*!<@brief GPIO PIO0 channel: 15 */
-#define BOARD_INITPINS_AD_SPI_CS_PIN_NAME PIO0_15  /*!<@brief Pin name */
-#define BOARD_INITPINS_AD_SPI_CS_LABEL "AD_SPI_CS" /*!<@brief Label */
-#define BOARD_INITPINS_AD_SPI_CS_NAME "AD_SPI_CS"  /*!<@brief Identifier name */
-                                                   /* @} */
-
-/*! @name PIO0_11 (number 9), AD_SPI_DI
-  @{ */
-#define BOARD_INITPINS_AD_SPI_DI_PERIPHERAL SPI1   /*!<@brief Device name: SPI1 */
-#define BOARD_INITPINS_AD_SPI_DI_SIGNAL MISO       /*!<@brief SPI1 signal: MISO */
-#define BOARD_INITPINS_AD_SPI_DI_PORT 0U           /*!<@brief PORT device name: 0U */
-#define BOARD_INITPINS_AD_SPI_DI_PIN 11U           /*!<@brief 0U pin index: 11 */
-#define BOARD_INITPINS_AD_SPI_DI_PIN_NAME PIO0_11  /*!<@brief Pin name */
-#define BOARD_INITPINS_AD_SPI_DI_LABEL "AD_SPI_DI" /*!<@brief Label */
-#define BOARD_INITPINS_AD_SPI_DI_NAME "AD_SPI_DI"  /*!<@brief Identifier name */
-                                                   /* @} */
-
-/*! @name PIO0_12 (number 4), AD_SPI_DO
-  @{ */
-#define BOARD_INITPINS_AD_SPI_DO_PERIPHERAL SPI1   /*!<@brief Device name: SPI1 */
-#define BOARD_INITPINS_AD_SPI_DO_SIGNAL MOSI       /*!<@brief SPI1 signal: MOSI */
-#define BOARD_INITPINS_AD_SPI_DO_PORT 0U           /*!<@brief PORT device name: 0U */
-#define BOARD_INITPINS_AD_SPI_DO_PIN 12U           /*!<@brief 0U pin index: 12 */
-#define BOARD_INITPINS_AD_SPI_DO_PIN_NAME PIO0_12  /*!<@brief Pin name */
-#define BOARD_INITPINS_AD_SPI_DO_LABEL "AD_SPI_DO" /*!<@brief Label */
-#define BOARD_INITPINS_AD_SPI_DO_NAME "AD_SPI_DO"  /*!<@brief Identifier name */
-                                                   /* @} */
-
-/*! @name PIO0_10 (number 10), AD_SPI_CLK
-  @{ */
-#define BOARD_INITPINS_AD_SPI_CLK_PERIPHERAL SPI1    /*!<@brief Device name: SPI1 */
-#define BOARD_INITPINS_AD_SPI_CLK_SIGNAL SCK         /*!<@brief SPI1 signal: SCK */
-#define BOARD_INITPINS_AD_SPI_CLK_PORT 0U            /*!<@brief PORT device name: 0U */
-#define BOARD_INITPINS_AD_SPI_CLK_PIN 10U            /*!<@brief 0U pin index: 10 */
-#define BOARD_INITPINS_AD_SPI_CLK_PIN_NAME PIO0_10   /*!<@brief Pin name */
-#define BOARD_INITPINS_AD_SPI_CLK_LABEL "AD_SPI_CLK" /*!<@brief Label */
-#define BOARD_INITPINS_AD_SPI_CLK_NAME "AD_SPI_CLK"  /*!<@brief Identifier name */
-                                                     /* @} */
+#define  BOARD_HX711_SCLK_GPIO       GPIO                                  
+#define  BOARD_HX711_SCLK_PORT       0U    
+#define  BOARD_HX711_SCLK_PIN        10   
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

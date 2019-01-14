@@ -1,9 +1,9 @@
 /*********************************************************************
-*                SEGGER Microcontroller GmbH & Co. KG                *
+*                    SEGGER Microcontroller GmbH                     *
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*       (c) 2014 - 2017  SEGGER Microcontroller GmbH & Co. KG        *
+*            (c) 1995 - 2018 SEGGER Microcontroller GmbH             *
 *                                                                    *
 *       www.segger.com     Support: support@segger.com               *
 *                                                                    *
@@ -31,7 +31,7 @@
 *   disclaimer in the documentation and/or other materials provided  *
 *   with the distribution.                                           *
 *                                                                    *
-* o Neither the name of SEGGER Microcontroller GmbH & Co. KG         *
+* o Neither the name of SEGGER Microcontroller GmbH                  *
 *   nor the names of its contributors may be used to endorse or      *
 *   promote products derived from this software without specific     *
 *   prior written permission.                                        *
@@ -52,7 +52,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       RTT version: 6.12j                                           *
+*       RTT version: 6.40                                           *
 *                                                                    *
 **********************************************************************
 ---------------------------END-OF-HEADER------------------------------
@@ -60,8 +60,8 @@ File    : SEGGER_RTT_Conf.h
 Purpose : Implementation of SEGGER real-time transfer (RTT) which
           allows real-time communication on targets which support
           debugger memory accesses while the CPU is running.
-Revision: $Rev: 5496 $
-----------------------------------------------------------------------
+Revision: $Rev: 12847 $
+
 */
 
 #ifndef SEGGER_RTT_CONF_H
@@ -81,12 +81,34 @@ Revision: $Rev: 5496 $
 #define SEGGER_RTT_MAX_NUM_UP_BUFFERS             (3)     // Max. number of up-buffers (T->H) available on this target    (Default: 3)
 #define SEGGER_RTT_MAX_NUM_DOWN_BUFFERS           (3)     // Max. number of down-buffers (H->T) available on this target  (Default: 3)
 
-#define BUFFER_SIZE_UP                            (512)   // Size of the buffer for terminal output of target, up to host (Default: 1k)
-#define BUFFER_SIZE_DOWN                          (32)    // Size of the buffer for terminal input to target from host (Usually keyboard input) (Default: 16)
+#define BUFFER_SIZE_UP                            (512)  // Size of the buffer for terminal output of target, up to host (Default: 1k)
+#define BUFFER_SIZE_DOWN                          (16)    // Size of the buffer for terminal input to target from host (Usually keyboard input) (Default: 16)
 
-#define SEGGER_RTT_PRINTF_BUFFER_SIZE             (128)   // Size of buffer for RTT printf to bulk-send chars via RTT     (Default: 64)
+#define SEGGER_RTT_PRINTF_BUFFER_SIZE             (64u)    // Size of buffer for RTT printf to bulk-send chars via RTT     (Default: 64)
 
 #define SEGGER_RTT_MODE_DEFAULT                   SEGGER_RTT_MODE_NO_BLOCK_SKIP // Mode for pre-initialized terminal channel (buffer 0)
+
+#define USE_RTT_ASM                               (0)     // Use assembler version of SEGGER_RTT.c when 1 
+
+/*********************************************************************
+*
+*       RTT memcpy configuration
+*
+*       memcpy() is good for large amounts of data, 
+*       but the overhead is big for small amounts, which are usually stored via RTT.
+*       With SEGGER_RTT_MEMCPY_USE_BYTELOOP a simple byte loop can be used instead.
+*
+*       SEGGER_RTT_MEMCPY() can be used to replace standard memcpy() in RTT functions.
+*       This is may be required with memory access restrictions, 
+*       such as on Cortex-A devices with MMU.
+*/
+#define SEGGER_RTT_MEMCPY_USE_BYTELOOP              0 // 0: Use memcpy/SEGGER_RTT_MEMCPY, 1: Use a simple byte-loop
+//
+// Example definition of SEGGER_RTT_MEMCPY to external memcpy with GCC toolchains and Cortex-A targets
+//
+//#if ((defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__)) && (defined (__ARM_ARCH_7A__))  
+//  #define SEGGER_RTT_MEMCPY(pDest, pSrc, NumBytes)      SEGGER_memcpy((pDest), (pSrc), (NumBytes))
+//#endif
 
 //
 // Target is not allowed to perform other RTT operations while string still has not been stored completely.
@@ -103,19 +125,19 @@ Revision: $Rev: 5496 $
 // or define SEGGER_RTT_LOCK() to completely disable interrupts.
 //
 
-#define SEGGER_RTT_MAX_INTERRUPT_PRIORITY           (5<<(8-4))   // Interrupt priority to lock on SEGGER_RTT_LOCK on Cortex-M3/4 (Default: 0x50)
+#define SEGGER_RTT_MAX_INTERRUPT_PRIORITY         (0x50)   // Interrupt priority to lock on SEGGER_RTT_LOCK on Cortex-M3/4 (Default: 0x20)
 
 /*********************************************************************
 *
 *       RTT lock configuration for SEGGER Embedded Studio,
 *       Rowley CrossStudio and GCC
 */
-#if (defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__)
-  #ifdef __ARM_ARCH_6M__
+#if (defined __SES_ARM) || (defined __CROSSWORKS_ARM) || (defined __GNUC__) || (defined __clang__)
+  #if (defined(__ARM_ARCH_6M__) || defined(__ARM_ARCH_8M_BASE__))
     #define SEGGER_RTT_LOCK()   {                                                                   \
                                     unsigned int LockState;                                         \
                                   __asm volatile ("mrs   %0, primask  \n\t"                         \
-                                                  "mov   r1, $1     \n\t"                           \
+                                                  "movs  r1, $1       \n\t"                         \
                                                   "msr   primask, r1  \n\t"                         \
                                                   : "=r" (LockState)                                \
                                                   :                                                 \
@@ -128,8 +150,7 @@ Revision: $Rev: 5496 $
                                                   :                                                 \
                                                   );                                                \
                                 }
-
-  #elif (defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__))
+  #elif (defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7EM__) || defined(__ARM_ARCH_8M_MAIN__))
     #ifndef   SEGGER_RTT_MAX_INTERRUPT_PRIORITY
       #define SEGGER_RTT_MAX_INTERRUPT_PRIORITY   (0x20)
     #endif
@@ -194,7 +215,7 @@ Revision: $Rev: 5496 $
                                 }
   #elif ((defined (__ARM7EM__) && (__CORE__ == __ARM7EM__)) || (defined (__ARM7M__) && (__CORE__ == __ARM7M__)))
     #ifndef   SEGGER_RTT_MAX_INTERRUPT_PRIORITY
-      #define SEGGER_RTT_MAX_INTERRUPT_PRIORITY   (0x50)
+      #define SEGGER_RTT_MAX_INTERRUPT_PRIORITY   (0x20)
     #endif
     #define SEGGER_RTT_LOCK()   {                                                                   \
                                   unsigned int LockState;                                           \
@@ -213,6 +234,20 @@ Revision: $Rev: 5496 $
 #ifdef __ICCRX__
   #define SEGGER_RTT_LOCK()   {                                                                     \
                                 unsigned long LockState;                                            \
+                                LockState = __get_interrupt_state();                                \
+                                __disable_interrupt();
+
+  #define SEGGER_RTT_UNLOCK()   __set_interrupt_state(LockState);                                   \
+                              }
+#endif
+
+/*********************************************************************
+*
+*       RTT lock configuration for IAR RL78
+*/
+#ifdef __ICCRL78__
+  #define SEGGER_RTT_LOCK()   {                                                                     \
+                                __istate_t LockState;                                               \
                                 LockState = __get_interrupt_state();                                \
                                 __disable_interrupt();
 
@@ -272,12 +307,25 @@ Revision: $Rev: 5496 $
     #endif
     #define SEGGER_RTT_LOCK()   {                                                                   \
                                   unsigned int LockState;                                           \
-                                  LockState = OS_GetBASEPRI();                                      \
-                                  OS_SetBASEPRI(SEGGER_RTT_MAX_INTERRUPT_PRIORITY);
+                                  LockState = _set_interrupt_priority(SEGGER_RTT_MAX_INTERRUPT_PRIORITY);
 
-    #define SEGGER_RTT_UNLOCK()   OS_SetBASEPRI(LockState);                                         \
+    #define SEGGER_RTT_UNLOCK()   _set_interrupt_priority(LockState);                               \
                                 }
   #endif
+#endif
+
+/*********************************************************************
+*
+*       RTT lock configuration for CCRX
+*/
+#ifdef __RX
+  #define SEGGER_RTT_LOCK()   {                                                                     \
+                                unsigned long LockState;                                            \
+                                LockState = get_psw() & 0x010000;                                   \
+                                clrpsw_i();                           
+                                    
+  #define SEGGER_RTT_UNLOCK()   set_psw(get_psw() | LockState);                                     \
+                              }
 #endif
 
 /*********************************************************************

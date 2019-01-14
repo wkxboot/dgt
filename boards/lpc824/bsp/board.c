@@ -29,43 +29,127 @@
  */
 
 #include "board.h"
+#include "log.h"
 
 static void bsp_485_ctrl_pin_init();
 static void bsp_sys_led_ctrl_pin_init();
-int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq);
+/*
+* @brief hx711通信接口初始化
+* @param 无
+* @return 无
+* @note
+*/
+static void bsp_hx711_comm_if_init();
+
 int nv_init();
+
+
 
 /*板级初始化*/
 int board_init()
 {
- int result;
-  /* Enable clock of usart1. */   
- CLOCK_EnableClock(kCLOCK_Uart1);
- /* Ser DIV of uart0. */
- CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);  
+    int result;
+    /* Enable clock of usart1. */   
+    CLOCK_EnableClock(kCLOCK_Uart1);
+    /* Ser DIV of uart0. */
+    CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);  
+    /* Enable clock of i2c1. */   
+    CLOCK_EnableClock(kCLOCK_I2c1);
+ 
+    BOARD_InitPins();
+    BOARD_BootClockPll24M();
+    bsp_485_ctrl_pin_init();
+    bsp_sys_led_ctrl_pin_init();
+    bsp_hx711_comm_if_init();
+
+    result = nv_init();
+    if (result != 0){
+        return -1; 
+    }
+
+    return 0;
+}
+
+
+/*
+* @brief 硬件us级延时
+* @param us 延时长度
+* @return 无
+* @note 不准确
+*/
+void bsp_hal_delay(uint32_t us)
+{
+    for (uint32_t i = 0; i< us ;i++) {
+         __ASM("NOP");
+    }
+}
+
+/*
+* @brief hx711通信接口初始化
+* @param 无
+* @return 无
+* @note
+*/
+static void bsp_hx711_comm_if_init()
+{
+    /*HX711 dout pin*/
+    gpio_pin_config_t config;
     
- /* Enable clock of spi1. */   
- CLOCK_EnableClock(kCLOCK_Spi1);
- 
-  /* Enable clock of i2c1. */   
- CLOCK_EnableClock(kCLOCK_I2c1);
- 
- BOARD_InitPins();
- BOARD_BootClockPll24M();
- bsp_485_ctrl_pin_init();
- bsp_sys_led_ctrl_pin_init();
-
- result = bsp_ad7190_spi_int(BSP_AD7190_SPI_PORT,BSP_AD7190_SPI_FREQ);
- if(result != 0){
- return -1; 
- }
-result = nv_init();
-if(result != 0){
-return -1; 
+    config.pinDirection = kGPIO_DigitalInput;
+    
+    GPIO_PortInit(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT);
+    GPIO_PinInit(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT,BOARD_HX711_DOUT_PIN,&config);
+    /*HX711 sclk pin*/
+    config.pinDirection = kGPIO_DigitalOutput;
+    config.outputLogic = 0;
+    GPIO_PortInit(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT);
+    GPIO_PinInit(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,BOARD_HX711_SCLK_PIN,&config);
 }
 
-return 0;
+
+ /*
+ * @brief hx711时钟上升沿
+ * @param 无
+ * @return 无
+ * @note
+ */
+
+void bsp_hx711_sclk_rise(void)
+{
+ GPIO_PortSet(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
 }
+ /*
+ * @brief hx711时钟下降沿
+ * @param 无
+ * @return 无
+ * @note
+ */
+void bsp_hx711_sclk_fall(void)
+{
+ GPIO_PortClear(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
+}
+
+/*
+* @brief 
+* @param
+* @param
+* @return 
+* @note
+*/
+uint8_t bsp_hx711_read_dout_status(void)
+{
+  return GPIO_PinRead(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT,BOARD_HX711_DOUT_PIN);
+}
+
+
+
+/*
+* @brief 
+* @param
+* @param
+* @return 
+* @note
+*/
 
 static void bsp_485_ctrl_pin_init()
 {
@@ -75,6 +159,13 @@ static void bsp_485_ctrl_pin_init()
  GPIO_PortInit(BOARD_INITPINS_RWE_485_CTRL_GPIO, BOARD_INITPINS_RWE_485_CTRL_PORT);
  GPIO_PinInit(BOARD_INITPINS_RWE_485_CTRL_GPIO, BOARD_INITPINS_RWE_485_CTRL_PORT, BOARD_INITPINS_RWE_485_CTRL_PIN, &config);
 }
+/*
+* @brief 
+* @param
+* @param
+* @return 
+* @note
+*/
 
 static void bsp_sys_led_ctrl_pin_init()
 {

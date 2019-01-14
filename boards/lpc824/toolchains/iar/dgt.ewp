@@ -298,11 +298,11 @@
                 </option>
                 <option>
                     <name>IExtraOptionsCheck</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>IExtraOptions</name>
-                    <state></state>
+                    <state>--no_path_in_file_macros</state>
                 </option>
                 <option>
                     <name>CCLangConformance</name>
@@ -354,13 +354,15 @@
                     <state>$PROJ_DIR$/../../../../CMSIS/Driver/Include</state>
                     <state>$PROJ_DIR$/../../../../CMSIS/Include</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/bsp</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial_uart_hal</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/tasks</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/ad7190</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/comm_utils</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/hx711</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/circle_buffer</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/utils</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/nv</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/CPU</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/cpu</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/SEGGER_RTT_V612j/RTT</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/logSEGGER_RTT_V612j</state>
@@ -2184,9 +2186,9 @@
     <group>
         <name>user</name>
         <group>
-            <name>ad7190</name>
+            <name>circle_buffer</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\ad7190\ad7190.c</name>
+                <name>$PROJ_DIR$\..\..\user\circle_buffer\circle_buffer.c</name>
             </file>
         </group>
         <group>
@@ -2194,7 +2196,7 @@
             <group>
                 <name>cpu</name>
                 <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\CPU\cpu_utils.c</name>
+                    <name>$PROJ_DIR$\..\..\user\debug\cpu\cpu_utils.c</name>
                 </file>
             </group>
             <group>
@@ -2211,6 +2213,12 @@
             </group>
         </group>
         <group>
+            <name>hx711</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\hx711\hx711.c</name>
+            </file>
+        </group>
+        <group>
             <name>nv</name>
             <file>
                 <name>$PROJ_DIR$\..\..\user\nv\nv.c</name>
@@ -2220,6 +2228,12 @@
             <name>serial</name>
             <file>
                 <name>$PROJ_DIR$\..\..\user\serial\serial.c</name>
+            </file>
+        </group>
+        <group>
+            <name>serial_uart_hal</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\serial_uart_hal\nxp_serial_uart_hal_driver.c</name>
             </file>
         </group>
         <group>
@@ -2237,17 +2251,17 @@
                 <name>$PROJ_DIR$\..\..\user\tasks\scale_task.c</name>
             </file>
         </group>
+        <group>
+            <name>utils</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\utils\utils.c</name>
+            </file>
+        </group>
         <file>
             <name>$PROJ_DIR$\..\..\user\freertos.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\user\main.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\user\nxp_ad7190_spi.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\user\nxp_protocol_serial.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\devices\LPC824\system_LPC824.c</name>

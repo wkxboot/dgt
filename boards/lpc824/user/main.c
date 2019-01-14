@@ -70,16 +70,16 @@ int main(void)
     log_init();
     log_info("firmware version:%d.%d.\r\n",FIRMWARE_VERSION >> 8,FIRMWARE_VERSION & 0xff);
     
-    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 140);
+    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 200);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
 
-    osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 128);
+    osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 200);
     adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
 
-    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 180);
+    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 250);
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
 
-    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 128);
+    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 250);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
     
 

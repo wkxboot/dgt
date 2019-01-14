@@ -133,15 +133,15 @@ void BOARD_InitPins(void)
 
     /* USART1_RXD connect to P0_0 */
     SWM_SetMovablePinSelect(SWM0, kSWM_USART1_RXD, kSWM_PortPin_P0_0);
+     
+    /* SPI1_SCK connect to P0_15 */
+    //SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_SCK, kSWM_PortPin_P0_15);
 
-    /* SPI1_SCK connect to P0_10 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_SCK, kSWM_PortPin_P0_10);
-
-    /* SPI1_MOSI connect to P0_12 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MOSI, kSWM_PortPin_P0_12);
+    /* SPI1_MOSI connect to P0_10 */
+    //SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MOSI, kSWM_PortPin_P0_10);
 
     /* SPI1_MISO connect to P0_11 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MISO, kSWM_PortPin_P0_11);
+    //SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MISO, kSWM_PortPin_P0_11);
 
     /* I2C1_SDA connect to P0_9 */
     SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_9);

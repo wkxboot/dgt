@@ -40,7 +40,7 @@ void protocol_task(void const * argument);
 #define  PROTOCOL_TASK_CRC_SIZE                    2
 
 
-#define  PROTOCOL_TASK_FRAME_TIMEOUT_VALUE         osWaitForever
+#define  PROTOCOL_TASK_FRAME_TIMEOUT_VALUE         0x7FFFFFFF
 #define  PROTOCOL_TASK_CHARACTER_TIMEOUT_VALUE     3
 
 #define  PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE       5

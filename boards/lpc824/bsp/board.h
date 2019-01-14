@@ -41,14 +41,12 @@
 #include "fsl_wwdt.h"
 #include "pin_mux.h"
 #include "serial.h"
-#include "ad7190.h"
+#include "hx711.h"
 
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define  BSP_AD7190_SPI_PORT           1
-#define  BSP_AD7190_SPI_FREQ           500000
 
 int board_init();
 void bsp_sys_led_turn_on();
@@ -56,6 +54,38 @@ void bsp_sys_led_turn_off();
 void bsp_sys_led_toggle();
 void bsp_485_enable_read();
 void bsp_485_enable_write();
+/*
+* @brief 硬件us级延时
+* @param us 延时长度
+* @return 无
+* @note 不准确
+*/
+void bsp_hal_delay(uint32_t us);
+ /*
+ * @brief hx711时钟上升沿
+ * @param 无
+ * @return 无
+ * @note
+ */
+
+void bsp_hx711_sclk_rise(void);
+ /*
+ * @brief hx711时钟下降沿
+ * @param 无
+ * @return 无
+ * @note
+ */
+void bsp_hx711_sclk_fall(void);
+
+/*
+* @brief 
+* @param
+* @param
+* @return 
+* @note
+*/
+uint8_t bsp_hx711_read_dout_status(void);
+
 
 #if defined(__cplusplus)
 }
