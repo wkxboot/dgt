@@ -2,7 +2,7 @@
 #include "cpu_utils.h"
 #include "cmsis_os.h"
 #include "task_msg.h"
-#include "version.h"
+#include "firmware_version.h"
 #include "sensor_id.h"
 #include "nv.h"
 #include "adc_task.h"
@@ -69,7 +69,7 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 10
+#define  MOVE_SAMPLE_CNT                 4
 /*定义启动变化阈值 值越小灵敏度要高 1.2大约10g起跳*/
 #define  EVALUATE_TASK_VARIANCE_MAX      1.2 
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
@@ -181,7 +181,9 @@ void scale_task(void const *argument)
     log_assert(scale_task_msg_q_id);  
  
     scale_task_param_init();
- 
+
+    log_info("\r\nfirmware version:%s.\r\n",FIRMWARE_VERSION_STR);
+
 #if SCALE_TASK_CALCULATE_VARIANCE > 0
     move_sample_reset(&move_sample);
 #endif
@@ -451,7 +453,7 @@ set_addr_msg_handle:
     /*向protocol_task回应版本号*/
     if (msg.type ==  TASK_MSG_REQ_FW_VERSION){
         protocol_msg.type = TASK_MSG_RSP_FW_VERSION;
-        protocol_msg.value = FIRMWARE_VERSION;
+        protocol_msg.value = FIRMWARE_VERSION_HEX;
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
         log_assert(status == osOK);   
     } 

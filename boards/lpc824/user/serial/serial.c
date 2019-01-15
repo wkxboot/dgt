@@ -46,8 +46,8 @@ int serial_read(int handle,char *dst,int size)
     read = circle_buffer_read(&s->recv,dst,size); 
 
     SERIAL_ENTER_CRITICAL();
-    if (read > 0 && s->rxne_it_enable == false) {
-        s->rxne_it_enable = true;
+    if (read > 0 && s->full == true) {
+        s->full = false;
         s->driver->enable_rxne_it(s->port);  
     }
     SERIAL_EXIT_CRITICAL();
@@ -77,8 +77,8 @@ int serial_write(int handle,const char *src,int size)
 
     write = circle_buffer_write(&s->send,src,size);
     SERIAL_ENTER_CRITICAL();
-    if (write > 0 && s->txe_it_enable == false){
-        s->txe_it_enable = true;
+    if (write > 0 && s->empty == true){
+        s->empty = false;
         s->driver->enable_txe_it(s->port);
     }
     SERIAL_EXIT_CRITICAL();
@@ -104,9 +104,9 @@ int serial_flush(int handle)
         return -1;
     }
     SERIAL_ENTER_CRITICAL();
-    s->txe_it_enable = false;
+    s->empty = true;
+    s->full = false;
     s->driver->disable_txe_it(s->port);
-    s->rxne_it_enable = true;
     s->driver->enable_rxne_it(s->port);
     circle_buffer_flush(&s->send);
     size = circle_buffer_flush(&s->recv);
@@ -121,7 +121,7 @@ int serial_flush(int handle)
 * @return = 0 成功
 * @note 
 */
-int serial_open(int handle,uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit)
+int serial_open(int handle,uint8_t port,uint32_t baud_rates,uint8_t data_bits,uint8_t stop_bits)
 {
     int rc;
     serial_t *s;
@@ -133,14 +133,16 @@ int serial_open(int handle,uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t 
         return -1;
     }
  
-    rc = s->driver->init(port,bauds,data_bit,stop_bit);
+    rc = s->driver->init(port,baud_rates,data_bits,stop_bits);
     if (rc != 0){
         return -1;
     }
     SERIAL_ENTER_CRITICAL();
     s->init = true;
     s->port = port;
-    s->rxne_it_enable = true;
+    s->baud_rates = baud_rates;
+    s->data_bits = data_bits;
+    s->stop_bits = stop_bits;
     s->driver->enable_rxne_it(s->port);
     SERIAL_EXIT_CRITICAL();
 
@@ -172,9 +174,9 @@ int serial_close(int handle)
 
     SERIAL_ENTER_CRITICAL();
     s->init = false;
-    s->rxne_it_enable=false;
+    s->empty = true;
+    s->full = false;
     s->driver->disable_rxne_it(s->port);
-    s->txe_it_enable=false;
     s->driver->disable_txe_it(s->port);
     SERIAL_EXIT_CRITICAL();
  
@@ -226,7 +228,6 @@ int serial_select(int handle,uint32_t timeout)
 */
 int serial_complete(int handle,uint32_t timeout)
 {
-    int size;
     utils_timer_t timer;
     serial_t *s;
 
@@ -239,13 +240,12 @@ int serial_complete(int handle,uint32_t timeout)
     utils_timer_init(&timer,timeout,false);
 
     do {
-        size = circle_buffer_used_size(&s->send);
-        if (size != 0) {
+        if (s->empty == false) {
             osDelay(1);
         }
-    } while (utils_timer_value(&timer) > 0 && size != 0);
+    } while (utils_timer_value(&timer) > 0 && s->empty == false);
 
-    return size;
+    return circle_buffer_used_size(&s->send);
 }
 
 /*
@@ -301,7 +301,7 @@ int isr_serial_get_byte_to_send(int handle,char *byte_send)
     size = circle_buffer_read(&s->send,byte_send,1);
     /*发送缓存中已经没有待发送的数据，关闭发送中断*/
     if (size == 0) {
-        s->txe_it_enable = false;
+        s->empty = true; 
         s->driver->disable_txe_it(s->port);
     }
     SERIAL_EXIT_CRITICAL();
@@ -332,7 +332,7 @@ int isr_serial_put_byte_from_recv(int handle,char recv_byte)
     size = circle_buffer_write(&s->recv,&recv_byte,1);
     /*接收缓存中已经没有空间，关闭接收中断*/
     if (size == 0) {
-        s->rxne_it_enable = false;
+        s->full = true;
         s->driver->disable_rxne_it(s->port);
     }
     SERIAL_EXIT_CRITICAL();
@@ -381,8 +381,6 @@ int serial_create(int *handle,uint32_t rx_size,uint32_t tx_size)
 
     s->driver = NULL;
     s->registered = false;
-    s->rxne_it_enable = false;
-    s->txe_it_enable = false;
     s->handle = (int)s;
     *handle = s->handle;
 

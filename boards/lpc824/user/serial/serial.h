@@ -20,7 +20,9 @@
 
 SERIAL_BEGIN
 
-#define   SERIAL_MAX_INTERRUPT_PRIORITY            (5 << (8-4))
+#define  SERIAL_PRIORITY_BITS                       4
+#define  SERIAL_PRIORITY_HIGH                       5
+#define  SERIAL_MAX_INTERRUPT_PRIORITY             (SERIAL_PRIORITY_HIGH << (8 - SERIAL_PRIORITY_BITS))
 
 
 typedef struct 
@@ -43,8 +45,8 @@ typedef struct
     uint8_t             stop_bits;
     bool                registered;
     bool                init;
-    bool                txe_it_enable;
-    bool                rxne_it_enable;
+    bool                full;
+    bool                empty;
     serial_hal_driver_t *driver;
     circle_buffer_t     recv;
     circle_buffer_t     send;
@@ -89,7 +91,7 @@ int serial_flush(int handle);
 * @return = 0 成功
 * @note 
 */
-int serial_open(int handle,uint8_t port,uint32_t bauds,uint8_t data_bit,uint8_t stop_bit);
+int serial_open(int handle,uint8_t port,uint32_t baud_rates,uint8_t data_bits,uint8_t stop_bits);
 
 /*
 * @brief  关闭串口
@@ -196,9 +198,7 @@ int serial_destroy(int handle);
     __set_PRIMASK(pri_mask);                                   \
     }
   #elif ((defined (__ARM7EM__) && (__CORE__ == __ARM7EM__)) || (defined (__ARM7M__) && (__CORE__ == __ARM7M__)))
-   #ifndef  SERIAL_MAX_INTERRUPT_PRIORITY
-   #define  SERIAL_MAX_INTERRUPT_PRIORITY                 (0x50)
-   #endif
+
    #define SERIAL_ENTER_CRITICAL()                             \
    {                                                           \
    unsigned int base_pri;                                      \
@@ -228,9 +228,7 @@ int serial_destroy(int handle);
      __schedule_barrier();                                      \
     }
   #elif (defined(__TARGET_ARCH_7_M) || defined(__TARGET_ARCH_7E_M))
-    #ifndef  SERIAL_MAX_INTERRUPT_PRIORITY
-    #define  SERIAL_MAX_INTERRUPT_PRIORITY                (0x50)
-    #endif
+
     #define SERIAL_ENTER_CRITICAL()                             \
     {                                                           \
      unsigned int base_pri;                                     \

@@ -642,16 +642,17 @@ void protocol_task(void const * argument)
     for (int i=0; i < write_length; i++){
         log_array("[%2X]\r\n", send_buffer[i]);
     }
-    if(write_length != length_to_write){
-    log_error("protocol err in  serial buffer write. expect:%d write:%d.\r\n",length_to_write,write_length); 
-    goto err_exit;      
+    if (write_length != length_to_write){
+        log_error("protocol err in  serial buffer write. expect:%d write:%d.\r\n",length_to_write,write_length); 
+        goto err_exit;      
     }
     
     remain_length = serial_complete(protocol_serial_handle,PROTOCOL_TASK_SEND_TIMEOUT);
-    if(remain_length != 0){
-    log_error("protocol err in  serial send timeout.\r\n",); 
-    goto err_exit;  
+    if (remain_length != 0){
+        log_error("protocol err in  serial send timeout.\r\n",); 
+        goto err_exit;  
     }
+    osDelay(1);
     continue;
 
 err_exit:

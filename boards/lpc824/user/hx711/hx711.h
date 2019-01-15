@@ -19,7 +19,7 @@ typedef enum
 }hx711_chn_t;
 
 
-#define  HX711_CLK_DELAY        5
+#define  HX711_CLK_DELAY        2
 
 /*
 * @brief hx711系统复位

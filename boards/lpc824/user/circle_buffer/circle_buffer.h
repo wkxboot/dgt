@@ -13,7 +13,10 @@
 #endif
 
 
+#define  CIRCLE_BUFFER_PRIORITY_BITS                   4
+#define  CIRCLE_BUFFER_PRIORITY_HIGH                   5  
 
+#define  CIRCLE_BUFFER_MAX_INTERRUPT_PRIORITY          (CIRCLE_BUFFER_PRIORITY_HIGH << (8 - CIRCLE_BUFFER_PRIORITY_BITS))
 typedef struct
 {
     char      *buffer;
@@ -103,9 +106,7 @@ uint32_t circle_buffer_write(circle_buffer_t *cb,const char *src,uint32_t size);
     __set_PRIMASK(pri_mask);                                   \
 }
 #elif ((defined (__ARM7EM__) && (__CORE__ == __ARM7EM__)) || (defined (__ARM7M__) && (__CORE__ == __ARM7M__)))
-#ifndef  CIRCLE_BUFFER_MAX_INTERRUPT_PRIORITY
-#define  CIRCLE_BUFFER_MAX_INTERRUPT_PRIORITY                 (5 << ( 8 - 4 ))
-#endif
+
 #define CIRCLE_BUFFER_ENTER_CRITICAL()                         \
 {                                                              \
    unsigned int base_pri;                                      \
@@ -137,9 +138,7 @@ uint32_t circle_buffer_write(circle_buffer_t *cb,const char *src,uint32_t size);
     __schedule_barrier();                                       \
 }
 #elif (defined(__TARGET_ARCH_7_M) || defined(__TARGET_ARCH_7E_M))
-    #ifndef  CIRCLE_BUFFER_MAX_INTERRUPT_PRIORITY
-    #define  CIRCLE_BUFFER_MAX_INTERRUPT_PRIORITY               (5 << ( 8 - 4 ))
-    #endif
+
 #define CIRCLE_BUFFER_ENTER_CRITICAL()                          \
  {                                                              \
      unsigned int base_pri;                                     \

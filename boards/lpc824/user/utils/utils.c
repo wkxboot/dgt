@@ -4,7 +4,6 @@
 #include "stdbool.h"
 #include "utils.h"
 #include "cmsis_os.h"
-#include "log.h"
 
 
 /*字节转换成HEX字符串*/

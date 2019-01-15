@@ -20,7 +20,7 @@ void scale_task(void const *argument);
 
 
 
-#define  SCALE_TASK_ADDR_VALUE_MAX                  0xF0
+#define  SCALE_TASK_ADDR_VALUE_MAX                  0xF7
 #define  SCALE_TASK_WEIGHT_ERR_VALUE                0x7FFF
 #define  SCALE_TASK_MAX_WEIGHT_VALUE                (32767.0)  /*最大32767  g*/
 #define  SCALE_TASK_MIN_WEIGHT_VALUE                (-32767.0) /*最小-32767 g*/

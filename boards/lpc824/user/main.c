@@ -37,11 +37,9 @@
 #include "cpu_task.h"
 #include "scale_task.h"
 #include "protocol_task.h"
-#include "version.h"
-
+#include "utils.h"
 #include "log.h"
-#define LOG_MODULE_NAME   "[main]"
-#define LOG_MODULE_LEVEL   LOG_LEVEL_DEBUG  
+
 
 
 
@@ -62,13 +60,12 @@ return osKernelSysTick();
  */
 int main(void)
 { 
-    int result;
-    result = board_init();
-    if(result != 0){
-    while(1);
-    }
+    int rc;
+
+    rc = board_init();
+    UTILS_ASSERT(rc == 0);
+
     log_init();
-    log_info("firmware version:%d.%d.\r\n",FIRMWARE_VERSION >> 8,FIRMWARE_VERSION & 0xff);
     
     osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 200);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);

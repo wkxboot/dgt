@@ -75,11 +75,11 @@ int board_init()
 * @brief 硬件us级延时
 * @param us 延时长度
 * @return 无
-* @note 不准确
+* @note 不太准确 24MHz下相差 10%
 */
 void bsp_hal_delay(uint32_t us)
 {
-    for (uint32_t i = 0; i< us ;i++) {
+    for (uint32_t i = 0; i < 2 * us ;i++) {
          __ASM("NOP");
     }
 }

@@ -1,13 +1,8 @@
-#ifndef  __TOOL_H__
-#define  __TOOL_H__
+#ifndef  __UTILS_H__
+#define  __UTILS_H__
 #include "stdbool.h"
 #include "stdint.h"
 
-typedef struct
-{
-    const char *name;
-    const char *value;
-}form_data_t;
 
 typedef struct
 {
@@ -29,6 +24,14 @@ typedef struct
 #define   MAX(A,B)             ((A) > (B) ? (A) :(B))
 #endif
 
+#ifndef  UTILS_ASSERT
+#define  UTILS_ASSERT(x)                            \
+do {                                                \
+    if ((void *)(x) == (void *)0) {                 \
+        while(1);                                   \
+    }                                               \
+}while (0)                                         
+#endif
 
 
 
