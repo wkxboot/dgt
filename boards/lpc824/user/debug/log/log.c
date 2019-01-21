@@ -100,18 +100,13 @@ int log_vnprintf(uint8_t level,const char *format,...)
 {
     int rc = 0;
     uint32_t size;
-    char buffer[LOG_PRINTF_BUFFER_SIZE];
+    static char buffer[LOG_PRINTF_BUFFER_SIZE];
     va_list ap;
     
     va_start(ap,format);
 
     if (level <= log_level_globle ) {
         size = vsnprintf(buffer,LOG_PRINTF_BUFFER_SIZE,format,ap);
-        /*保证输出是完整的*/
-        if (size > LOG_PRINTF_BUFFER_SIZE - 1) {
-            rc = -1;
-            goto exit;
-        }
 #if    LOG_USE_RTT > 0
         rc = SEGGER_RTT_Write(0,buffer,size);
 #elif  LOG_USE_SERIAL > 0

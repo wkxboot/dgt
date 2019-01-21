@@ -459,9 +459,9 @@ void protocol_task(void const * argument)
           goto err_exit;
        }
        
-       if(recv_buffer[PROTOCOL_TASK_ADU_ADDR_OFFSET] != scale_addr ){
-        log_error("protocol err in addr.recv:%d legacy:%d.\r\n",recv_buffer[PROTOCOL_TASK_ADU_ADDR_OFFSET],scale_addr);
-        goto err_exit;  
+       if (recv_buffer[PROTOCOL_TASK_ADU_ADDR_OFFSET] != scale_addr ){
+          log_array("protocol in addr :%d.\r\n",recv_buffer[PROTOCOL_TASK_ADU_ADDR_OFFSET]);
+          goto ignore_exit;  
        }
 
        /*如果是读取净重值*/
@@ -652,6 +652,8 @@ void protocol_task(void const * argument)
         log_error("protocol err in  serial send timeout.\r\n",); 
         goto err_exit;  
     }
+    
+ignore_exit:
     osDelay(1);
     continue;
 

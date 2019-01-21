@@ -69,11 +69,11 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 4
-/*定义启动变化阈值 值越小灵敏度要高 1.2大约10g起跳*/
-#define  EVALUATE_TASK_VARIANCE_MAX      1.2 
+#define  MOVE_SAMPLE_CNT                 10
+/*定义启动变化阈值 值越小灵敏度要高 大约5g起跳*/
+#define  EVALUATE_TASK_VARIANCE_MAX      5
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      0.02
+#define  EVALUATE_TASK_VARIANCE_MIN      0.5
 
 typedef struct
 {

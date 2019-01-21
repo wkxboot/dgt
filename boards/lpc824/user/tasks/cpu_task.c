@@ -54,6 +54,15 @@ void cpu_task(void const * argument)
 
     read_len = log_read(cmd,15);
     cmd[read_len] = 0;
+    
+    if (strncmp(cmd,"set ",4) == 0) {
+        extern float a;
+        a = atof(cmd + 4);
+        log_debug("set a:%.4f.\r\n",a);
+    }
+           
+    
+ 
     if ( strncmp(cmd,"read",4) == 0) {
         rc =nv_read(0x00,nv_buffer,0x40);
         if (rc ==0){
