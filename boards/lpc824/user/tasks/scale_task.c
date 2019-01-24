@@ -89,11 +89,11 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 10
-/*定义启动变化阈值 值越小灵敏度要高 1.2大约10g起跳*/
-#define  EVALUATE_TASK_VARIANCE_MAX      5
+#define  MOVE_SAMPLE_CNT                20   
+/*定义启动变化阈值*/
+#define  EVALUATE_TASK_VARIANCE_MAX     20
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      0.5
+#define  EVALUATE_TASK_VARIANCE_MIN     3.5
 
 typedef struct
 {
@@ -122,6 +122,7 @@ uint32_t      change_start_time;
 uint32_t      change_stop_time;
 uint32_t      change_time;
 float         variance;
+int16_t       dir;
 stable_status_t status;
 }stable_t;
 
@@ -149,7 +150,7 @@ sum =0;
 for(i=0;i<cnt;i++){
 sum += pow((ms->sample[i] - average),2);
 }
-variance = sum / (double)cnt;
+variance = sqrt(sum / (double)cnt);
 ms->value = average;
 ms->variance =variance;
 
@@ -282,6 +283,7 @@ void scale_task(void const *argument)
   all_net_weight +=  digital_scale.scale[i].net_weight; 
   }
   digital_scale.all_net_weight = all_net_weight;
+  bsp_debug_uart_printf("%d\n",(uint32_t)all_net_weight);
 ignore_all_net_weight:
   /*向adc_task回应处理结果*/
   osSignalSet(adc_task_hdl,ADC_TASK_RESTART_SIGNAL);
@@ -309,20 +311,31 @@ ignore_all_net_weight:
     net_weight.change_start_time = osKernelSysTick();
     net_weight.change_start_value = net_weight.change_stop_value;
     net_weight.status = STABLE_STATUS_START_WAIT_IDEL;
-    //log_debug("change start time:%d,start_weight:%dg.\r\n",net_weight.change_start_time,net_weight.change_start_value);
+    log_debug("start time:%d.\r\n",net_weight.change_start_time);
     }else if(net_weight.status == STABLE_STATUS_START_WAIT_IDEL && \
              variance <= EVALUATE_TASK_VARIANCE_MIN){
     net_weight.change_stop_time = osKernelSysTick();
     net_weight.change_time = net_weight.change_stop_time - net_weight.change_start_time;
     net_weight.change_stop_value = all_net_weight;
-    net_weight.change_value = net_weight.change_stop_value -net_weight.change_start_value;
+    net_weight.change_value = net_weight.change_stop_value - net_weight.change_start_value;
+
+    if (net_weight.change_value > SCALE_TASK_DIFF_WEIGHT) {
+        net_weight.dir++;
+        log_debug("放下%dg.dir:%d.\r\n",(uint16_t)net_weight.change_value,net_weight.dir);
+    }else if(net_weight.change_value < -SCALE_TASK_DIFF_WEIGHT){
+        net_weight.dir--;
+        log_debug("拿起%dg.dir:%d\r\n",(uint16_t)(net_weight.change_value * -1),net_weight.dir);
+    }
     net_weight.variance = variance;    
     net_weight.status = STABLE_STATUS_IDEL_WAIT_START;
-    log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n"
+    /*
+    log_debug("change stop time:%d stop_weight:%dg change_time:%dms change_weight:%dg dir:%d\r\n"
               ,net_weight.change_stop_time
               ,(int16_t)net_weight.change_stop_value
               ,net_weight.change_time 
-              ,(int16_t)net_weight.change_value);  
+              ,(int16_t)net_weight.change_value
+              ,net_weight.dir);  
+    */
    } 
    }
    }
@@ -340,7 +353,7 @@ ignore_all_net_weight:
   }
   protocol_msg.net_weight +=  digital_scale.scale[i].net_weight; 
   }
-  
+
   status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
   }
  
@@ -508,7 +521,7 @@ set_addr_msg_handle:
    log_assert(status == osOK);   
   } 
  
- 
+#if defined(FEATURE_FULL) && FEATURE_FULL > 0
   /*向protocol_task回应传感器ID*/
   if(msg->type ==  REQ_SENSOR_ID){
    protocol_msg.type = RESPONSE_SENSOR_ID;
@@ -525,6 +538,16 @@ set_addr_msg_handle:
    status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
    log_assert(status == osOK);   
   } 
+
+#endif
+  /*向protocol_task回应0点校准重量值*/
+  if(msg->type ==  REQ_DIR){
+    protocol_msg.type = RESPONSE_DIR;
+    protocol_msg.dir = net_weight.dir;
+  
+  status = osMessagePut(protocol_task_msg_q_id,(uint32_t)(&protocol_msg),SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
+  }
+
   }
  
   }  

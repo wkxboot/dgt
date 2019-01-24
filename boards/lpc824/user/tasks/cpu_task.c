@@ -50,10 +50,11 @@ void cpu_task(void const * argument)
  while(1){
  osDelay(CPU_TASK_INTERVAL_VALUE);
  bsp_sys_led_toggle();
-
+/*
  read_len = log_read(cmd,3);
  if(read_len == 3){
    switch(cmd[0]){
+
    case 'r':
     rc =nv_read(0x00,nv_buffer,0x40);
     if(rc ==0){
@@ -85,6 +86,7 @@ void cpu_task(void const * argument)
    break;
    }
    }
+*/
  }
 }
    

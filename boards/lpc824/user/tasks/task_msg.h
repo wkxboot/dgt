@@ -16,6 +16,7 @@ REQ_SENSOR_ID,
 REQ_VERSION,
 REQ_SET_ADDR,
 REQ_ADDR,
+REQ_DIR,
 REQ_CALIBRATE_ZERO_VALUE,
 REQ_CALIBRATE_FULL_VALUE,
 RESPONSE_NET_WEIGHT,
@@ -26,6 +27,7 @@ RESPONSE_SENSOR_ID,
 RESPONSE_VERSION,
 RESPONSE_SET_ADDR,
 RESPONSE_ADDR,
+RESPONSE_DIR,
 RESPONSE_CALIBRATE_ZERO_VALUE,
 RESPONSE_CALIBRATE_FULL_VALUE
 }message_type_t;
@@ -42,6 +44,7 @@ uint8_t      result;
 uint8_t      sensor_id;
 uint16_t     version;
 uint8_t      scale_addr;
+int16_t      dir;
 };
 }task_message_t;
 

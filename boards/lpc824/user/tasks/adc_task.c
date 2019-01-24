@@ -80,30 +80,9 @@ static void adc_one_order_lag_filter(adc_sample_t *sample,uint32_t adc)
 */
 
 /*滑动平均滤波*/
-/*
-static void adc_moving_average_filter(adc_sample_t *sample,uint32_t adc)
-{
-  uint16_t pos;
-  
-  log_assert(sample);
-  pos = sample->cnt % sample->cnt_max;
-  
-  if(sample->cnt < sample->cnt_max ){
-  sample->adc[pos] = adc;
-  sample->sum+=sample->adc[pos];
-  }else{
-  sample->sum -= sample->adc[pos];
-  sample->adc[pos] = adc;
-  sample->sum += sample->adc[pos];
-  sample->average = sample->sum / sample->cnt_max;
-  if(sample->average_pre !=sample->average){
-  sample->average_pre = sample->average;
-  sample->changed =true;
-  }
-  }
-  sample->cnt++;
-}
-*/
+
+
+
 
 /*一阶滞后+滑动平均滤波*/
 static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,uint32_t adc)
@@ -112,6 +91,9 @@ static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,u
   static float a = 0.8866;
   
   log_assert(sample);
+
+  //bsp_debug_uart_printf("%d\n",adc);
+
   adc =(uint32_t)( (float)sample->adc_pre * a + (1 - a)*(float)adc);
   sample->adc_pre = adc;
   

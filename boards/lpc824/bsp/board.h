@@ -32,6 +32,9 @@
 #define _BOARD_H_
 
 #include <stdint.h>
+#include "stdbool.h"
+#include "stdarg.h"
+#include "stdio.h"
 #include "clock_config.h"
 #include "fsl_common.h"
 #include "fsl_gpio.h"
@@ -56,6 +59,7 @@ void bsp_sys_led_turn_off();
 void bsp_sys_led_toggle();
 void bsp_485_enable_read();
 void bsp_485_enable_write();
+void bsp_debug_uart_printf(char *format,...);
 
 #if defined(__cplusplus)
 }

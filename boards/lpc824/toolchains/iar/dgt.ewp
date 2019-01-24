@@ -222,6 +222,7 @@
                     <name>CCDefines</name>
                     <state>CPU_LPC824</state>
                     <state>CPU_LPC824M201JHI33</state>
+                    <state>FEATURE_FULL=0</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -384,7 +385,7 @@
                 <option>
                     <name>CCOptStrategy</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCOptLevelSlave</name>
@@ -451,7 +452,7 @@
                 <option>
                     <name>CCOptStrategySlave</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCGuardCalls</name>
@@ -2194,7 +2195,7 @@
             <group>
                 <name>cpu</name>
                 <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\CPU\cpu_utils.c</name>
+                    <name>$PROJ_DIR$\..\..\user\debug\cpu\cpu_utils.c</name>
                 </file>
             </group>
             <group>

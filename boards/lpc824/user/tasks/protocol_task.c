@@ -289,6 +289,28 @@ int protocol_set_scale_addr(uint8_t addr)
  return result;
 }
 
+static int16_t protocol_get_dir()
+{
+ osStatus status;
+ osEvent  os_msg;
+ task_message_t *msg;
+ int16_t   dir = 0;
+ 
+ scale_msg.type = REQ_DIR;
+ status = osMessagePut(scale_task_msg_q_id,(uint32_t)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+ log_assert(status == osOK);
+ while(1){
+ os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+ if(os_msg.status == osEventMessage){
+    msg =  (task_message_t *)os_msg.value.v;
+    if(msg->type == RESPONSE_DIR){
+        dir = msg->dir;
+        break;
+    }  
+ }
+ }
+ return dir;
+}
 
 
 void protocol_task(void const * argument)
@@ -305,6 +327,7 @@ void protocol_task(void const * argument)
  int16_t  net_weight;
  uint16_t version;
  uint8_t  sensor_id;
+int16_t  dir;
  uint8_t  scale_set_addr;
  protocol_step_t step;
  
@@ -500,7 +523,9 @@ protocol_parse_start:
          length_to_write = protocol_task_prepare_crc16(send_buffer,length_to_write); 
          break;              
        }
-       
+
+
+#if defined(FEATURE_FULL) && FEATURE_FULL > 0       
        /*如果是读取传感器厂家ID*/
        if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_READ_SENSOR_ID && \
           read_length == PROTOCOL_TASK_READ_SENSOR_ID_FRAME_LEN){
@@ -532,7 +557,8 @@ protocol_parse_start:
           length_to_write = protocol_task_prepare_crc16(send_buffer,length_to_write); 
           break;  
       }
-      
+#endif    
+
        /*如果是设置地址值*/
        if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_SET_ADDR && \
           read_length == PROTOCOL_TASK_SET_ADDR_FRAME_LEN){
@@ -558,7 +584,24 @@ protocol_parse_start:
          length_to_write = protocol_task_prepare_crc16(send_buffer,length_to_write); 
          break;  
       }
-     
+
+       /*如果是获取方向累计变化量*/
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_READ_DIR && \
+          read_length == PROTOCOL_TASK_READ_DIR_FRAME_LEN){
+            
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_DIR_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_DIR_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
+          send_buffer[length_to_write++] = scale_addr;           
+          send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_DIR;
+          
+          dir = protocol_get_dir();
+          send_buffer[length_to_write++] = (uint16_t)dir & 0xff;
+          send_buffer[length_to_write++] = (uint16_t)dir >> 8;
+          /*填充CRC16值*/
+          length_to_write = protocol_task_prepare_crc16(send_buffer,length_to_write); 
+          break;               
+       }
+
      default :
      log_error("protocol err in  func:%d.\r\n",recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET]); 
      goto protocol_parse_start;

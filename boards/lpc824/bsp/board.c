@@ -34,6 +34,8 @@ static void bsp_485_ctrl_pin_init();
 static void bsp_sys_led_ctrl_pin_init();
 int bsp_ad7190_spi_int(uint8_t spi_port,uint32_t freq);
 int nv_init();
+static int bsp_debug_uart_init();
+
 
 /*板级初始化*/
 int board_init()
@@ -43,7 +45,12 @@ int board_init()
  CLOCK_EnableClock(kCLOCK_Uart1);
  /* Ser DIV of uart0. */
  CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);  
-    
+ 
+  /* Enable clock of usart1. */   
+ CLOCK_EnableClock(kCLOCK_Uart0);
+ /* Ser DIV of uart0. */
+ CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);  
+
  /* Enable clock of spi1. */   
  CLOCK_EnableClock(kCLOCK_Spi1);
  
@@ -55,6 +62,7 @@ int board_init()
  bsp_485_ctrl_pin_init();
  bsp_sys_led_ctrl_pin_init();
 
+ bsp_debug_uart_init();
  result = bsp_ad7190_spi_int(BSP_AD7190_SPI_PORT,BSP_AD7190_SPI_FREQ);
  if(result != 0){
  return -1; 
@@ -67,6 +75,40 @@ return -1;
 return 0;
 }
 
+static int bsp_debug_uart_init()
+{
+    status_t status;
+    usart_config_t config;
+
+    USART_GetDefaultConfig(&config);
+    config.baudRate_Bps = 115200;
+    config.enableRx = false;
+    config.enableTx = true;
+    /* Initialize the USART with configuration. */
+    status=USART_Init(USART0, &config, CLOCK_GetFreq(kCLOCK_MainClk));
+ 
+    if (status != kStatus_Success){
+        return -1;
+    } 
+    return 0;
+}
+
+
+void bsp_debug_uart_printf(char *format,...)
+{
+    int size;
+    char buffer[30];
+    va_list ap;
+
+    va_start(ap,format);
+
+    vsnprintf(buffer,30,format,ap);
+    size = strlen(buffer);
+    USART_WriteBlocking(USART0,(uint8_t*)buffer,size);
+
+    va_end(ap);
+
+}
 static void bsp_485_ctrl_pin_init()
 {
   gpio_pin_config_t config = {
