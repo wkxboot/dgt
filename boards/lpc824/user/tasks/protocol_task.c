@@ -340,6 +340,38 @@ int protocol_set_scale_addr(uint8_t addr)
     return rc;
 }
 
+/*
+* @brief 
+* @param
+* @param
+* @return 
+* @note
+*/
+
+static int protocol_get_dir(int16_t *dir)
+{
+    int rc = -1;
+    osStatus status;
+    osEvent  os_msg;
+    task_message_t msg,scale_msg;
+
+    scale_msg.type = TASK_MSG_REQ_DIR;
+    status = osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,PROTOCOL_TASK_MSG_PUT_TIMEOUT_VALUE);
+    log_assert(status == osOK);
+
+    os_msg = osMessageGet(protocol_task_msg_q_id,PROTOCOL_TASK_MSG_WAIT_TIMEOUT_VALUE);
+    if (os_msg.status == osEventMessage){
+        msg =  *(task_message_t *)&os_msg.value.v;
+        if (msg.type == TASK_MSG_RSP_DIR){
+            *dir = (int16_t)msg.value;
+            rc =0;
+        }  
+    }
+
+    return rc;
+}
+
+
 /*串口中断处理*/
 void USART1_IRQHandler()
 {
@@ -362,6 +394,7 @@ void protocol_task(void const * argument)
     int16_t  calibrate_weight;
     int16_t  net_weight;
     uint16_t version;
+    int16_t  dir;
     uint8_t  sensor_id;
     uint8_t  scale_set_addr;
     protocol_step_t step;
@@ -623,6 +656,23 @@ void protocol_task(void const * argument)
          break;  
       }
      
+      /*如果是读取重力方向*/
+       if(recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET] == PROTOCOL_TASK_FUNC_READ_DIR && \
+          read_length == PROTOCOL_TASK_READ_DIR_FRAME_LEN){
+            
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_DIR_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE));
+          send_buffer[length_to_write++] = (PROTOCOL_TASK_RESPONSE_READ_DIR_FRAME_LEN -(PROTOCOL_TASK_HEADER_SIZE + PROTOCOL_TASK_SIZE_SIZE)) >> 8; 
+          send_buffer[length_to_write++] = scale_addr;  
+          send_buffer[length_to_write++] = PROTOCOL_TASK_FUNC_READ_DIR;
+          
+          rc = protocol_get_dir(&dir); 
+          log_assert(rc == 0);        
+          send_buffer[length_to_write++] = (uint16_t)dir & 0xff;
+          send_buffer[length_to_write++] = (uint16_t)dir >> 8;
+          length_to_write = protocol_task_prepare_crc16((uint8_t *)send_buffer,length_to_write); 
+          break;  
+      }
+
      default :
      log_error("protocol err in  func:%d.\r\n",recv_buffer[PROTOCOL_TASK_ADU_FUNC_OFFSET]); 
      goto err_exit;

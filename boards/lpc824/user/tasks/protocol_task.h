@@ -58,6 +58,7 @@ void protocol_task(void const * argument);
 #define  PROTOCOL_TASK_FUNC_READ_SENSOR_ID         0x04
 #define  PROTOCOL_TASK_FUNC_READ_VERSION           0x05
 #define  PROTOCOL_TASK_FUNC_SET_ADDR               0x06
+#define  PROTOCOL_TASK_FUNC_READ_DIR               0x07
 
 #define  PROTOCOL_TASK_SUCCESS_VALUE               0x00
 #define  PROTOCOL_TASK_FAILURE_VALUE               0x01
@@ -72,7 +73,7 @@ void protocol_task(void const * argument);
 #define  PROTOCOL_TASK_READ_SENSOR_ID_FRAME_LEN                 8
 #define  PROTOCOL_TASK_READ_VERSION_FRAME_LEN                   8
 #define  PROTOCOL_TASK_SET_ADDR_FRAME_LEN                       9
-
+#define  PROTOCOL_TASK_READ_DIR_FRAME_LEN                       8
 
 #define  PROTOCOL_TASK_RESPONSE_NET_WEIGHT_FRAME_LEN            10
 #define  PROTOCOL_TASK_RESPONSE_REMOVE_TAR_WEIGHT_FRAME_LEN     9
@@ -81,5 +82,5 @@ void protocol_task(void const * argument);
 #define  PROTOCOL_TASK_RESPONSE_READ_SENSOR_ID_FRAME_LEN        9
 #define  PROTOCOL_TASK_RESPONSE_READ_VERSION_FRAME_LEN          10
 #define  PROTOCOL_TASK_RESPONSE_SET_ADDR_FRAME_LEN              9
-
+#define  PROTOCOL_TASK_RESPONSE_READ_DIR_FRAME_LEN              10
 #endif

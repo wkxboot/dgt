@@ -69,11 +69,11 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 10
+#define  MOVE_SAMPLE_CNT                 20
 /*定义启动变化阈值 值越小灵敏度要高 大约5g起跳*/
-#define  EVALUATE_TASK_VARIANCE_MAX      5
+#define  EVALUATE_TASK_VARIANCE_MAX      20
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      0.5
+#define  EVALUATE_TASK_VARIANCE_MIN      3.0
 
 typedef struct
 {
@@ -102,6 +102,7 @@ typedef struct
     uint32_t      change_stop_time;
     uint32_t      change_time;
     float         variance;
+    int16_t       dir;
     stable_status_t status;
 }stable_t;
 
@@ -261,11 +262,21 @@ void scale_task(void const *argument)
                         net_weight.change_value = net_weight.change_stop_value -net_weight.change_start_value;
                         net_weight.variance = variance;    
                         net_weight.status = STABLE_STATUS_IDEL_WAIT_START;
+
+                        if (net_weight.change_value > SCALE_TASK_DIFF_WEIGHT) {
+                            net_weight.dir++;
+                            log_debug("放下%dg.dir:%d.\r\n",net_weight.change_value,net_weight.dir);
+                        }else if (net_weight.change_value < -SCALE_TASK_DIFF_WEIGHT) {
+                            net_weight.dir--;
+                            log_debug("拿起%dg.dir:%d.\r\n",net_weight.change_value * -1,net_weight.dir);
+                        }
+                       /*
                         log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n"
                         ,net_weight.change_stop_time
                         ,(int16_t)net_weight.change_stop_value
                         ,net_weight.change_time 
                         ,(int16_t)net_weight.change_value);  
+                    */
                 } 
             }
         }
@@ -457,6 +468,14 @@ set_addr_msg_handle:
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
         log_assert(status == osOK);   
     } 
+
+    /*向protocol_task回应重力变化方向*/
+    if (msg.type ==  TASK_MSG_REQ_DIR){
+        protocol_msg.type = TASK_MSG_RSP_DIR;
+        protocol_msg.value = net_weight.dir;;
+
+        status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
+    }
 
   }
   }

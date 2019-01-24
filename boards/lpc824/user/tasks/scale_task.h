@@ -24,7 +24,7 @@ void scale_task(void const *argument);
 #define  SCALE_TASK_WEIGHT_ERR_VALUE                0x7FFF
 #define  SCALE_TASK_MAX_WEIGHT_VALUE                (32767.0)  /*最大32767  g*/
 #define  SCALE_TASK_MIN_WEIGHT_VALUE                (-32767.0) /*最小-32767 g*/
-
+#define  SCALE_TASK_DIFF_WEIGHT                     50 /*重力变化阈值*/
 #define  SCALE_TASK_MSG_PUT_TIMEOUT_VALUE           10
 #define  SCALE_TASK_MSG_WAIT_TIMEOUT_VALUE          osWaitForever    
 
