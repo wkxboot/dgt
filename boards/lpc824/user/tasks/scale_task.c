@@ -69,11 +69,11 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 20
-/*定义启动变化阈值 值越小灵敏度要高 大约5g起跳*/
-#define  EVALUATE_TASK_VARIANCE_MAX      20
+#define  MOVE_SAMPLE_CNT                 5
+/*定义启动变化阈值*/
+#define  EVALUATE_TASK_VARIANCE_MAX      8
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      3.0
+#define  EVALUATE_TASK_VARIANCE_MIN      1.25
 
 typedef struct
 {
@@ -131,7 +131,7 @@ static  int caculate_variance(move_sample_t *ms)
         sum += pow((ms->sample[i] - average),2);
     }
 
-    variance = sum / cnt;
+    variance = sqrt(sum / cnt);
     ms->value = average;
     ms->variance =variance;
 
@@ -253,7 +253,7 @@ void scale_task(void const *argument)
                     net_weight.change_start_time = osKernelSysTick();
                     net_weight.change_start_value = net_weight.change_stop_value;
                     net_weight.status = STABLE_STATUS_START_WAIT_IDEL;
-                    //log_debug("change start time:%d,start_weight:%dg.\r\n",net_weight.change_start_time,net_weight.change_start_value);
+                    log_debug("start time:%d.\r\n",net_weight.change_start_time);
                 }else if (net_weight.status == STABLE_STATUS_START_WAIT_IDEL && \
                         variance <= EVALUATE_TASK_VARIANCE_MIN){
                         net_weight.change_stop_time = osKernelSysTick();
@@ -265,10 +265,10 @@ void scale_task(void const *argument)
 
                         if (net_weight.change_value > SCALE_TASK_DIFF_WEIGHT) {
                             net_weight.dir++;
-                            log_debug("放下%dg.dir:%d.\r\n",net_weight.change_value,net_weight.dir);
+                            log_debug("放下%dg.dir:%d.\r\n",(uint16_t)net_weight.change_value,net_weight.dir);
                         }else if (net_weight.change_value < -SCALE_TASK_DIFF_WEIGHT) {
                             net_weight.dir--;
-                            log_debug("拿起%dg.dir:%d.\r\n",net_weight.change_value * -1,net_weight.dir);
+                            log_debug("拿起%dg.dir:%d.\r\n",(uint16_t)(net_weight.change_value * -1),net_weight.dir);
                         }
                        /*
                         log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n"

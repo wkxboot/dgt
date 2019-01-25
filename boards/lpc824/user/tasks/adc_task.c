@@ -92,7 +92,7 @@ static void adc_moving_average_filter(adc_sample_t *sample,uint32_t adc)
   sample->cnt++;
 }
 */
-float a = 0.8866;
+float a = 0.778899;
 /*一阶滞后+滑动平均滤波*/
 static void adc_moving_average_plus_one_order_flag_filter(adc_sample_t *sample,uint32_t adc)
 {

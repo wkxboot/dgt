@@ -222,6 +222,7 @@
                     <name>CCDefines</name>
                     <state>CPU_LPC824</state>
                     <state>CPU_LPC824M201JHI33</state>
+                    <state>FEATURE_FULL=1</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

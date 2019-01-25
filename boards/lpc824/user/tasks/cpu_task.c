@@ -51,13 +51,13 @@ void cpu_task(void const * argument)
  while (1){
     osDelay(CPU_TASK_INTERVAL_VALUE);
     bsp_sys_led_toggle();
-
+   /*
     read_len = log_read(cmd,15);
     cmd[read_len] = 0;
     
-    if (strncmp(cmd,"set ",4) == 0) {
+    if (strncmp(cmd,"set a",5) == 0) {
         extern float a;
-        a = atof(cmd + 4);
+        a = atof(cmd + 5);
         log_debug("set a:%.4f.\r\n",a);
     }
            
@@ -100,6 +100,7 @@ void cpu_task(void const * argument)
         level = atoi(pos);
         log_set_level(level);
     }
+*/
 
  }
 }
