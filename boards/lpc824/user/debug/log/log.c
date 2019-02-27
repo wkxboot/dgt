@@ -113,7 +113,6 @@ int log_vnprintf(uint8_t level,const char *format,...)
         rc = log_serial_uart_write(buffer,size);
 #endif
     }
-exit:
     va_end(ap);
     return rc;
 }

@@ -39,11 +39,9 @@ void APP_WDT_IRQ_HANDLER(void)
 
 void cpu_task(void const * argument)
 {
-    uint8_t  read_len;
-    int      rc;
-    uint8_t  nv_buffer[0x40];
+    uint8_t  read_cnt;
+    //uint8_t  nv_buffer[0x40];
     char     cmd[16];
-    char     *pos;
     uint8_t  level;
 
     bsp_sys_led_turn_on();
@@ -51,6 +49,13 @@ void cpu_task(void const * argument)
  while (1){
     osDelay(CPU_TASK_INTERVAL_VALUE);
     bsp_sys_led_toggle();
+    /*设置日志输出等级*/
+    read_cnt = log_read(cmd,15);
+    cmd[read_cnt] = 0;
+    if (strncmp(cmd,"set level ",strlen("set level ")) == 0) {
+        level = atoi(cmd + strlen("set level "));
+        log_set_level(level);
+    }
    /*
     read_len = log_read(cmd,15);
     cmd[read_len] = 0;

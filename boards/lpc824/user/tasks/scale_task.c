@@ -177,10 +177,6 @@ void scale_task(void const *argument)
     task_message_t    msg;
     task_message_t    protocol_msg;
  
-    osMessageQDef(scale_task_msg_q,5,uint32_t);
-    scale_task_msg_q_id = osMessageCreate(osMessageQ(scale_task_msg_q),scale_task_hdl);
-    log_assert(scale_task_msg_q_id);  
- 
     scale_task_param_init();
 
     log_info("\r\nfirmware version:%s.\r\n",FIRMWARE_VERSION_STR);
@@ -385,7 +381,7 @@ calibrate_full_msg_handle:
    }
  
     /*向protocol_task回应去皮结果*/
-    if(msg.type ==  TASK_MSG_REQ_REMOVE_TAR_WEIGHT){
+    if(msg.type ==  TASK_MSG_REQ_REMOVE_TARE_WEIGHT){
         if (digital_scale.scale.net_weight == SCALE_TASK_WEIGHT_ERR_VALUE ){
             result = SCALE_TASK_FAILURE; 
             log_error("scale calibrate full fail.\r\n");
@@ -407,7 +403,7 @@ calibrate_full_msg_handle:
         log_info("scale remove tar weight success.\r\n"); 
         result = SCALE_TASK_SUCCESS;   
 remove_tar_weight_msg_handle:
-        protocol_msg.type = TASK_MSG_RSP_REMOVE_TAR_WEIGHT;
+        protocol_msg.type = TASK_MSG_RSP_REMOVE_TARE_WEIGHT;
         protocol_msg.value = result;
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
         log_assert(status == osOK);
@@ -468,14 +464,6 @@ set_addr_msg_handle:
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
         log_assert(status == osOK);   
     } 
-
-    /*向protocol_task回应重力变化方向*/
-    if (msg.type ==  TASK_MSG_REQ_DIR){
-        protocol_msg.type = TASK_MSG_RSP_DIR;
-        protocol_msg.value = net_weight.dir;;
-
-        status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
-    }
 
   }
   }
