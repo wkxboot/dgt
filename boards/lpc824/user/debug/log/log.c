@@ -18,6 +18,7 @@
 *                                                                            
 *****************************************************************************/
 #include "log.h"
+#include "printf.h"
 
 #if  LOG_USE_RTT > 0
 #include "SEGGER_RTT.h"

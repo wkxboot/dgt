@@ -364,6 +364,7 @@
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/nv</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/cpu</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/printf</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/SEGGER_RTT_V612j/RTT</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/logSEGGER_RTT_V612j</state>
@@ -2197,13 +2198,16 @@
             <group>
                 <name>cpu</name>
                 <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\CPU\cpu_utils.c</name>
+                    <name>$PROJ_DIR$\..\..\user\debug\cpu\cpu_utils.c</name>
                 </file>
             </group>
             <group>
                 <name>log</name>
                 <file>
                     <name>$PROJ_DIR$\..\..\user\debug\log\log.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\..\user\debug\log\printf\printf.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\RTT\SEGGER_RTT.c</name>
