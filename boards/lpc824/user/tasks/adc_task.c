@@ -128,7 +128,32 @@ static task_message_t   scale_msg;
 void adc_task(void const * argument)
 {
     uint32_t adc; 
+#if DEBUG_CHART > 0
+    /*串口输出，测试用*/
+    int rc;
+    int chart_serial_handle;
+    extern serial_hal_driver_t nxp_serial_uart_hal_driver;
+    char chart_buffer[20];
+    uint8_t size;
+    rc = serial_create(&chart_serial_handle,CHART_RX_BUFFER_SIZE,CHART_TX_BUFFER_SIZE);
+    log_assert(rc == 0);
+    rc = serial_register_hal_driver(chart_serial_handle,&nxp_serial_uart_hal_driver);
+    log_assert(rc == 0);
  
+    rc = serial_open(chart_serial_handle,
+                    CHART_SERIAL_PORT,
+                    CHART_SERIAL_BAUDRATES,
+                    CHART_SERIAL_DATABITS,
+                    CHART_SERIAL_STOPBITS);
+    log_assert(rc == 0); 
+    log_debug("chart serial ok.\r\n");
+#endif
+
+
+
+
+
+
 adc_task_restart: 
     adc_task_param_init();
     hx711_soft_reset();
@@ -162,7 +187,11 @@ adc_task_restart:
             scale_msg.type = TASK_MSG_ADC_COMPLETE;
             scale_msg.value = scale_sensor.channel_a.sample.average; 
             osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
-  
+#if  DEBUG_CHART > 0
+            size = snprintf(chart_buffer,20,"%d,%d\n",adc,scale_msg.value);
+            serial_write(chart_serial_handle,chart_buffer,size);
+
+#endif
             /*等待scale 发出restart信号*/
             osSignalWait(ADC_TASK_RESTART_SIGNAL,osWaitForever); 
          }
