@@ -69,11 +69,11 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 5
+#define  MOVE_SAMPLE_CNT                 20
 /*定义启动变化阈值*/
 #define  EVALUATE_TASK_VARIANCE_MAX      8
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      1.25
+#define  EVALUATE_TASK_VARIANCE_MIN      0.1
 
 typedef struct
 {
@@ -89,7 +89,7 @@ static move_sample_t move_sample;
 
 typedef enum
 {
-    STABLE_STATUS_IDEL_WAIT_START=0,
+    STABLE_STATUS_IDEL_WAIT_START = 0,
     STABLE_STATUS_START_WAIT_IDEL
 }stable_status_t;
 
@@ -128,10 +128,10 @@ static  int caculate_variance(move_sample_t *ms)
 
     sum =0;
     for (i = 0;i < cnt;i++) {
-        sum += pow((ms->sample[i] - average),2);
+      sum += pow(ms->sample[i] > average ? ms->sample[i] - average : average - ms->sample[i],2);
     }
 
-    variance = sqrt(sum / cnt);
+    variance = sqrt(sum / (cnt - 1));
     ms->value = average;
     ms->variance =variance;
 

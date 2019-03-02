@@ -777,7 +777,7 @@
                 </option>
                 <option>
                     <name>CCJLinkSpeedRadioV2</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>CCUSBDevice</name>

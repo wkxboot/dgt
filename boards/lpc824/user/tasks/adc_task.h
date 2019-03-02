@@ -16,7 +16,7 @@ void adc_task(void const * argument);
 #define  ADC_TASK_SAMPLE_TIMEOUT_VALUE       500  /*ADC取样超时时间*/
 #define  ADC_TASK_SAMPLE_ERR_CNT_MAX         500  /*ADC取样错误次数最大值*/
 
-#define  ADC_TASK_SAMPLE_CNT_MAX             25    /*ADC取样平均值 */
+#define  ADC_TASK_SAMPLE_CNT_MAX             50   /*ADC取样平均值 */
 #define  ADC_TASK_SAMPLE_ERR_VALUE           0xFFFFFFFFUL  /*ADC取样错误码*/
 
 
@@ -27,8 +27,8 @@ void adc_task(void const * argument);
     
 
 #define  DEBUG_CHART                         1
-#define  CHART_RX_BUFFER_SIZE                0
-#define  CHART_TX_BUFFER_SIZE                4
+#define  CHART_RX_BUFFER_SIZE                4
+#define  CHART_TX_BUFFER_SIZE                32
 #define  CHART_SERIAL_PORT                   0
 #define  CHART_SERIAL_BAUDRATES              115200
 #define  CHART_SERIAL_DATABITS               8
