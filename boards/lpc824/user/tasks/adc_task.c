@@ -26,7 +26,7 @@ static moving_average_filter_t adc_filter1;
 static moving_average_filter_t adc_filter2;
 static moving_average_filter_t adc_filter3;
 
-#define  ADC_TASK_SAMPLE1_CNT     32
+#define  ADC_TASK_SAMPLE1_CNT     16
 #define  ADC_TASK_SAMPLE2_CNT     16
 #define  ADC_TASK_SAMPLE3_CNT     16
 
@@ -51,21 +51,14 @@ static int moving_average_filter_init(moving_average_filter_t *filter,uint32_t *
     return 0;
 }
 
-
-static bool is_moving_average_filter_buffer_full(moving_average_filter_t *filter)
-{
-    log_assert(filter);
-    return filter->write >= filter->size ? true : false;
-}
-
+/*滑动平均滤波*/
 static uint32_t moving_average_filter_put(moving_average_filter_t *filter,uint32_t adc)
 {
-    if (is_moving_average_filter_buffer_full(filter) == false) {     
-        filter->buffer[filter->write & filter->mask] = adc;
-    } else {
-        filter->sum -= filter->buffer[filter->write & filter->mask];
-        filter->buffer[filter->write & filter->mask] = adc;    
+    if (filter->write >= filter->size) {            
+        filter->sum -= filter->buffer[filter->write & filter->mask];    
     }
+        
+    filter->buffer[filter->write & filter->mask] = adc;     
     filter->write ++;
     filter->sum += adc;  
     filter->average = filter->sum / filter->size;
@@ -146,13 +139,14 @@ adc_task_restart:
         scale_msg.type = TASK_MSG_ADC_COMPLETE;
         scale_msg.value = adc3;
         
-        osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
-        
 #if  DEBUG_CHART > 0
         size = snprintf(chart_buffer,30,"%d,%d,%d\n",adc1,adc2,adc3);
         serial_write(chart_serial_handle,chart_buffer,size);
 
 #endif
+        osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
+        
+
         /*等待scale 发出restart信号*/
         osSignalWait(ADC_TASK_RESTART_SIGNAL,osWaitForever); 
         }

@@ -69,11 +69,11 @@ static void scale_task_param_init()
 
 #if  SCALE_TASK_CALCULATE_VARIANCE > 0
 
-#define  MOVE_SAMPLE_CNT                 20
+#define  MOVE_SAMPLE_CNT                 16
 /*定义启动变化阈值*/
-#define  EVALUATE_TASK_VARIANCE_MAX      8
+#define  EVALUATE_TASK_VARIANCE_MAX      10
 /*定义停止变化阈值 值越小稳定时间越长，值越精确 */
-#define  EVALUATE_TASK_VARIANCE_MIN      0.1
+#define  EVALUATE_TASK_VARIANCE_MIN      1
 
 typedef struct
 {
@@ -111,7 +111,6 @@ stable_t net_weight;
 /*计算方差*/
 static  int caculate_variance(move_sample_t *ms)
 {
-    uint8_t i;
     float sum;
     float average;
     float variance;
@@ -119,21 +118,21 @@ static  int caculate_variance(move_sample_t *ms)
     uint8_t cnt;
 
     cnt = ms->expired;
-    sum=0;
+    sum = 0;
 
-    for (i = 0;i < cnt;i++) {
+    for (uint8_t i = 0;i < cnt;i++) {
         sum += ms->sample[i];
     }
-    average = sum / cnt;
+    average = sum / (float)cnt;
 
-    sum =0;
-    for (i = 0;i < cnt;i++) {
+    sum = 0;
+    for (uint8_t i = 0;i < cnt;i++) {
       sum += pow(ms->sample[i] > average ? ms->sample[i] - average : average - ms->sample[i],2);
     }
 
-    variance = sqrt(sum / (cnt - 1));
+    variance = sqrt(sum / (float)(cnt - 1));
     ms->value = average;
-    ms->variance =variance;
+    ms->variance = variance;
 
     return 0;
 }
@@ -216,7 +215,7 @@ void scale_task(void const *argument)
         if (msg.type ==  TASK_MSG_ADC_COMPLETE){
             digital_scale.scale.cur_adc = msg.value;
             /*计算毛重和净重*/
-            weight = (int16_t) (digital_scale.scale.cur_adc *  digital_scale.scale.nv_param.a +  digital_scale.scale.nv_param.b);
+            weight = (int16_t) ((float)digital_scale.scale.cur_adc *  digital_scale.scale.nv_param.a +  digital_scale.scale.nv_param.b);
             if (weight >= SCALE_TASK_MAX_WEIGHT_VALUE ||
                 weight <= SCALE_TASK_MIN_WEIGHT_VALUE  ){
                 digital_scale.scale.gross_weight = SCALE_TASK_WEIGHT_ERR_VALUE;
@@ -241,9 +240,7 @@ void scale_task(void const *argument)
         if (rc == 0){
             rc = caculate_variance(&move_sample);
             if (rc == 0){
-                //log_debug("variance:%d.",(int)(move_sample.variance*100) );
                 variance = move_sample.variance;
-                //log_one_line("net weight:%d g. v:%d.cpu:%d%%.",all_net_weight,(int32_t)(variance*100000) ,osGetCPUUsage());
     
                 if (net_weight.status == STABLE_STATUS_IDEL_WAIT_START && variance >= EVALUATE_TASK_VARIANCE_MAX){
                     net_weight.change_start_time = osKernelSysTick();
@@ -260,19 +257,10 @@ void scale_task(void const *argument)
                         net_weight.status = STABLE_STATUS_IDEL_WAIT_START;
 
                         if (net_weight.change_value > SCALE_TASK_DIFF_WEIGHT) {
-                            net_weight.dir++;
-                            log_debug("放下%dg.dir:%d.\r\n",(uint16_t)net_weight.change_value,net_weight.dir);
+                            log_debug("放下%dg.time:%dms.\r\n",(uint16_t)net_weight.change_value,net_weight.change_time);
                         }else if (net_weight.change_value < -SCALE_TASK_DIFF_WEIGHT) {
-                            net_weight.dir--;
-                            log_debug("拿起%dg.dir:%d.\r\n",(uint16_t)(net_weight.change_value * -1),net_weight.dir);
+                            log_debug("拿起%dg.time:%dms.\r\n",(uint16_t)(net_weight.change_value * -1),net_weight.change_time);
                         }
-                       /*
-                        log_debug("change stop time:%d,stop_weight:%dg,change_time:%dms,change_weight:%dg.\r\n"
-                        ,net_weight.change_stop_time
-                        ,(int16_t)net_weight.change_stop_value
-                        ,net_weight.change_time 
-                        ,(int16_t)net_weight.change_value);  
-                    */
                 } 
             }
         }
