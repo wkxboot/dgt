@@ -15,8 +15,8 @@ osThreadId   scale_task_hdl;
 osMessageQId scale_task_msg_q_id;
 
 
-#define  SCALE_TASK_DEFAULT_A_VALUE       (1.39e-2)
-#define  SCALE_TASK_DEFAULT_B_VALUE       (-1.17e5)
+#define  SCALE_TASK_DEFAULT_A_VALUE       (6.95875e-3)
+#define  SCALE_TASK_DEFAULT_B_VALUE       (-3.75259e3)
 
 #define  SCALE_ADDR_DEFAULT                0x01
 
@@ -106,7 +106,7 @@ typedef struct
     stable_status_t status;
 }stable_t;
 
-stable_t net_weight;
+static stable_t net_weight;
 
 /*计算方差*/
 static  int caculate_variance(move_sample_t *ms)
@@ -161,8 +161,25 @@ static int move_sample_reset(move_sample_t *ms)
 
 #endif
 
+/*获取四舍五入的重量值*/
+static int16_t get_fine_weight(float weight)
+{
+    int16_t int_weight = 0;
+    float float_weight;
+    
+    int_weight = (int16_t)weight;
+    float_weight = weight - int_weight;
+    
+    if (float_weight >= 0.5) {
+        int_weight += 1;
+    } else if (float_weight <= -0.5) {
+        int_weight -= 1;
+    }
+    
+    return int_weight;
+}
 
-
+/*电子秤任务*/
 void scale_task(void const *argument)
 {
     osStatus status;
@@ -171,6 +188,7 @@ void scale_task(void const *argument)
 
     int      nv_result;
     int16_t  weight;
+    float    temp_weight;
     scale_nv_param_t  pre_nv_param;
     scale_nv_addr_t   pre_nv_addr;
     task_message_t    msg;
@@ -178,7 +196,7 @@ void scale_task(void const *argument)
  
     scale_task_param_init();
 
-    log_info("\r\nfirmware version:%s.\r\n",FIRMWARE_VERSION_STR);
+    log_info("\r\nfirmware version:%s\r\n",FIRMWARE_VERSION_STR);
 
 #if SCALE_TASK_CALCULATE_VARIANCE > 0
     move_sample_reset(&move_sample);
@@ -215,7 +233,8 @@ void scale_task(void const *argument)
         if (msg.type ==  TASK_MSG_ADC_COMPLETE){
             digital_scale.scale.cur_adc = msg.value;
             /*计算毛重和净重*/
-            weight = (int16_t) ((float)digital_scale.scale.cur_adc *  digital_scale.scale.nv_param.a +  digital_scale.scale.nv_param.b);
+            temp_weight = ((float)digital_scale.scale.cur_adc *  digital_scale.scale.nv_param.a +  digital_scale.scale.nv_param.b);
+            weight = get_fine_weight(temp_weight);
             if (weight >= SCALE_TASK_MAX_WEIGHT_VALUE ||
                 weight <= SCALE_TASK_MIN_WEIGHT_VALUE  ){
                 digital_scale.scale.gross_weight = SCALE_TASK_WEIGHT_ERR_VALUE;

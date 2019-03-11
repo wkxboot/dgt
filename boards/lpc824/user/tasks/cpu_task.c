@@ -2,7 +2,7 @@
 #include "cpu_utils.h"
 #include "cmsis_os.h"
 #include "cpu_task.h"
-#include "nv.h"
+#include "kalman_filter.h"
 #include "log.h"
  
 
@@ -35,14 +35,14 @@ void APP_WDT_IRQ_HANDLER(void)
      WWDT_ClearStatusFlags(WWDT, kWWDT_WarningFlag);
     }
 }
-
+extern kalman1_state kalman_filter;
 
 void cpu_task(void const * argument)
 {
     uint8_t  read_cnt;
-    //uint8_t  nv_buffer[0x40];
     char     cmd[16];
     uint8_t  level;
+    float param;
 
     bsp_sys_led_turn_on();
  
@@ -56,57 +56,25 @@ void cpu_task(void const * argument)
         level = atoi(cmd + strlen("set level "));
         log_set_level(level);
     }
-   /*
-    read_len = log_read(cmd,15);
-    cmd[read_len] = 0;
+    if (strncmp(cmd,"a=",strlen("a=")) == 0) {
+        param = atof(cmd + strlen("a="));
+        kalman_filter.A = param;
+    }
     
-    if (strncmp(cmd,"set a",5) == 0) {
-        extern float a;
-        a = atof(cmd + 5);
-        log_debug("set a:%.4f.\r\n",a);
+        if (strncmp(cmd,"h=",strlen("h=")) == 0) {
+        param = atof(cmd + strlen("h="));
+        kalman_filter.H = param;
     }
-           
     
- 
-    if ( strncmp(cmd,"read",4) == 0) {
-        rc =nv_read(0x00,nv_buffer,0x40);
-        if (rc ==0){
-            log_debug("read success.\r\n");
-        }else{
-            log_error("read fail.\r\n");  
-        }
-     
-        for(uint8_t i = 0;i < 0x40;i++){
-            log_array("(%d).\r\n",nv_buffer[i]);
-        }
+        if (strncmp(cmd,"q=",strlen("q=")) == 0) {
+        param = atof(cmd + strlen("q="));
+        kalman_filter.q = param;
     }
-
-    if (strncmp(cmd,"write",5) == 0) {
     
-        for(uint8_t i = 0;i < 0x40;i++){
-            nv_buffer[i] = i;
-        }
-        rc = nv_save(0x00,nv_buffer,0x40);
-        if (rc == 0){
-            log_debug("write success.\r\n");
-        }else{
-            log_error("write fail.\r\n");  
-        }
+        if (strncmp(cmd,"r=",strlen("r=")) == 0) {
+        param = atof(cmd + strlen("r="));
+        kalman_filter.r = param;
     }
-
-    if (strncmp(cmd,"print",5) == 0) {    
-        for(uint8_t i=0;i<0x40;i++){
-        log_array("(%d).\r\n",nv_buffer[i]);
-        }
-   }
-
-    if (strncmp(cmd,"set level ",10) == 0) {    
-        pos = cmd + 10;
-        level = atoi(pos);
-        log_set_level(level);
-    }
-*/
-
  }
 }
    

@@ -5,6 +5,8 @@
 #include "task_msg.h"
 #include "scale_task.h"
 #include "adc_task.h"
+#include "kalman_filter.h"
+#include "math.h"
 #include "log.h"
 
 
@@ -21,20 +23,24 @@ typedef struct
     uint32_t mask;
     uint32_t size;
 }moving_average_filter_t;
- 
+
+/*滑动平均滤波对象*/
 static moving_average_filter_t adc_filter1;
 static moving_average_filter_t adc_filter2;
-static moving_average_filter_t adc_filter3;
 
-#define  ADC_TASK_SAMPLE1_CNT     16
-#define  ADC_TASK_SAMPLE2_CNT     16
-#define  ADC_TASK_SAMPLE3_CNT     16
+/*kalman滤波对象*/
+kalman1_state kalman_filter;
+
+/*标准差*/
+static volatile float sd;
+
+#define  ADC_TASK_SAMPLE1_CNT     8
+#define  ADC_TASK_SAMPLE2_CNT     32
 
 static uint32_t buffer1[ADC_TASK_SAMPLE1_CNT];
 static uint32_t buffer2[ADC_TASK_SAMPLE2_CNT];
-static uint32_t buffer3[ADC_TASK_SAMPLE3_CNT];
 
-
+/*滑动平均滤波初始化*/
 static int moving_average_filter_init(moving_average_filter_t *filter,uint32_t *buffer,uint8_t size)
 {
     log_assert(filter);
@@ -66,10 +72,29 @@ static uint32_t moving_average_filter_put(moving_average_filter_t *filter,uint32
 }
 
 
+/*标准方差*/
+static float standard_deviation(moving_average_filter_t *filter)
+{
+    float sum = 0;
+    float delta;
+    float variance,sd;
+    
+    for (uint8_t i = 0;i < filter->size;i ++) {
+        delta = filter->buffer[i] >= filter->average ? filter->buffer[i] - filter->average : filter->average - filter->buffer[i];
+        sum += delta * delta;
+    }
+    /*方差*/
+    variance = sum / (float)filter->size;
+    /*开平方*/
+    sd = sqrt(variance);
+    return  sd;
+}
+
+/*图像化数据输出串口初始化*/
 #if DEBUG_CHART > 0
+#include "nxp_serial_uart_hal_driver.h"
 
 int chart_serial_handle;
-#include "nxp_serial_uart_hal_driver.h"
 /*串口中断处理*/
 void USART0_IRQHandler()
 {
@@ -79,9 +104,11 @@ void USART0_IRQHandler()
 #endif
 
 
+
 void adc_task(void const * argument)
 {
-    uint32_t adc,adc1,adc2,adc3;
+    uint32_t adc,adc1,adc2,adc_filter;
+    bool kalman_filter_init = false;
     uint16_t timeout = 0;
     
 #if DEBUG_CHART > 0
@@ -106,10 +133,10 @@ void adc_task(void const * argument)
     serial_flush(chart_serial_handle);
 #endif
 
-    
+    /*三次滑动平均滤波迭代初始化*/
     moving_average_filter_init(&adc_filter1,buffer1,ADC_TASK_SAMPLE1_CNT);
     moving_average_filter_init(&adc_filter2,buffer2,ADC_TASK_SAMPLE2_CNT);
-    moving_average_filter_init(&adc_filter3,buffer3,ADC_TASK_SAMPLE3_CNT);
+
     
 adc_task_restart: 
     hx711_soft_reset();
@@ -127,23 +154,32 @@ adc_task_restart:
         }
         timeout  = 0;
         adc = hx711_read_convertion_code(ADC_TASK_GAIN,ADC_TASK_CHANNEL);
-       
-        
+        /*两次滑动平均滤波迭代*/     
         adc1 = moving_average_filter_put(&adc_filter1,adc);
-        
         adc2 = moving_average_filter_put(&adc_filter2,adc1);
-        
-        adc3 = moving_average_filter_put(&adc_filter3,adc2);
-               
-
+        /*计算标准差 小于阈值使用kalman滤波，否则使用滑动平均滤波*/
+        sd = standard_deviation(&adc_filter2);
+        if (sd <= STANDARD_DEVIATION_LIMIT) {
+            if (kalman_filter_init == false) {
+                kalman1_init(&kalman_filter,adc2,200);
+                kalman_filter_init = true;
+            }
+            adc_filter = (uint32_t)kalman1_filter(&kalman_filter,adc2);
+        } else {
+            kalman_filter_init = false;
+            adc_filter = adc2;
+        }
+        /*构建电子秤消息体*/
         scale_msg.type = TASK_MSG_ADC_COMPLETE;
-        scale_msg.value = adc3;
+        scale_msg.value = adc_filter;
         
+        /*图像化数据输出*/
 #if  DEBUG_CHART > 0
-        size = snprintf(chart_buffer,30,"%d,%d,%d\n",adc1,adc2,adc3);
+        size = snprintf(chart_buffer,30,"%d,%d,%d\n",adc,adc1,adc_filter);
         serial_write(chart_serial_handle,chart_buffer,size);
 
 #endif
+        /*发送消息给电子称*/
         osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
         
 

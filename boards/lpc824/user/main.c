@@ -61,11 +61,11 @@ return osKernelSysTick();
 int main(void)
 { 
     int rc;
-
-    rc = board_init();
-    UTILS_ASSERT(rc == 0);
-
     log_init();
+    rc = board_init();
+    log_assert(rc == 0);
+
+
     /*电子秤任务消息队列*/
     osMessageQDef(scale_task_msg_q,5,uint32_t);
     scale_task_msg_q_id = osMessageCreate(osMessageQ(scale_task_msg_q),scale_task_hdl);
@@ -74,16 +74,16 @@ int main(void)
     osMessageQDef(protocol_task_msg_q,5,uint32_t);
     protocol_task_msg_q_id = osMessageCreate(osMessageQ(protocol_task_msg_q),protocol_task_hdl);
     log_assert(protocol_task_msg_q_id);  
-
+    /*cpu任务*/
     osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);
     cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
-
+    /*adc任务*/
     osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 128);
     adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
-
+    /*电子秤功能任务*/
     osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 128);
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
-
+    /*通信协议任务*/
     osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 128);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
     

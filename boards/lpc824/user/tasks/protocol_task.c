@@ -416,7 +416,7 @@ static int receive_adu(int handle,uint8_t *adu,uint32_t wait_timeout)
    
         /*打印接收的数据*/
         for (int i = 0;i < rc;i++){
-            log_debug("<%2X>\r\n", adu[read_size_total + i]);
+            log_array("<%2X>\r\n", adu[read_size_total + i]);
         }
    
         read_size_total += rc;
@@ -632,7 +632,7 @@ static int send_adu(int handle,uint8_t *adu,uint8_t size,uint32_t timeout)
 
     write_size = serial_write(handle,(char *)adu,size);
     for (int i = 0; i < write_size; i++){
-        log_debug("[%2X]\r\n",adu[i]);
+        log_array("[%2X]\r\n",adu[i]);
     }
     if (size != write_size){
         log_error("controller err in  serial write. expect:%d write:%d.\r\n",size,write_size); 

@@ -357,6 +357,7 @@
                     <state>$PROJ_DIR$/../../../../boards/lpc824/bsp</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial_uart_hal</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/kalman_filter</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/tasks</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/hx711</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/circle_buffer</state>
@@ -2198,7 +2199,7 @@
             <group>
                 <name>cpu</name>
                 <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\cpu\cpu_utils.c</name>
+                    <name>$PROJ_DIR$\..\..\user\debug\CPU\cpu_utils.c</name>
                 </file>
             </group>
             <group>
@@ -2224,15 +2225,15 @@
             </file>
         </group>
         <group>
-            <name>nv</name>
+            <name>kalman_filter</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\nv\nv.c</name>
+                <name>$PROJ_DIR$\..\..\user\kalman_filter\kalman_filter.c</name>
             </file>
         </group>
         <group>
-            <name>serial</name>
+            <name>nv</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\serial\serial.c</name>
+                <name>$PROJ_DIR$\..\..\user\nv\nv.c</name>
             </file>
         </group>
         <group>
@@ -2243,6 +2244,12 @@
         </group>
         <group>
             <name>tasks</name>
+            <group>
+                <name>serial</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\user\serial\serial.c</name>
+                </file>
+            </group>
             <file>
                 <name>$PROJ_DIR$\..\..\user\tasks\adc_task.c</name>
             </file>
