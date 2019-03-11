@@ -52,7 +52,7 @@ typedef enum
 
 /*协议时间*/
 #define  ADU_WAIT_TIMEOUT              osWaitForever
-#define  ADU_FRAME_TIMEOUT             2
+#define  ADU_FRAME_TIMEOUT             3
 #define  ADU_RSP_TIMEOUT               200
 #define  ADU_SEND_TIMEOUT              5
 
@@ -645,7 +645,9 @@ static int send_adu(int handle,uint8_t *adu,uint8_t size,uint32_t timeout)
 /*串口中断处理*/
 void USART1_IRQHandler()
 {
-  nxp_serial_uart_hal_isr(protocol_serial_handle);
+    if (protocol_serial_handle != 0) {
+        nxp_serial_uart_hal_isr(protocol_serial_handle);
+    }
 }
 
 /*

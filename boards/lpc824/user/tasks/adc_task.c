@@ -98,7 +98,9 @@ int chart_serial_handle;
 /*串口中断处理*/
 void USART0_IRQHandler()
 {
-  nxp_serial_uart_hal_isr(chart_serial_handle);
+    if (chart_serial_handle != 0) {
+        nxp_serial_uart_hal_isr(chart_serial_handle);
+    }
 }
 
 #endif
