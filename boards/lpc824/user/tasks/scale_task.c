@@ -4,7 +4,7 @@
 #include "task_msg.h"
 #include "firmware_version.h"
 #include "sensor_id.h"
-#include "nv.h"
+#include "nv_flash.h"
 #include "adc_task.h"
 #include "protocol_task.h"
 #include "scale_task.h"
@@ -193,34 +193,47 @@ void scale_task(void const *argument)
     scale_nv_addr_t   pre_nv_addr;
     task_message_t    msg;
     task_message_t    protocol_msg;
- 
-    scale_task_param_init();
 
     log_info("\r\nfirmware version:%s\r\n",FIRMWARE_VERSION_STR);
+
+    nv_flash_region_int();
+    scale_task_param_init();
 
 #if SCALE_TASK_CALCULATE_VARIANCE > 0
     move_sample_reset(&move_sample);
 #endif
  
     /*查看保存的地址是否有效*/
-    nv_read(digital_scale.nv_addr_addr,(uint8_t*)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));
+    nv_flash_read_user_data(digital_scale.nv_addr_addr,(uint8_t*)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));
 
     if (digital_scale.nv_addr.valid != SCALE_TASK_NV_VALID || digital_scale.nv_addr.addr > SCALE_TASK_ADDR_VALUE_MAX){
         digital_scale.nv_addr.valid = SCALE_TASK_NV_VALID;
-        log_info("legacy addr invalid:%d. use default:%d.\r\n",digital_scale.nv_addr.addr,SCALE_ADDR_DEFAULT);
-        digital_scale.nv_addr.addr = SCALE_ADDR_DEFAULT;   
+        log_info("legacy addr invalid:%d. use default:%d and save.\r\n",digital_scale.nv_addr.addr,SCALE_ADDR_DEFAULT);
+        digital_scale.nv_addr.addr = SCALE_ADDR_DEFAULT;
+        
+        nv_result = nv_flash_save_user_data(digital_scale.nv_addr_addr,(uint8_t *)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));   
+        if (nv_result != 0) {
+            log_error("default addr save err.\r\n");
+        }
     }else {
         log_info("legacy addr valid:%d.\r\n",digital_scale.nv_addr.addr);
     }
  
-    nv_read(digital_scale.scale.nv_param_addr,(uint8_t*)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
+    nv_flash_read_user_data(digital_scale.scale.nv_param_addr,(uint8_t*)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
  
     /*如果上次断电后保存的数据无效的*/
     if (digital_scale.scale.nv_param.valid != SCALE_TASK_NV_VALID){
         digital_scale.scale.nv_param.valid = SCALE_TASK_NV_VALID;
         digital_scale.scale.nv_param.a = SCALE_TASK_DEFAULT_A_VALUE;
         digital_scale.scale.nv_param.b = SCALE_TASK_DEFAULT_B_VALUE;
-        log_info("scale.nv is invlaid.use default.\r\n");
+        log_info("scale.nv is invlaid.use default and save.\r\n");
+
+        nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));   
+        if (nv_result != 0) {
+            log_error("default addr save err.\r\n");
+        }
+    } else {
+        log_info("legacy param valid.a:%.5f b:%.5f.\r\n",digital_scale.scale.nv_param.a,digital_scale.scale.nv_param.b);
     }
  
  
@@ -332,7 +345,7 @@ void scale_task(void const *argument)
         digital_scale.scale.nv_param.b = (float)digital_scale.scale.nv_param.zero_weight - digital_scale.scale.nv_param.a * digital_scale.scale.nv_param.zero_adc;
         digital_scale.scale.nv_param.tar_weight = 0;
        
-        nv_result = nv_save(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
+        nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
         if (nv_result != 0) {
             result = SCALE_TASK_FAILURE;
             /*恢复先前参数*/
@@ -369,7 +382,7 @@ calibrate_zero_msg_handle:
     digital_scale.scale.nv_param.a = (float)(digital_scale.scale.nv_param.full_weight - digital_scale.scale.nv_param.zero_weight) / (float)(digital_scale.scale.nv_param.full_adc - digital_scale.scale.nv_param.zero_adc);
     digital_scale.scale.nv_param.b = (float)digital_scale.scale.nv_param.full_weight - digital_scale.scale.nv_param.a * digital_scale.scale.nv_param.full_adc;
        
-    nv_result = nv_save(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
+    nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
     if (nv_result != 0){
         result = SCALE_TASK_FAILURE;
         /*恢复先前参数*/
@@ -399,7 +412,7 @@ calibrate_full_msg_handle:
         digital_scale.scale.nv_param.tar_weight = digital_scale.scale.gross_weight;
         //scale.nv_param.b = (float)scale.gross_weight - scale.nv_param.a * scale.cur_adc; 
    
-        nv_result = nv_save(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
+        nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
         if (nv_result != 0){
             result = SCALE_TASK_FAILURE;
             /*恢复先前参数*/
@@ -429,7 +442,7 @@ remove_tar_weight_msg_handle:
    
     digital_scale.nv_addr.addr = msg.value;   
        
-    nv_result = nv_save(digital_scale.nv_addr_addr,(uint8_t *)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));
+    nv_result = nv_flash_save_user_data(digital_scale.nv_addr_addr,(uint8_t *)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));
     if (nv_result != 0){
         result = SCALE_TASK_FAILURE;
         /*恢复先前地址*/

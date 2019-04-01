@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2017, NXP Semiconductors, Inc.
  * All rights reserved.
  *
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef _FSL_SPI_H_
@@ -50,13 +24,18 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief SPI driver version 2.0.0. */
-#define FSL_SPI_DRIVER_VERSION (MAKE_VERSION(2, 0, 0))
+/*! @brief SPI driver version 2.0.1. */
+#define FSL_SPI_DRIVER_VERSION (MAKE_VERSION(2, 0, 1))
 /*@}*/
 
 #ifndef SPI_DUMMYDATA
 /*! @brief SPI dummy transfer data, the data is sent while txBuff is NULL. */
 #define SPI_DUMMYDATA (0xFFFFU)
+#endif
+
+/* Macro gate for enable/disable the SPI transactional API. 1 for enable, 0 for disable. */
+#ifndef FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS
+#define FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS 1
 #endif
 
 /* @brief Dummy data for each instance. This data is used when user's tx buffer is NULL*/
@@ -96,15 +75,15 @@ typedef enum _spi_clock_phase
 /*! @brief Slave select */
 typedef enum _spi_ssel
 {
-    kSPI_Ssel0Assert = ~SPI_TXDATCTL_TXSSEL0_N_MASK, /*!< Slave select 0 */
+    kSPI_Ssel0Assert = (int)(~SPI_TXDATCTL_TXSSEL0_N_MASK), /*!< Slave select 0 */
 #if defined(SPI_TXDATCTL_TXSSEL1_N_MASK)
-    kSPI_Ssel1Assert = ~SPI_TXDATCTL_TXSSEL1_N_MASK, /*!< Slave select 1 */
+    kSPI_Ssel1Assert = (int)(~SPI_TXDATCTL_TXSSEL1_N_MASK), /*!< Slave select 1 */
 #endif
 #if defined(SPI_TXDATCTL_TXSSEL2_N_MASK)
-    kSPI_Ssel2Assert = ~SPI_TXDATCTL_TXSSEL2_N_MASK, /*!< Slave select 2 */
+    kSPI_Ssel2Assert = (int)(~SPI_TXDATCTL_TXSSEL2_N_MASK), /*!< Slave select 2 */
 #endif
 #if defined(SPI_TXDATCTL_TXSSEL3_N_MASK)
-    kSPI_Ssel3Assert = ~SPI_TXDATCTL_TXSSEL3_N_MASK, /*!< Slave select 3 */
+    kSPI_Ssel3Assert = (int)(~SPI_TXDATCTL_TXSSEL3_N_MASK), /*!< Slave select 3 */
 #endif
     kSPI_SselDeAssertAll = (SPI_TXDATCTL_TXSSEL0_N_MASK
 #if defined(FSL_FEATURE_SPI_HAS_SSEL1) & FSL_FEATURE_SPI_HAS_SSEL1
@@ -151,7 +130,7 @@ typedef enum _spi_spol
                               SPI_CFG_SPOL3_MASK
 #endif
                               ),
-    kSPI_SpolActiveAllLow = ~kSPI_SpolActiveAllHigh,
+    kSPI_SpolActiveAllLow = (int)(~kSPI_SpolActiveAllHigh),
 } spi_spol_t;
 
 /*! @brief SPI delay time configure structure.*/
@@ -235,6 +214,7 @@ typedef struct _spi_transfer
     uint32_t configFlags; /*!< Additional option to control transfer @ref _spi_xfer_option. */
 } spi_transfer_t;
 
+#if defined(FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS) && (FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS)
 /*! @brief  Master handle type */
 typedef struct _spi_master_handle spi_master_handle_t;
 
@@ -261,6 +241,7 @@ struct _spi_master_handle
     uint8_t dataWidth;                /*!< Width of the data [Valid values: 1 to 16] */
     uint32_t lastCommand;             /*!< Last command for transfer. */
 };
+#endif /* FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -527,8 +508,19 @@ void SPI_SetTransferDelay(SPI_Type *base, const spi_delay_config_t *config);
  * @param dummyData Data to be transferred when tx buffer is NULL.
  */
 void SPI_SetDummyData(SPI_Type *base, uint16_t dummyData);
+
+/*!
+ * @brief Transfers a block of data using a polling method.
+ *
+ * @param base SPI base pointer
+ * @param xfer pointer to spi_xfer_config_t structure
+ * @retval kStatus_Success Successfully start a transfer.
+ * @retval kStatus_InvalidArgument Input argument is invalid.
+ */
+status_t SPI_MasterTransferBlocking(SPI_Type *base, spi_transfer_t *xfer);
 /*! @} */
 
+#if defined(FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS) && (FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS)
 /*!
  * @name Transactional
  * @{
@@ -549,16 +541,6 @@ status_t SPI_MasterTransferCreateHandle(SPI_Type *base,
                                         spi_master_handle_t *handle,
                                         spi_master_callback_t callback,
                                         void *userData);
-
-/*!
- * @brief Transfers a block of data using a polling method.
- *
- * @param base SPI base pointer
- * @param xfer pointer to spi_xfer_config_t structure
- * @retval kStatus_Success Successfully start a transfer.
- * @retval kStatus_InvalidArgument Input argument is invalid.
- */
-status_t SPI_MasterTransferBlocking(SPI_Type *base, spi_transfer_t *xfer);
 
 /*!
  * @brief Performs a non-blocking SPI interrupt transfer.
@@ -667,8 +649,8 @@ static inline void SPI_SlaveTransferAbort(SPI_Type *base, spi_slave_handle_t *ha
  * @param handle pointer to spi_slave_handle_t structure which stores the transfer state
  */
 void SPI_SlaveTransferHandleIRQ(SPI_Type *base, spi_slave_handle_t *handle);
-
 /*! @} */
+#endif /* FSL_SDK_ENABLE_SPI_DRIVER_TRANSACTIONAL_APIS */
 
 #if defined(__cplusplus)
 }

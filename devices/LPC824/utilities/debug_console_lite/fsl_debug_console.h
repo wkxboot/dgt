@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
- * Copyright 2017 NXP
+ * Copyright 2017-2018 NXP
  * All rights reserved.
  *
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  * Debug console shall provide input and output functions to scan and print formatted data.
  * o Support a format specifier for PRINTF follows this prototype "%[flags][width][.precision][length]specifier"
@@ -58,6 +32,11 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+
+/*! @brief Definition select redirect toolchain printf, scanf to uart or not. */
+#define DEBUGCONSOLE_REDIRECT_TO_TOOLCHAIN 0U /*!< Select toolchain printf and scanf. */
+#define DEBUGCONSOLE_REDIRECT_TO_SDK 1U       /*!< Select SDK version printf, scanf. */
+#define DEBUGCONSOLE_DISABLE 2U               /*!< Disable debugconsole function. */
 
 /*! @brief Definition to select sdk or toolchain printf, scanf. */
 #ifndef SDK_DEBUGCONSOLE
@@ -88,17 +67,35 @@
 #define SCANF_ADVANCED_ENABLE 0U
 #endif /* SCANF_ADVANCED_ENABLE */
 
-#if SDK_DEBUGCONSOLE /* Select printf, scanf, putchar, getchar of SDK version. */
+/*! @brief Definition to select redirect toolchain printf, scanf to uart or not.
+ *
+ *  if SDK_DEBUGCONSOLE defined to 0,it represents select toolchain printf, scanf.
+ *  if SDK_DEBUGCONSOLE defined to 1,it represents select SDK version printf, scanf.
+ *  if SDK_DEBUGCONSOLE defined to 2,it represents disable debugconsole function.
+*/
+#if SDK_DEBUGCONSOLE == DEBUGCONSOLE_DISABLE /* Disable debug console */
+#define PRINTF
+#define SCANF
+#define PUTCHAR
+#define GETCHAR
+#elif SDK_DEBUGCONSOLE == DEBUGCONSOLE_REDIRECT_TO_SDK /* Select printf, scanf, putchar, getchar of SDK version. */
 #define PRINTF DbgConsole_Printf
 #define SCANF DbgConsole_Scanf
 #define PUTCHAR DbgConsole_Putchar
 #define GETCHAR DbgConsole_Getchar
-#else /* Select printf, scanf, putchar, getchar of toolchain. */
+#elif SDK_DEBUGCONSOLE == \
+    DEBUGCONSOLE_REDIRECT_TO_TOOLCHAIN /* Select printf, scanf, putchar, getchar of toolchain. \ */
 #define PRINTF printf
 #define SCANF scanf
 #define PUTCHAR putchar
 #define GETCHAR getchar
 #endif /* SDK_DEBUGCONSOLE */
+
+typedef enum _serial_port_type
+{
+    kSerialPort_None = 0U, /*!< Serial port is none */
+    kSerialPort_Uart = 1U, /*!< Serial port UART */
+} serial_port_type_t;
 
 /*******************************************************************************
  * Prototypes
@@ -118,21 +115,17 @@ extern "C" {
  * frequency of peripheral source clock, and base address at the specified baud rate.
  * After this function has returned, stdout and stdin are connected to the selected peripheral.
  *
- * @param baseAddr      Indicates the address of the peripheral used to send debug messages.
+ * @param instance      The instance of the module.
  * @param baudRate      The desired baud rate in bits per second.
  * @param device        Low level device type for the debug console, can be one of the following.
- *                      @arg DEBUG_CONSOLE_DEVICE_TYPE_UART,
- *                      @arg DEBUG_CONSOLE_DEVICE_TYPE_LPUART,
- *                      @arg DEBUG_CONSOLE_DEVICE_TYPE_LPSCI,
- *                      @arg DEBUG_CONSOLE_DEVICE_TYPE_USBCDC.
+ *                      @arg kSerialPort_Uart.
  * @param clkSrcFreq    Frequency of peripheral source clock.
  *
  * @return              Indicates whether initialization was successful or not.
  * @retval kStatus_Success          Execution successfully
  * @retval kStatus_Fail             Execution failure
- * @retval kStatus_InvalidArgument  Invalid argument existed
  */
-status_t DbgConsole_Init(uint32_t baseAddr, uint32_t baudRate, uint8_t device, uint32_t clkSrcFreq);
+status_t DbgConsole_Init(uint8_t instance, uint32_t baudRate, serial_port_type_t device, uint32_t clkSrcFreq);
 
 /*!
  * @brief De-initializes the peripheral used for debug messages.

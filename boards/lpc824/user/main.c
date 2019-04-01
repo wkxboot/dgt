@@ -34,7 +34,7 @@
 #include "cmsis_os.h"
 #include "board.h"
 #include "adc_task.h"
-#include "cpu_task.h"
+#include "watch_dog_task.h"
 #include "scale_task.h"
 #include "protocol_task.h"
 #include "utils.h"
@@ -74,18 +74,22 @@ int main(void)
     osMessageQDef(protocol_task_msg_q,5,uint32_t);
     protocol_task_msg_q_id = osMessageCreate(osMessageQ(protocol_task_msg_q),protocol_task_hdl);
     log_assert(protocol_task_msg_q_id);  
-    /*cpu任务*/
-    osThreadDef(cpu_task, cpu_task, osPriorityNormal, 0, 128);
-    cpu_task_hdl = osThreadCreate(osThread(cpu_task), NULL);
+    /*看门狗任务*/
+    osThreadDef(watch_dog_task, watch_dog_task, osPriorityBelowNormal, 0, 160);
+    watch_dog_task_hdl = osThreadCreate(osThread(watch_dog_task), NULL);
+    log_assert(watch_dog_task_hdl);
     /*adc任务*/
-    osThreadDef(adc_task, adc_task, osPriorityNormal, 0, 128);
+    osThreadDef(adc_task, adc_task, osPriorityAboveNormal, 0, 160);
     adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
+    log_assert(adc_task_hdl);
     /*电子秤功能任务*/
-    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 128);
+    osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 200);
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
+    log_assert(scale_task_hdl);
     /*通信协议任务*/
-    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 128);
+    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 160);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
+    log_assert(protocol_task_hdl);
     
 
 

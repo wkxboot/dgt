@@ -1,31 +1,8 @@
 /*
- * Copyright 2017 NXP
+ * Copyright 2017-2018 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "fsl_common.h"
@@ -47,11 +24,11 @@
 /* External clock rate.
  * Either external clk in rate or system oscillator frequency.
  */
-uint32_t g_Ext_Clk_Freq = 0U;
-uint32_t g_Wdt_Osc_Freq = 0U;
+volatile uint32_t g_Ext_Clk_Freq = 0U;
+volatile uint32_t g_Wdt_Osc_Freq = 0U;
 
 /** Sys pll freq.*/
-uint32_t g_Sys_Pll_Freq = 0U;
+static volatile uint32_t s_Sys_Pll_Freq = 0U;
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -66,14 +43,12 @@ uint32_t g_Sys_Pll_Freq = 0U;
  */
 static uint32_t findSyestemPllPsel(uint32_t outFreq);
 
-
 /*
  * @brief Update clock source.
  * @param base clock register base address.
  * @param mask clock source update enable bit mask value.
  */
 static void CLOCK_UpdateClkSrc(volatile uint32_t *base, uint32_t mask);
-
 
 /*******************************************************************************
  * Code
@@ -84,34 +59,40 @@ static void CLOCK_UpdateClkSrc(volatile uint32_t *base, uint32_t mask)
 
     *base &= ~mask;
     *base |= mask;
-    while((*base & mask) == 0U)
+    while ((*base & mask) == 0U)
     {
     }
 }
 
+/*! brief  Return Frequency of IRC
+ *  return Frequency of IRC
+ */
 uint32_t CLOCK_GetIrcFreq(void)
 {
     return 12000000U;
 }
 
-
+/*! brief  Return Frequency of SYSOSC
+ *  return Frequency of SYSOSC
+ */
 uint32_t CLOCK_GetSysOscFreq(void)
 {
-   uint32_t freq = 0U;
-   if (!(SYSCON->PDRUNCFG & SYSCON_PDRUNCFG_SYSOSC_PD_MASK))
-   {
+    uint32_t freq = 0U;
+    if (!(SYSCON->PDRUNCFG & SYSCON_PDRUNCFG_SYSOSC_PD_MASK))
+    {
         freq = CLOCK_GetExtClkFreq();
-   }
-   return freq;
-   
+    }
+    return freq;
 }
 
-
+/*! brief  Return Frequency of Main Clock.
+ *  return Frequency of Main Clock.
+ */
 uint32_t CLOCK_GetMainClkFreq(void)
 {
     uint32_t freq = 0U;
 
-    switch(SYSCON->MAINCLKSEL)
+    switch (SYSCON->MAINCLKSEL)
     {
         case 0U:
             freq = CLOCK_GetIrcFreq();
@@ -135,12 +116,14 @@ uint32_t CLOCK_GetMainClkFreq(void)
     return freq;
 }
 
-
+/*! brief  Return Frequency of ClockOut
+ *  return Frequency of ClockOut
+ */
 uint32_t CLOCK_GetClockOutClkFreq(void)
 {
     uint32_t div = SYSCON->CLKOUTDIV & 0xffU, freq = 0U;
 
-    switch(SYSCON->CLKOUTSEL)
+    switch (SYSCON->CLKOUTSEL)
     {
         case 0U:
             freq = CLOCK_GetIrcFreq();
@@ -165,6 +148,20 @@ uint32_t CLOCK_GetClockOutClkFreq(void)
     return div == 0U ? 0U : (freq / div);
 }
 
+/*! brief  Return Frequency of UART
+ *  return Frequency of UART
+ */
+uint32_t CLOCK_GetUartClkFreq(void)
+{
+    uint32_t freq = CLOCK_GetMainClkFreq();
+    uint32_t uartDiv = SYSCON->UARTCLKDIV & 0xffU;
+
+    return uartDiv == 0U ? 0U : ((freq << 8) / (uartDiv * (256 + SYSCON->UARTFRGMULT)));
+}
+
+/*! brief	Return Frequency of selected clock
+ *  return	Frequency of selected clock
+ */
 uint32_t CLOCK_GetFreq(clock_name_t clockName)
 {
     uint32_t freq;
@@ -189,6 +186,7 @@ uint32_t CLOCK_GetFreq(clock_name_t clockName)
         case kCLOCK_PllOut:
             freq = CLOCK_GetSystemPLLFreq();
             break;
+
         default:
             freq = 0U;
             break;
@@ -197,6 +195,9 @@ uint32_t CLOCK_GetFreq(clock_name_t clockName)
     return freq;
 }
 
+/*! brief  Return System PLL input clock rate
+ *  return System PLL input clock rate
+ */
 uint32_t CLOCK_GetSystemPLLInClockRate(void)
 {
     uint32_t freq = 0U;
@@ -205,21 +206,21 @@ uint32_t CLOCK_GetSystemPLLInClockRate(void)
     {
         /* source from external clock in */
         case 0x00U:
-            freq = CLOCK_GetIrcFreq(); 
+            freq = CLOCK_GetIrcFreq();
             break;
         /* source from the IRC clock */
         case 0x01U:
-            freq = CLOCK_GetSysOscFreq(); 
+            freq = CLOCK_GetSysOscFreq();
             break;
         /* source from external clock clock */
         case 0x03U:
-            freq = CLOCK_GetExtClkFreq(); 
+            freq = CLOCK_GetExtClkFreq();
             break;
 
         default:
             break;
     }
-    
+
     return freq;
 }
 
@@ -247,6 +248,9 @@ static uint32_t findSyestemPllPsel(uint32_t outFreq)
     return pSel;
 }
 
+/*! brief  System PLL initialize.
+ *  param config System PLL configurations.
+ */
 void CLOCK_InitSystemPll(const clock_sys_pll_t *config)
 {
     assert(config->targetFreq <= SYSPLL_MAX_OUTPUT_FREQ_HZ);
@@ -270,7 +274,7 @@ void CLOCK_InitSystemPll(const clock_sys_pll_t *config)
 
     /* configure PSEL and MSEL */
     SYSCON->SYSPLLCTRL = (SYSCON->SYSPLLCTRL & (~(SYSCON_SYSPLLCTRL_MSEL_MASK | SYSCON_SYSPLLCTRL_PSEL_MASK))) |
-                         SYSCON_SYSPLLCTRL_MSEL(mSel-1U) | SYSCON_SYSPLLCTRL_PSEL(pSel);
+                         SYSCON_SYSPLLCTRL_MSEL(mSel - 1U) | SYSCON_SYSPLLCTRL_PSEL(pSel);
 
     /* Power up PLL after setup changes */
     SYSCON->PDRUNCFG &= ~SYSCON_PDRUNCFG_SYSPLL_PD_MASK;
@@ -279,10 +283,13 @@ void CLOCK_InitSystemPll(const clock_sys_pll_t *config)
     while ((SYSCON->SYSPLLSTAT & SYSCON_SYSPLLSTAT_LOCK_MASK) == 0U)
     {
     }
-    
-    g_Sys_Pll_Freq = inputFreq * mSel;
+
+    s_Sys_Pll_Freq = inputFreq * mSel;
 }
 
+/*! brief  Init external CLK IN, select the CLKIN as the external clock source.
+* param clkInFreq external clock in frequency.
+*/
 void CLOCK_InitExtClkin(uint32_t clkInFreq)
 {
     /* remove the pull up and pull down resistors in the IOCON */
@@ -293,8 +300,11 @@ void CLOCK_InitExtClkin(uint32_t clkInFreq)
     g_Ext_Clk_Freq = clkInFreq;
 }
 
-
-
+/*! brief  XTALIN init function
+ *  system oscillator is bypassed, sys_osc_clk is fed driectly from the XTALIN.
+ *  param xtalInFreq XTALIN frequency value
+ *  return Frequency of PLL
+ */
 void CLOCK_InitXtalin(uint32_t xtalInFreq)
 {
     volatile uint32_t i = 0U;
@@ -319,8 +329,9 @@ void CLOCK_InitXtalin(uint32_t xtalInFreq)
     g_Ext_Clk_Freq = xtalInFreq;
 }
 
-
-
+/*! brief	Init SYS OSC
+* param oscFreq oscillator frequency value.
+*/
 void CLOCK_InitSysOsc(uint32_t oscFreq)
 {
     volatile uint32_t i = 0U;
@@ -332,8 +343,9 @@ void CLOCK_InitSysOsc(uint32_t oscFreq)
     SWM0->PINENABLE0 &= ~(SWM_PINENABLE0_XTALIN_MASK | SWM_PINENABLE0_XTALOUT_MASK);
 
     /* system osc configure */
-    SYSCON->SYSOSCCTRL |= (SYSCON->SYSOSCCTRL & (~(SYSCON_SYSOSCCTRL_BYPASS_MASK | SYSCON_SYSOSCCTRL_FREQ_RANGE_MASK))) |
-                                  (oscFreq > SYSOSC_BOUNDARY_FREQ_HZ ? SYSCON_SYSOSCCTRL_FREQ_RANGE_MASK : 0U);
+    SYSCON->SYSOSCCTRL |=
+        (SYSCON->SYSOSCCTRL & (~(SYSCON_SYSOSCCTRL_BYPASS_MASK | SYSCON_SYSOSCCTRL_FREQ_RANGE_MASK))) |
+        (oscFreq > SYSOSC_BOUNDARY_FREQ_HZ ? SYSCON_SYSOSCCTRL_FREQ_RANGE_MASK : 0U);
 
     /* enable system osc power first */
     SYSCON->PDRUNCFG &= ~SYSCON_PDRUNCFG_SYSOSC_PD_MASK;
@@ -348,6 +360,17 @@ void CLOCK_InitSysOsc(uint32_t oscFreq)
     g_Ext_Clk_Freq = oscFreq;
 }
 
+/*! brief  Init watch dog OSC
+* Any setting of the FREQSEL bits will yield a Fclkana value within 40% of the
+* listed frequency value. The watchdog oscillator is the clock source with the lowest power
+* consumption. If accurate timing is required, use the FRO or system oscillator.
+* The frequency of the watchdog oscillator is undefined after reset. The watchdog
+* oscillator frequency must be programmed by writing to the WDTOSCCTRL register before
+* using the watchdog oscillator.
+* Watchdog osc output frequency = wdtOscFreq / wdtOscDiv, should in range 9.3KHZ to 2.3MHZ.
+* param wdtOscFreq watch dog analog part output frequency, reference _wdt_analog_output_freq.
+* param wdtOscDiv watch dog analog part output frequency divider, shoule be a value >= 2U and multiple of 2
+*/
 void CLOCK_InitWdtOsc(clock_wdt_analog_freq_t wdtOscFreq, uint32_t wdtOscDiv)
 {
     assert(wdtOscDiv >= 2U);
@@ -356,8 +379,8 @@ void CLOCK_InitWdtOsc(clock_wdt_analog_freq_t wdtOscFreq, uint32_t wdtOscDiv)
 
     wdtOscCtrl &= ~(SYSCON_WDTOSCCTRL_DIVSEL_MASK | SYSCON_WDTOSCCTRL_FREQSEL_MASK);
 
-    wdtOscCtrl |= SYSCON_WDTOSCCTRL_DIVSEL((wdtOscDiv >> 1U) - 1U) |
-                  SYSCON_WDTOSCCTRL_FREQSEL(CLK_WDT_OSC_GET_REG(wdtOscFreq));
+    wdtOscCtrl |=
+        SYSCON_WDTOSCCTRL_DIVSEL((wdtOscDiv >> 1U) - 1U) | SYSCON_WDTOSCCTRL_FREQSEL(CLK_WDT_OSC_GET_REG(wdtOscFreq));
 
     SYSCON->WDTOSCCTRL = wdtOscCtrl;
 
@@ -367,6 +390,9 @@ void CLOCK_InitWdtOsc(clock_wdt_analog_freq_t wdtOscFreq, uint32_t wdtOscDiv)
     g_Wdt_Osc_Freq = CLK_WDT_OSC_GET_FREQ(wdtOscFreq) / wdtOscDiv;
 }
 
+/*! brief  Set main clock reference source.
+* param src, reference clock_main_clk_src_t to set the main clock source.
+*/
 void CLOCK_SetMainClkSrc(clock_main_clk_src_t src)
 {
     uint32_t mainMux = CLK_MAIN_CLK_MUX_GET_MUX(src), mainPreMux = CLK_MAIN_CLK_MUX_GET_PRE_MUX(src);
@@ -376,9 +402,11 @@ void CLOCK_SetMainClkSrc(clock_main_clk_src_t src)
         SYSCON->MAINCLKSEL = (SYSCON->MAINCLKSEL & (~SYSCON_MAINCLKSEL_SEL_MASK)) | SYSCON_MAINCLKSEL_SEL(mainPreMux);
         CLOCK_UpdateClkSrc((volatile uint32_t *)(&(SYSCON->MAINCLKUEN)), SYSCON_MAINCLKUEN_ENA_MASK);
     }
-
 }
 
+/*! brief  Set UARTFRG
+* param target UART clock src.
+*/
 bool CLOCK_SetUARTFRGClkFreq(uint32_t freq)
 {
     uint32_t input = CLOCK_GetMainClkFreq();
@@ -389,7 +417,7 @@ bool CLOCK_SetUARTFRGClkFreq(uint32_t freq)
     {
         return false;
     }
-    
+
     mul = ((uint64_t)(input - freq) << 8U) / ((uint64_t)freq);
 
     SYSCON->UARTFRGDIV = SYSCON_UARTFRGDIV_DIV_MASK;
@@ -398,6 +426,8 @@ bool CLOCK_SetUARTFRGClkFreq(uint32_t freq)
     return true;
 }
 
+/*! brief  updates the clock source of the CLKOUT
+*/
 void CLOCK_UpdateClkOUTsrc(void)
 {
     CLOCK_UpdateClkSrc((volatile uint32_t *)(&(SYSCON->CLKOUTUEN)), SYSCON_CLKOUTUEN_ENA_MASK);

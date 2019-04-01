@@ -1,34 +1,8 @@
 /*
- * The Clear BSD License
  * Copyright 2017 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- * that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "fsl_acomp.h"
@@ -58,8 +32,16 @@ static uint32_t ACOMP_GetInstance(ACOMP_Type *base);
  ******************************************************************************/
 /* Array of ACOMP peripheral base address. */
 static ACOMP_Type *const s_acompBases[] = ACOMP_BASE_PTRS;
+
+#if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
 /* Clock name of ACOMP. */
 static const clock_ip_name_t s_acompClock[] = ACMP_CLOCKS;
+#endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
+
+#if !(defined(FSL_FEATURE_ACMP_HAS_NO_RESET) && FSL_FEATURE_ACMP_HAS_NO_RESET)
+/* Reset the ACMP module */
+static const reset_ip_name_t s_acompResets[] = ACMP_RSTS_N;
+#endif
 
 /*******************************************************************************
  * Codes
@@ -81,6 +63,12 @@ static uint32_t ACOMP_GetInstance(ACOMP_Type *base)
     return instance;
 }
 
+/*!
+ * brief Initialize the ACOMP module.
+ *
+ * param base ACOMP peripheral base address.
+ * param config Pointer to "acomp_config_t" structure.
+ */
 void ACOMP_Init(ACOMP_Type *base, const acomp_config_t *config)
 {
     assert(NULL != config);
@@ -88,8 +76,14 @@ void ACOMP_Init(ACOMP_Type *base, const acomp_config_t *config)
 
     uint32_t tmp32;
 
-    /* Open clock gate. */
+#if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
+    /* Enable the clock. */
     CLOCK_EnableClock(s_acompClock[ACOMP_GetInstance(base)]);
+#endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
+
+#if !(defined(FSL_FEATURE_ACMP_HAS_NO_RESET) && FSL_FEATURE_ACMP_HAS_NO_RESET)
+    RESET_PeripheralReset(s_acompResets[ACOMP_GetInstance(base)]);
+#endif
 
     /* Write CTRL register. */
     tmp32 = base->CTRL & ~(ACOMP_CTRL_COMPSA_MASK | ACOMP_CTRL_HYS_MASK);
@@ -101,20 +95,49 @@ void ACOMP_Init(ACOMP_Type *base, const acomp_config_t *config)
     base->CTRL = tmp32;
 }
 
+/*!
+* brief De-initialize the ACOMP module.
+*
+* param base ACOMP peripheral base address.
+*/
 void ACOMP_Deinit(ACOMP_Type *base)
 {
-    /* Disable clock gate. */
+#if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
+    /* Disable the clock. */
     CLOCK_DisableClock(s_acompClock[ACOMP_GetInstance(base)]);
+#endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 }
 
+/*!
+ * brief Gets an available pre-defined settings for the ACOMP's configuration.
+ *
+ * This function initializes the converter configuration structure with available settings. The default values are:
+ * code
+ *   config->enableSyncToBusClk = false;
+ *   config->hysteresisSelection = kACOMP_hysteresisNoneSelection;
+ * endcode
+ * In default configuration, the ACOMP's output would be used directly and switch as the voltages cross.
+ *
+ * param base   ACOMP peripheral base address.
+ * param config Pointer to the configuration structure.
+ */
 void ACOMP_GetDefaultConfig(acomp_config_t *config)
 {
     assert(NULL != config);
+
+    /* Initializes the configure structure to zero. */
+    memset(config, 0, sizeof(*config));
 
     config->enableSyncToBusClk = false;
     config->hysteresisSelection = kACOMP_HysteresisNoneSelection;
 }
 
+/*!
+* brief Enable ACOMP interrupts.
+*
+* param base ACOMP peripheral base address.
+* param enable Enable/Disable interrupt feature.
+*/
 void ACOMP_EnableInterrupts(ACOMP_Type *base, acomp_interrupt_enable_t enable)
 {
 #if defined(FSL_FEATURE_ACOMP_HAS_CTRL_INTENA) && FSL_FEATURE_ACOMP_HAS_CTRL_INTENA
@@ -133,6 +156,13 @@ void ACOMP_EnableInterrupts(ACOMP_Type *base, acomp_interrupt_enable_t enable)
     }
 }
 
+/*!
+* brief Set the voltage ladder configuration.
+*
+* param base ACOMP peripheral base address.
+* param config The structure for voltage ladder. If the config is NULL, voltage ladder would be diasbled,
+*               otherwise the voltage ladder would be configured and enabled.
+*/
 void ACOMP_SetLadderConfig(ACOMP_Type *base, const acomp_ladder_config_t *config)
 {
     if (NULL == config)

@@ -7,7 +7,7 @@ extern osMessageQId scale_task_msg_q_id;
 void scale_task(void const *argument);
 
 
-#define  SCALE_TASK_CALCULATE_VARIANCE              1
+#define  SCALE_TASK_CALCULATE_VARIANCE              0
 
 #define  SCALE_TASK_SUCCESS                         1
 #define  SCALE_TASK_FAILURE                         2

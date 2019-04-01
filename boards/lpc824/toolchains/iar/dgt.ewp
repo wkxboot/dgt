@@ -362,7 +362,7 @@
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/hx711</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/circle_buffer</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/utils</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/nv</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/nv_flash</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/cpu</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/printf</state>
@@ -2100,6 +2100,9 @@
                     <name>$PROJ_DIR$\..\..\..\..\devices\LPC824\drivers\fsl_dma.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\..\..\..\devices\LPC824\drivers\fsl_flashiap.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\..\..\..\devices\LPC824\drivers\fsl_gpio.c</name>
                 </file>
                 <file>
@@ -2199,7 +2202,7 @@
             <group>
                 <name>cpu</name>
                 <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\CPU\cpu_utils.c</name>
+                    <name>$PROJ_DIR$\..\..\user\debug\cpu\cpu_utils.c</name>
                 </file>
             </group>
             <group>
@@ -2231,9 +2234,15 @@
             </file>
         </group>
         <group>
-            <name>nv</name>
+            <name>nv_flash</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\nv\nv.c</name>
+                <name>$PROJ_DIR$\..\..\user\nv_flash\nv_flash.c</name>
+            </file>
+        </group>
+        <group>
+            <name>serial</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\serial\serial.c</name>
             </file>
         </group>
         <group>
@@ -2244,23 +2253,17 @@
         </group>
         <group>
             <name>tasks</name>
-            <group>
-                <name>serial</name>
-                <file>
-                    <name>$PROJ_DIR$\..\..\user\serial\serial.c</name>
-                </file>
-            </group>
             <file>
                 <name>$PROJ_DIR$\..\..\user\tasks\adc_task.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\user\tasks\cpu_task.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\user\tasks\protocol_task.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\user\tasks\scale_task.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\tasks\watch_dog_task.c</name>
             </file>
         </group>
         <group>

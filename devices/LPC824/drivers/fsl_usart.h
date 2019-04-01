@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2017, NXP Semiconductors, Inc.
  * All rights reserved.
  *
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef _FSL_USART_H_
@@ -45,12 +19,50 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-
 /*! @name Driver version */
 /*@{*/
-/*! @brief USART driver version 2.0.0. */
-#define FSL_USART_DRIVER_VERSION (MAKE_VERSION(2, 0, 0))
+/*! @brief USART driver version 2.0.1. */
+#define FSL_USART_DRIVER_VERSION (MAKE_VERSION(2, 0, 1))
 /*@}*/
+
+/*! @brief Macro gate for enable transaction API.  1 for enable, 0 for disable. */
+#ifndef FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS
+#define FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS 1
+#endif
+
+/*! @brief USART baud rate auto generate switch gate. 1 for enable, 0 for disable*/
+#ifndef FSL_SDK_USART_DRIVER_ENABLE_BAUDRATE_AUTO_GENERATE
+#define FSL_SDK_USART_DRIVER_ENABLE_BAUDRATE_AUTO_GENERATE 1
+#endif /* FSL_SDK_USART_DRIVER_ENABLE_BAUDRATE_AUTO_GENERATE */
+
+/*! @brief Macro for generating baud rate manually.
+ * <pre>
+ *  Table of common register values for generating baud rate in specific USART clock frequency.
+ *     Target baud rate(Hz)  |  USART clock frequency(Hz)   |      OSR value      |    BRG value   |
+ *         9600              |         12,000,000           |       10            |       124      |
+ *         9600              |         24,000,000           |       10            |       249      |
+ *         9600              |         30,000,000           |       16            |       194      |
+ *         9600              |         12,000,000           | NO OSR register(16) |       77       |
+ *         115200            |         12,000,000           |       13            |       7        |
+ *         115200            |         24,000,000           |       16            |       12       |
+ *         115200            |         30,000,000           |       13            |       19       |
+ *  @note: The formula for generating a baud rate is: baduRate = usartClock_Hz / (OSR * (BRG +1)).
+ *        For some devices, there is no OSR register for setting, so the default OSR value is 16 in formula.
+ *        If the USART clock source can not generate a precise baud rate, please setting the FRG register
+ *        in SYSCON module to get a precise USART clock frequency.
+ * </pre>
+ */
+#if !(defined(FSL_SDK_USART_DRIVER_ENABLE_BAUDRATE_AUTO_GENERATE) && FSL_SDK_USART_DRIVER_ENABLE_BAUDRATE_AUTO_GENERATE)
+/* Macro for setiing OSR register. */
+#ifndef FSL_SDK_USART_OSR_VALUE
+#define FSL_SDK_USART_OSR_VALUE 10U
+#endif /* FSL_SDK_USART_OSR_VALUE */
+
+/* Macro for setting BRG register. */
+#ifndef FSL_SDK_USART_BRG_VALUE
+#define FSL_SDK_USART_BRG_VALUE 124U
+#endif /* FSL_SDK_USART_BRG_VALUE */
+#endif /* FSL_SDK_USART_DRIVER_ENABLE_BAUDRATE_AUTO_GENERATE */
 
 /*! @brief Error codes for the USART driver. */
 enum _usart_status
@@ -174,6 +186,7 @@ typedef struct _usart_config
     usart_sync_mode_t syncMode;          /*!< Transfer mode - asynchronous, synchronous master, synchronous slave. */
 } usart_config_t;
 
+#if defined(FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS) && (FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS)
 /*! @brief USART transfer structure. */
 typedef struct _usart_transfer
 {
@@ -208,6 +221,7 @@ struct _usart_handle
     volatile uint8_t txState; /*!< TX transfer state. */
     volatile uint8_t rxState; /*!< RX transfer state */
 };
+#endif /* FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS */
 
 /*******************************************************************************
  * API
@@ -404,6 +418,25 @@ static inline uint32_t USART_GetEnabledInterrupts(USART_Type *base)
  */
 
 /*!
+ * @brief Enable CTS.
+ * This function will determine whether CTS is used for flow control.
+ *
+ * @param base    USART peripheral base address.
+ * @param enable  Enable CTS or not, true for enable and false for disable.
+ */
+static inline void USART_EnableCTS(USART_Type *base, bool enable)
+{
+    if (enable)
+    {
+        base->CFG |= USART_CFG_CTSEN_MASK;
+    }
+    else
+    {
+        base->CFG &= ~USART_CFG_CTSEN_MASK;
+    }
+}
+
+/*!
  * @brief Enable the USART transmit.
  *
  * This function will enable or disable the USART transmit.
@@ -507,6 +540,7 @@ status_t USART_ReadBlocking(USART_Type *base, uint8_t *data, size_t length);
 
 /* @} */
 
+#if defined(FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS) && (FSL_SDK_ENABLE_USART_DRIVER_TRANSACTIONAL_APIS)
 /*!
  * @name Transactional
  * @{
@@ -683,6 +717,7 @@ status_t USART_TransferGetReceiveCount(USART_Type *base, usart_handle_t *handle,
 void USART_TransferHandleIRQ(USART_Type *base, usart_handle_t *handle);
 
 /* @} */
+#endif
 
 #if defined(__cplusplus)
 }

@@ -1,46 +1,20 @@
 /*
- * The Clear BSD License
- * Copyright 2017 NXP
+ * Copyright 2017-2018 NXP
  * All rights reserved.
  *
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
  *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
 #include <stdarg.h>
 #include <stdlib.h>
-#if defined(__CC_ARM)
+#if defined(__CC_ARM) || defined(__ARMCC_VERSION)
 #include <stdio.h>
 #endif
 #include <math.h>
 #include "fsl_debug_console.h"
-#include "fsl_usart.h"
+#include "uart.h"
 
 /*! @brief Keil: suppress ellipsis warning in va_arg usage below. */
 #if defined(__CC_ARM)
@@ -59,17 +33,17 @@
 #define HUGE_VAL (99.e99)
 #endif /* HUGE_VAL */
 
-#if SCANF_FLOAT_ENABLE
-static double fnum = 0.0;
-#endif /* SCANF_FLOAT_ENABLE */
-
 /*! @brief State structure storing debug console. */
 typedef struct DebugConsoleState
 {
-    uint8_t type; /*!< Indicator telling whether the debug console is initialized. */
-    void *base;   /*!< Base of the IP register. */
-    void (*putChar)(USART_Type *base, const uint8_t *data, size_t length); /*!< put char function pointer */
-    status_t (*getChar)(USART_Type *base, uint8_t *data, size_t length);   /*!< get char function pointer */
+    uint8_t uartHandleBuffer[HAL_UART_HANDLE_SIZE];
+    hal_uart_status_t (*putChar)(hal_uart_handle_t handle,
+                                 const uint8_t *data,
+                                 size_t length); /*!< put char function pointer */
+    hal_uart_status_t (*getChar)(hal_uart_handle_t handle,
+                                 uint8_t *data,
+                                 size_t length); /*!< get char function pointer */
+    serial_port_type_t type;                     /*!< The initialized port of the debug console. */
 } debug_console_state_t;
 
 /*! @brief Type of KSDK printf function pointer. */
@@ -118,8 +92,7 @@ enum _debugconsole_scanf_flag
  * Variables
  ******************************************************************************/
 /*! @brief Debug UART state information. */
-static debug_console_state_t s_debugConsole = {
-    .type = DEBUG_CONSOLE_DEVICE_TYPE_NONE, .base = NULL, .putChar = NULL, .getChar = NULL};
+static debug_console_state_t s_debugConsole;
 
 /*******************************************************************************
  * Prototypes
@@ -137,9 +110,11 @@ double modf(double input_dbl, double *intpart_ptr);
 /*************Code for DbgConsole Init, Deinit, Printf, Scanf *******************************/
 
 /* See fsl_debug_console.h for documentation of this function. */
-status_t DbgConsole_Init(uint32_t baseAddr, uint32_t baudRate, uint8_t device, uint32_t clkSrcFreq)
+status_t DbgConsole_Init(uint8_t instance, uint32_t baudRate, serial_port_type_t device, uint32_t clkSrcFreq)
 {
-    if (device != DEBUG_CONSOLE_DEVICE_TYPE_MINI_USART)
+    hal_uart_config_t usrtConfig;
+
+    if (kSerialPort_Uart != device)
     {
         return kStatus_Fail;
     }
@@ -147,17 +122,18 @@ status_t DbgConsole_Init(uint32_t baseAddr, uint32_t baudRate, uint8_t device, u
     /* Set debug console to initialized to avoid duplicated initialized operation. */
     s_debugConsole.type = device;
 
-    usart_config_t usart_config;
-    s_debugConsole.base = (USART_Type *)baseAddr;
-    USART_GetDefaultConfig(&usart_config);
-    usart_config.baudRate_Bps = baudRate;
-    usart_config.enableRx = true;
-    usart_config.enableTx = true;
+    usrtConfig.srcClock_Hz = clkSrcFreq;
+    usrtConfig.baudRate_Bps = baudRate;
+    usrtConfig.parityMode = kHAL_UartParityDisabled;
+    usrtConfig.stopBitCount = kHAL_UartOneStopBit;
+    usrtConfig.enableRx = true;
+    usrtConfig.enableTx = true;
+    usrtConfig.instance = instance;
     /* Enable clock and initial UART module follow user configure structure. */
-    USART_Init(s_debugConsole.base, &usart_config, clkSrcFreq);
+    HAL_UartInit((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], &usrtConfig);
     /* Set the function pointer for send and receive for this kind of device. */
-    s_debugConsole.putChar = USART_WriteBlocking;
-    s_debugConsole.getChar = USART_ReadBlocking;
+    s_debugConsole.putChar = HAL_UartSendBlocking;
+    s_debugConsole.getChar = HAL_UartReceiveBlocking;
 
     return kStatus_Success;
 }
@@ -165,14 +141,14 @@ status_t DbgConsole_Init(uint32_t baseAddr, uint32_t baudRate, uint8_t device, u
 /* See fsl_debug_console.h for documentation of this function. */
 status_t DbgConsole_Deinit(void)
 {
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return kStatus_Success;
     }
 
-    USART_Deinit((USART_Type *)s_debugConsole.base);
+    HAL_UartDeinit((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0]);
 
-    s_debugConsole.type = DEBUG_CONSOLE_DEVICE_TYPE_NONE;
+    s_debugConsole.type = kSerialPort_None;
 
     return kStatus_Success;
 }
@@ -185,7 +161,7 @@ int DbgConsole_Printf(const char *fmt_s, ...)
     int result;
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
@@ -200,11 +176,11 @@ int DbgConsole_Printf(const char *fmt_s, ...)
 int DbgConsole_Putchar(int ch)
 {
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
-    s_debugConsole.putChar(s_debugConsole.base, (uint8_t *)(&ch), 1);
+    s_debugConsole.putChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)(&ch), 1);
 
     return 1;
 }
@@ -219,7 +195,7 @@ int DbgConsole_Scanf(char *fmt_ptr, ...)
     char result;
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
@@ -264,11 +240,12 @@ int DbgConsole_Getchar(void)
 {
     char ch;
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
-    while (kStatus_Success != s_debugConsole.getChar(s_debugConsole.base, (uint8_t *)(&ch), 1))
+    while (kStatus_HAL_UartSuccess !=
+           s_debugConsole.getChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)(&ch), 1))
     {
         return -1;
     }
@@ -1125,6 +1102,10 @@ static int DbgConsole_ScanfFormattedData(const char *line_ptr, char *format, va_
     /* Identifier for the input string. */
     const char *p = line_ptr;
 
+#if SCANF_FLOAT_ENABLE
+    double fnum = 0.0;
+#endif /* SCANF_FLOAT_ENABLE */
+
     /* Return EOF error before any conversion. */
     if (*p == '\0')
     {
@@ -1574,13 +1555,13 @@ size_t __write(int handle, const unsigned char *buffer, size_t size)
     }
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return ((size_t)-1);
     }
 
     /* Send data. */
-    s_debugConsole.putChar(s_debugConsole.base, buffer, 1);
+    s_debugConsole.putChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], buffer, 1);
     return size;
 }
 
@@ -1594,13 +1575,13 @@ size_t __read(int handle, unsigned char *buffer, size_t size)
     }
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return ((size_t)-1);
     }
 
     /* Receive data. */
-    s_debugConsole.getChar(s_debugConsole.base, buffer, size);
+    s_debugConsole.getChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], buffer, size);
 
     return size;
 }
@@ -1624,13 +1605,13 @@ int __attribute__((weak)) __sys_write(int handle, char *buffer, int size)
     }
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
 
     /* Send data. */
-    s_debugConsole.putChar(s_debugConsole.base, (uint8_t *)buffer, size);
+    s_debugConsole.putChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)buffer, size);
     return 0;
 }
 
@@ -1638,13 +1619,13 @@ int __attribute__((weak)) __sys_readc(void)
 {
     char tmp;
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
 
     /* Receive data. */
-    s_debugConsole.getChar(s_debugConsole.base, (uint8_t *)&tmp, sizeof(tmp));
+    s_debugConsole.getChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)&tmp, sizeof(tmp));
     return tmp;
 }
 #endif
@@ -1670,13 +1651,13 @@ int __attribute__((weak)) _write(int handle, char *buffer, int size)
     }
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
 
     /* Send data. */
-    s_debugConsole.putChar(s_debugConsole.base, (uint8_t *)buffer, size);
+    s_debugConsole.putChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)buffer, size);
     return size;
 }
 
@@ -1689,19 +1670,20 @@ int __attribute__((weak)) _read(int handle, char *buffer, int size)
     }
 
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
 
     /* Receive data. */
-    s_debugConsole.getChar(s_debugConsole.base, (uint8_t *)buffer, size);
+    s_debugConsole.getChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)buffer, size);
     return size;
 }
 #endif
 
 /* These function fputc and fgetc is used to support KEIL toolchain to printf and scanf*/
-#elif defined(__CC_ARM)
+#elif defined(__CC_ARM) || defined(__ARMCC_VERSION)
+#if defined(__CC_ARM)
 struct __FILE
 {
     int handle;
@@ -1710,6 +1692,7 @@ struct __FILE
      * no file handling is required.
      */
 };
+#endif
 
 /* FILE is typedef in stdio.h. */
 #pragma weak __stdout
@@ -1721,13 +1704,13 @@ FILE __stdin;
 int fputc(int ch, FILE *f)
 {
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
 
     /* Send data. */
-    s_debugConsole.putChar(s_debugConsole.base, (uint8_t *)(&ch), 1);
+    s_debugConsole.putChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)(&ch), 1);
     return 1;
 }
 
@@ -1736,13 +1719,13 @@ int fgetc(FILE *f)
 {
     char ch;
     /* Do nothing if the debug UART is not initialized. */
-    if (s_debugConsole.type == DEBUG_CONSOLE_DEVICE_TYPE_NONE)
+    if (kSerialPort_None == s_debugConsole.type)
     {
         return -1;
     }
 
     /* Receive data. */
-    s_debugConsole.getChar(s_debugConsole.base, (uint8_t *)(&ch), 1);
+    s_debugConsole.getChar((hal_uart_handle_t)&s_debugConsole.uartHandleBuffer[0], (uint8_t *)(&ch), 1);
     return ch;
 }
 #endif /* __ICCARM__ */

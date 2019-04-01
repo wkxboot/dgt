@@ -1,34 +1,10 @@
 /*
  * Copyright (c) 2016, Freescale Semiconductor, Inc.
- * Copyright (c) 2016, NXP
+ * Copyright (c) 2016-2018, NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "fsl_common.h"
 #include "fsl_power.h"
 /* Component ID definition, used by tools. */
 #ifndef FSL_COMPONENT_ID
@@ -38,5 +14,150 @@
 /*******************************************************************************
  * Code
  ******************************************************************************/
+/*!
+ * brief API to enter sleep power mode.
+ *
+ * return none
+ */
+void POWER_EnterSleep(void)
+{
+    uint32_t pmsk;
 
-/* Empty file since implementation is in header file and power library */
+    pmsk = __get_PRIMASK();
+    __disable_irq();
+
+    /* sleep mode */
+    PMU->PCON &= ~PMU_PCON_PM_MASK;
+    /* disable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
+
+    /* Enter powerdown mode */
+    __WFI();
+
+    __set_PRIMASK(pmsk);
+}
+
+/*!
+ * brief API to enter deep sleep power mode.
+ *
+ * param activePart , should be a single or combine value of _power_deep_sleep_active .
+ * return none
+ */
+void POWER_EnterDeepSleep(uint32_t activePart)
+{
+    assert((SYSCON->MAINCLKSEL & SYSCON_MAINCLKSEL_SEL_MASK) == 0U);
+
+    uint32_t pmsk;
+
+    pmsk = __get_PRIMASK();
+    __disable_irq();
+
+    PMU->PCON = (PMU->PCON & (~PMU_PCON_PM_MASK)) | PMU_PCON_PM(kPmu_Deep_Sleep);
+
+    /* remain active during power down mode */
+    SYSCON->PDSLEEPCFG &= ~activePart;
+
+    /* enable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+
+    /* Enter powerdown mode */
+    __WFI();
+
+    /* disable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
+    __set_PRIMASK(pmsk);
+}
+
+/*!
+ * brief API to enter power down mode.
+ *
+ * param activePart , should be a single or combine value of _power_deep_sleep_active .
+ * return none
+ */
+void POWER_EnterPowerDown(uint32_t activePart)
+{
+    assert((SYSCON->MAINCLKSEL & SYSCON_MAINCLKSEL_SEL_MASK) == 0U);
+
+    uint32_t pmsk;
+
+    pmsk = __get_PRIMASK();
+    __disable_irq();
+
+    PMU->PCON = (PMU->PCON & (~PMU_PCON_PM_MASK)) | PMU_PCON_PM(kPmu_PowerDown);
+
+    /* remain active during power down mode */
+    SYSCON->PDSLEEPCFG &= ~activePart;
+
+    /* enable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+
+    /* Enter powerdown mode */
+    __WFI();
+
+    /* disable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
+    __set_PRIMASK(pmsk);
+}
+
+/*!
+ * brief API to enter deep power down mode.
+ *
+ * return none
+ */
+void POWER_EnterDeepPowerDownMode(void)
+{
+    uint32_t pmsk;
+
+    pmsk = __get_PRIMASK();
+    __disable_irq();
+
+    /* make sure NODPD is cleared  */
+    PMU->PCON = (PMU->PCON & (~(PMU_PCON_PM_MASK | PMU_PCON_NODPD_MASK))) | PMU_PCON_PM(kPmu_Deep_PowerDown);
+
+    /* enable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+
+    /* Enter powerdown mode */
+    __WFI();
+
+    /* disable Deepsleep mode in the ARM-CORTEX M0+ SCR register */
+    SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
+    __set_PRIMASK(pmsk);
+}
+
+void EnableDeepSleepIRQ(IRQn_Type interrupt)
+{
+    uint32_t intNumber = (uint32_t)interrupt;
+	
+    if(intNumber >= 24u) 
+    {
+        /* enable pin interrupt wake up in the STARTERP0 register */
+        SYSCON->STARTERP0 |= 1u << (intNumber - 24u); 
+    }        
+    else
+    {
+        /* enable interrupt wake up in the STARTERP1 register */	 
+        SYSCON->STARTERP1 |= 1u << intNumber;          
+    }
+    /* also enable interrupt at NVIC */
+    EnableIRQ(interrupt); 
+}
+
+void DisableDeepSleepIRQ(IRQn_Type interrupt)
+{
+    uint32_t intNumber = (uint32_t)interrupt;
+	
+    /* also disable interrupt at NVIC */
+    DisableIRQ(interrupt); 
+	
+    if(intNumber >= 24u) 
+    {
+        /* disable pin interrupt wake up in the STARTERP0 register */
+        SYSCON->STARTERP0 &= ~(1u << (intNumber - 24)); 
+    }  
+    else
+    {
+        /* disable interrupt wake up in the STARTERP1 register */	
+        SYSCON->STARTERP1 &= ~(1u << intNumber);         
+    }
+}

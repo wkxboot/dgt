@@ -150,6 +150,7 @@ adc_task_restart:
             timeout += ADC_TASK_INTERVAL_VALUE;
             if (timeout >= ADC_TASK_SAMPLE_TIMEOUT_VALUE) {
                 log_error("sensor sample timeout.reset.\r\n");
+                timeout  = 0;
                 goto adc_task_restart;
             }
             continue;

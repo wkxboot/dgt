@@ -19,7 +19,7 @@
 *****************************************************************************/
 #include "board.h"
 #include "hx711.h"
-
+#include "cmsis_os.h"
 /*
 * @brief hx711系统复位
 * @param
@@ -31,11 +31,11 @@ void hx711_soft_reset(void)
 {
     /*保持60us以上即可进入断电复位状态*/
     bsp_hx711_sclk_rise();
-    bsp_hal_delay(1000);
+    osDelay(1000);
 
     bsp_hx711_sclk_fall();
     /*保持1000us以上即可进入正常状态*/
-    bsp_hal_delay(1000);
+    osDelay(1000);
 }
 
 /*

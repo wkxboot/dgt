@@ -1,31 +1,8 @@
 /*
- * Copyright 2017 NXP
+ * Copyright 2017-2018 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name ofcopyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef _FSL_CLOCK_H_
@@ -47,167 +24,167 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief CLOCK driver version 2.0.2. */
-#define FSL_CLOCK_DRIVER_VERSION (MAKE_VERSION(2, 0, 2))
+/*! @brief CLOCK driver version 2.0.3. */
+#define FSL_CLOCK_DRIVER_VERSION (MAKE_VERSION(2, 0, 3))
 /*@}*/
 
 /*! @brief watchdog oscilltor clock frequency.
  *
- * This variable is used to store the watchdog oscillator frequency which is 
+ * This variable is used to store the watchdog oscillator frequency which is
  * set by CLOCK_InitWdtOsc, and it is returned by CLOCK_GetWdtOscFreq.
  */
-extern uint32_t g_Wdt_Osc_Freq;
+extern volatile uint32_t g_Wdt_Osc_Freq;
 
 /*! @brief external clock frequency.
  *
  * This variable is used to store the external clock frequency which is include
  * external oscillator clock and external clk in clock frequency value, it is
  * set by CLOCK_InitExtClkin when CLK IN is used as external clock or by CLOCK_InitSysOsc
- * when external oscillator is used as external clock ,and it is returned by 
+ * when external oscillator is used as external clock ,and it is returned by
  * CLOCK_GetExtClkFreq.
  */
-extern uint32_t g_Ext_Clk_Freq;
+extern volatile uint32_t g_Ext_Clk_Freq;
 
 /*! @brief Clock ip name array for ADC. */
-#define ADC_CLOCKS      \
-    {                   \
-        kCLOCK_Adc,      \
+#define ADC_CLOCKS  \
+    {               \
+        kCLOCK_Adc, \
     }
 /*! @brief Clock ip name array for ACMP. */
-#define ACMP_CLOCKS     \
-    {                   \
-        kCLOCK_Acmp,     \
+#define ACMP_CLOCKS  \
+    {                \
+        kCLOCK_Acmp, \
     }
 /*! @brief Clock ip name array for SWM. */
-#define SWM_CLOCKS      \
-    {                   \
-        kCLOCK_Swm,      \
+#define SWM_CLOCKS  \
+    {               \
+        kCLOCK_Swm, \
     }
 /*! @brief Clock ip name array for ROM. */
-#define ROM_CLOCKS      \
-    {                   \
-        kCLOCK_Rom,     \
+#define ROM_CLOCKS  \
+    {               \
+        kCLOCK_Rom, \
     }
 /*! @brief Clock ip name array for SRAM. */
-#define SRAM_CLOCKS     \
-    {                   \
-        kCLOCK_Ram0_1,   \
+#define SRAM_CLOCKS    \
+    {                  \
+        kCLOCK_Ram0_1, \
     }
 /*! @brief Clock ip name array for IOCON. */
-#define IOCON_CLOCKS    \
-    {                   \
-        kCLOCK_Iocon,    \
+#define IOCON_CLOCKS  \
+    {                 \
+        kCLOCK_Iocon, \
     }
 /*! @brief Clock ip name array for GPIO. */
-#define GPIO_CLOCKS     \
-    {                   \
-        kCLOCK_Gpio0,     \
+#define GPIO_CLOCKS   \
+    {                 \
+        kCLOCK_Gpio0, \
     }
 /*! @brief Clock ip name array for GPIO_INT. */
 #define GPIO_INT_CLOCKS \
     {                   \
-        kCLOCK_GpioInt,  \
+        kCLOCK_GpioInt, \
     }
 /*! @brief Clock ip name array for DMA. */
-#define DMA_CLOCKS      \
-    {                   \
-        kCLOCK_Dma,      \
+#define DMA_CLOCKS  \
+    {               \
+        kCLOCK_Dma, \
     }
 /*! @brief Clock ip name array for CRC. */
-#define CRC_CLOCKS      \
-    {                   \
-        kCLOCK_Crc,      \
+#define CRC_CLOCKS  \
+    {               \
+        kCLOCK_Crc, \
     }
 /*! @brief Clock ip name array for WWDT. */
-#define WWDT_CLOCKS     \
-    {                   \
-        kCLOCK_Wwdt,     \
+#define WWDT_CLOCKS  \
+    {                \
+        kCLOCK_Wwdt, \
     }
 /*! @brief Clock ip name array for SCT0. */
-#define SCT_CLOCKS      \
-    {                   \
-        kCLOCK_Sct,      \
+#define SCT_CLOCKS  \
+    {               \
+        kCLOCK_Sct, \
     }
 /*! @brief Clock ip name array for I2C. */
-#define I2C_CLOCKS      \
-    {                   \
-        kCLOCK_I2c1, kCLOCK_I2c2, kCLOCK_I2c3,   \
+#define I2C_CLOCKS                             \
+    {                                          \
+        kCLOCK_I2c1, kCLOCK_I2c2, kCLOCK_I2c3, \
     }
 /*! @brief Clock ip name array for I2C. */
-#define USART_CLOCKS    \
-    {                   \
-        kCLOCK_Uart0, kCLOCK_Uart1, kCLOCK_Uart2,    \
+#define USART_CLOCKS                              \
+    {                                             \
+        kCLOCK_Uart0, kCLOCK_Uart1, kCLOCK_Uart2, \
     }
 /*! @brief Clock ip name array for SPI. */
-#define SPI_CLOCKS      \
-    {                   \
-        kCLOCK_Spi0, kCLOCK_Spi1,    \
+#define SPI_CLOCKS                \
+    {                             \
+        kCLOCK_Spi0, kCLOCK_Spi1, \
     }
 /*! @brief Clock ip name array for MTB. */
-#define MTB_CLOCKS      \
-    {                   \
-        kCLOCK_Mtb,      \
+#define MTB_CLOCKS  \
+    {               \
+        kCLOCK_Mtb, \
     }
 /*! @brief Clock ip name array for MRT. */
-#define MRT_CLOCKS      \
-    {                   \
-        kCLOCK_Mrt,      \
+#define MRT_CLOCKS  \
+    {               \
+        kCLOCK_Mrt, \
     }
 /*! @brief Clock ip name array for WKT. */
-#define WKT_CLOCKS      \
-    {                   \
-        kCLOCK_Wkt,      \
+#define WKT_CLOCKS  \
+    {               \
+        kCLOCK_Wkt, \
     }
 
 /*! @brief Internal used Clock definition only. */
-#define CLK_GATE_DEFINE(reg, bit)               ((((reg) & 0xFFU) << 8U) | ((bit) & 0xFFU))
-#define CLK_GATE_GET_REG(x)                     (((x) >> 8U) & 0xFFU)
-#define CLK_GATE_GET_BITS_SHIFT(x)              ((uint32_t)(x) & 0xFFU)
+#define CLK_GATE_DEFINE(reg, bit) ((((reg)&0xFFU) << 8U) | ((bit)&0xFFU))
+#define CLK_GATE_GET_REG(x) (((x) >> 8U) & 0xFFU)
+#define CLK_GATE_GET_BITS_SHIFT(x) ((uint32_t)(x)&0xFFU)
 /* clock mux register definition */
-#define CLK_MUX_DEFINE(reg, mux)                (((((uint32_t)(&((SYSCON_Type *)0U)->reg)) & 0xFFU) << 8U) | ((mux) & 0xFFU))
-#define CLK_MUX_GET_REG(x)                      ((volatile uint32_t *)(((uint32_t)(SYSCON)) + (((x) >> 8U) & 0xFFU)))
-#define CLK_MUX_GET_MUX(x) ((x) & 0xFFU)
-#define CLK_MAIN_CLK_MUX_DEFINE(preMux, mux)    ((preMux) << 8U | (mux))
-#define CLK_MAIN_CLK_MUX_GET_PRE_MUX(x)         (((x) >> 8U) & 0xFFU)
-#define CLK_MAIN_CLK_MUX_GET_MUX(x)             ((x) & 0xFFU)
+#define CLK_MUX_DEFINE(reg, mux) (((((uint32_t)(&((SYSCON_Type *)0U)->reg)) & 0xFFU) << 8U) | ((mux)&0xFFU))
+#define CLK_MUX_GET_REG(x) ((volatile uint32_t *)(((uint32_t)(SYSCON)) + (((x) >> 8U) & 0xFFU)))
+#define CLK_MUX_GET_MUX(x) ((x)&0xFFU)
+#define CLK_MAIN_CLK_MUX_DEFINE(preMux, mux) ((preMux) << 8U | (mux))
+#define CLK_MAIN_CLK_MUX_GET_PRE_MUX(x) (((x) >> 8U) & 0xFFU)
+#define CLK_MAIN_CLK_MUX_GET_MUX(x) ((x)&0xFFU)
 /* clock divider register definition */
-#define CLK_DIV_DEFINE(reg)                     (((uint32_t)(&((SYSCON_Type *)0U)->reg)) & 0xFFFU)
-#define CLK_DIV_GET_REG(x)                      *((volatile uint32_t *)(((uint32_t)(SYSCON)) + ((x) & 0xFFFU)))
+#define CLK_DIV_DEFINE(reg) (((uint32_t)(&((SYSCON_Type *)0U)->reg)) & 0xFFFU)
+#define CLK_DIV_GET_REG(x) *((volatile uint32_t *)(((uint32_t)(SYSCON)) + ((x)&0xFFFU)))
 /* watch dog oscillator definition */
-#define CLK_WDT_OSC_DEFINE(freq, regValue)      (((freq) & 0xFFFFFFU) | (((regValue) & 0xFFU) << 24U))
-#define CLK_WDT_OSC_GET_FREQ(x)                 ((x) & 0xFFFFFFU)
-#define CLK_WDT_OSC_GET_REG(x)                  (((x) >> 24U) & 0xFFU)
+#define CLK_WDT_OSC_DEFINE(freq, regValue) (((freq)&0xFFFFFFU) | (((regValue)&0xFFU) << 24U))
+#define CLK_WDT_OSC_GET_FREQ(x) ((x)&0xFFFFFFU)
+#define CLK_WDT_OSC_GET_REG(x) (((x) >> 24U) & 0xFFU)
 /* register offset */
-#define SYS_AHB_CLK_CTRL   (0U)
+#define SYS_AHB_CLK_CTRL (0U)
 /*! @brief Clock gate name used for CLOCK_EnableClock/CLOCK_DisableClock. */
 typedef enum _clock_ip_name
 {
-    kCLOCK_Sys          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 0U),
-    kCLOCK_Rom          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 1U),
-    kCLOCK_Ram0_1       = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 2U),
-    kCLOCK_Flashreg     = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 3U),
-    kCLOCK_Flash        = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 4U),
-    kCLOCK_I2c0         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 5U),
-    kCLOCK_Gpio0        = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 6U),
-    kCLOCK_Swm          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 7U),
-    kCLOCK_Sct          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 8U),
-    kCLOCK_Wkt          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 9U),
-    kCLOCK_Mrt          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 10U),
-    kCLOCK_Spi0         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 11U),
-    kCLOCK_Spi1         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 12U),
-    kCLOCK_Crc          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 13U),
-    kCLOCK_Uart0        = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 14U),
-    kCLOCK_Uart1        = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 15U),
-    kCLOCK_Uart2        = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 16U),
-    kCLOCK_Wwdt         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 17U),
-    kCLOCK_Iocon        = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 18U),
-    kCLOCK_Acmp         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 19U),
-    kCLOCK_I2c1         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 21U),
-    kCLOCK_I2c2         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 22U),
-    kCLOCK_I2c3         = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 23U),
-    kCLOCK_Adc          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 24U),
-    kCLOCK_Mtb          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 26U),
-    kCLOCK_Dma          = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 29U),
+    kCLOCK_Sys = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 0U),
+    kCLOCK_Rom = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 1U),
+    kCLOCK_Ram0_1 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 2U),
+    kCLOCK_Flashreg = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 3U),
+    kCLOCK_Flash = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 4U),
+    kCLOCK_I2c0 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 5U),
+    kCLOCK_Gpio0 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 6U),
+    kCLOCK_Swm = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 7U),
+    kCLOCK_Sct = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 8U),
+    kCLOCK_Wkt = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 9U),
+    kCLOCK_Mrt = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 10U),
+    kCLOCK_Spi0 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 11U),
+    kCLOCK_Spi1 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 12U),
+    kCLOCK_Crc = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 13U),
+    kCLOCK_Uart0 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 14U),
+    kCLOCK_Uart1 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 15U),
+    kCLOCK_Uart2 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 16U),
+    kCLOCK_Wwdt = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 17U),
+    kCLOCK_Iocon = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 18U),
+    kCLOCK_Acmp = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 19U),
+    kCLOCK_I2c1 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 21U),
+    kCLOCK_I2c2 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 22U),
+    kCLOCK_I2c3 = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 23U),
+    kCLOCK_Adc = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 24U),
+    kCLOCK_Mtb = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 26U),
+    kCLOCK_Dma = CLK_GATE_DEFINE(SYS_AHB_CLK_CTRL, 29U),
 } clock_ip_name_t;
 
 /*! @brief Clock name used to get clock frequency. */
@@ -232,19 +209,19 @@ typedef enum _clock_name
 typedef enum _clock_select
 {
 
-    kSYSPLL_From_Irc            = CLK_MUX_DEFINE(SYSPLLCLKSEL, 0U),
-    kSYSPLL_From_SysOsc         = CLK_MUX_DEFINE(SYSPLLCLKSEL, 1U),
-    kSYSPLL_From_ExtClk         = CLK_MUX_DEFINE(SYSPLLCLKSEL, 3U),
-    
-    kMAINCLK_From_Irc           = CLK_MUX_DEFINE(MAINCLKSEL, 0U),
-    kMAINCLK_From_SysPllIn      = CLK_MUX_DEFINE(MAINCLKSEL, 1U),
-    kMAINCLK_From_WdtOsc        = CLK_MUX_DEFINE(MAINCLKSEL, 2U),
-    kMAINCLK_From_SysPll        = CLK_MUX_DEFINE(MAINCLKSEL, 3U),
-    
-    kCLKOUT_From_Irc           = CLK_MUX_DEFINE(CLKOUTSEL, 0U),
-    kCLKOUT_From_SysOsc        = CLK_MUX_DEFINE(CLKOUTSEL, 1U),
-    kCLKOUT_From_WdtOsc        = CLK_MUX_DEFINE(CLKOUTSEL, 2U),
-    kCLKOUT_From_MainClk       = CLK_MUX_DEFINE(CLKOUTSEL, 3U)
+    kSYSPLL_From_Irc = CLK_MUX_DEFINE(SYSPLLCLKSEL, 0U),
+    kSYSPLL_From_SysOsc = CLK_MUX_DEFINE(SYSPLLCLKSEL, 1U),
+    kSYSPLL_From_ExtClk = CLK_MUX_DEFINE(SYSPLLCLKSEL, 3U),
+
+    kMAINCLK_From_Irc = CLK_MUX_DEFINE(MAINCLKSEL, 0U),
+    kMAINCLK_From_SysPllIn = CLK_MUX_DEFINE(MAINCLKSEL, 1U),
+    kMAINCLK_From_WdtOsc = CLK_MUX_DEFINE(MAINCLKSEL, 2U),
+    kMAINCLK_From_SysPll = CLK_MUX_DEFINE(MAINCLKSEL, 3U),
+
+    kCLKOUT_From_Irc = CLK_MUX_DEFINE(CLKOUTSEL, 0U),
+    kCLKOUT_From_SysOsc = CLK_MUX_DEFINE(CLKOUTSEL, 1U),
+    kCLKOUT_From_WdtOsc = CLK_MUX_DEFINE(CLKOUTSEL, 2U),
+    kCLKOUT_From_MainClk = CLK_MUX_DEFINE(CLKOUTSEL, 3U)
 } clock_select_t;
 
 /*! @brief Clock divider
@@ -252,9 +229,9 @@ typedef enum _clock_select
 typedef enum _clock_divider
 {
 
-    kCLOCK_DivUsartClk  = CLK_DIV_DEFINE(UARTCLKDIV),
-    kCLOCK_DivClkOut    = CLK_DIV_DEFINE(CLKOUTDIV),
-    kCLOCK_DivUartFrg   = CLK_DIV_DEFINE(UARTFRGDIV),
+    kCLOCK_DivUsartClk = CLK_DIV_DEFINE(UARTCLKDIV),
+    kCLOCK_DivClkOut = CLK_DIV_DEFINE(CLKOUTDIV),
+    kCLOCK_DivUartFrg = CLK_DIV_DEFINE(UARTFRGDIV),
 
     kCLOCK_IOCONCLKDiv6 = CLK_DIV_DEFINE(IOCONCLKDIV6),
     kCLOCK_IOCONCLKDiv5 = CLK_DIV_DEFINE(IOCONCLKDIV5),
@@ -263,14 +240,14 @@ typedef enum _clock_divider
     kCLOCK_IOCONCLKDiv2 = CLK_DIV_DEFINE(IOCONCLKDIV2),
     kCLOCK_IOCONCLKDiv1 = CLK_DIV_DEFINE(IOCONCLKDIV1),
     kCLOCK_IOCONCLKDiv0 = CLK_DIV_DEFINE(IOCONCLKDIV0),
-    
+
 } clock_divider_t;
 
 /*! @brief watch dog analog output frequency */
 typedef enum _clock_wdt_analog_freq
 {
-    kCLOCK_WdtAnaFreq0HZ     = CLK_WDT_OSC_DEFINE(0U, 0U),
-    kCLOCK_WdtAnaFreq600KHZ  = CLK_WDT_OSC_DEFINE(600000U, 1U),
+    kCLOCK_WdtAnaFreq0HZ = CLK_WDT_OSC_DEFINE(0U, 0U),
+    kCLOCK_WdtAnaFreq600KHZ = CLK_WDT_OSC_DEFINE(600000U, 1U),
     kCLOCK_WdtAnaFreq1050KHZ = CLK_WDT_OSC_DEFINE(1050000U, 2u),
     kCLOCK_WdtAnaFreq1400KHZ = CLK_WDT_OSC_DEFINE(1400000U, 3U),
     kCLOCK_WdtAnaFreq1750KHZ = CLK_WDT_OSC_DEFINE(1750000U, 4U),
@@ -287,11 +264,10 @@ typedef enum _clock_wdt_analog_freq
     kCLOCK_WdtAnaFreq4600KHZ = CLK_WDT_OSC_DEFINE(4600000U, 15U),
 } clock_wdt_analog_freq_t;
 
-
 /*! @brief PLL clock definition.*/
 typedef enum _clock_sys_pll_src
 {
-    kCLOCK_SysPllSrcIrc    = 0U, /*!< system pll source from FRO */
+    kCLOCK_SysPllSrcIrc = 0U,    /*!< system pll source from FRO */
     kCLOCK_SysPllSrcSysosc = 1U, /*!< system pll source from system osc */
     kCLOCK_SysPllSrcExtClk = 3U, /*!< system pll source from ext clkin */
 } clock_sys_pll_src;
@@ -299,11 +275,11 @@ typedef enum _clock_sys_pll_src
 /*!< Main clock source definition */
 typedef enum _clock_main_clk_src
 {
-    kCLOCK_MainClkSrcIrc    =   CLK_MAIN_CLK_MUX_DEFINE(0U, 0U),   /*!< main clock source from FRO */
-    kCLOCK_MainClkSrcSysPllin =   CLK_MAIN_CLK_MUX_DEFINE(1U, 0U), /*!< main clock source from pll input */
-    kCLOCK_MainClkSrcWdtOsc =   CLK_MAIN_CLK_MUX_DEFINE(2U, 0U),   /*!< main clock source from watchdog oscillator */
-    kCLOCK_MainClkSrcSysPll =   CLK_MAIN_CLK_MUX_DEFINE(3U, 0U),   /*!< main clock source from system pll */
-}clock_main_clk_src_t;
+    kCLOCK_MainClkSrcIrc = CLK_MAIN_CLK_MUX_DEFINE(0U, 0U),      /*!< main clock source from FRO */
+    kCLOCK_MainClkSrcSysPllin = CLK_MAIN_CLK_MUX_DEFINE(1U, 0U), /*!< main clock source from pll input */
+    kCLOCK_MainClkSrcWdtOsc = CLK_MAIN_CLK_MUX_DEFINE(2U, 0U),   /*!< main clock source from watchdog oscillator */
+    kCLOCK_MainClkSrcSysPll = CLK_MAIN_CLK_MUX_DEFINE(3U, 0U),   /*!< main clock source from system pll */
+} clock_main_clk_src_t;
 
 /*! @brief PLL configuration structure */
 typedef struct _clock_sys_pll
@@ -394,14 +370,22 @@ static inline void CLOCK_SetCoreSysClkDiv(uint32_t value)
 */
 void CLOCK_SetMainClkSrc(clock_main_clk_src_t src);
 
-
+/*
+ *! @brief	Set Fractional generator 0 multiplier value.
+ * @param	mul	: FRG0 multiplier value.
+ * @return	Nothing
+ */
+static inline void CLOCK_SetFRGClkMul(uint32_t mul)
+{
+    SYSCON->UARTFRGDIV = SYSCON_UARTFRGDIV_DIV_MASK;
+    SYSCON->UARTFRGMULT = SYSCON_UARTFRGMULT_MULT(mul);
+}
 /* @} */
 
 /*!
  * @name Get frequency
  * @{
  */
-
 
 /*! @brief  Return Frequency of Main Clock.
  *  @return Frequency of Main Clock.
@@ -430,6 +414,11 @@ uint32_t CLOCK_GetIrcFreq(void);
  *  @return Frequency of SYSOSC
  */
 uint32_t CLOCK_GetSysOscFreq(void);
+
+/*! @brief  Get UART0 frequency
+ * @retval UART0 frequency value.
+ */
+uint32_t CLOCK_GetUartClkFreq(void);
 
 /*! @brief	Return Frequency of selected clock
  *  @return	Frequency of selected clock
@@ -465,7 +454,6 @@ static inline uint32_t CLOCK_GetExtClkFreq(void)
     return g_Ext_Clk_Freq;
 }
 /* @} */
-
 
 /*!
  * @name PLL operations
@@ -508,7 +496,6 @@ void CLOCK_InitSysOsc(uint32_t oscFreq);
  */
 void CLOCK_InitXtalin(uint32_t xtalInFreq);
 
-
 /*! @brief  Deinit SYS OSC
 * @param config oscillator configuration.
 */
@@ -540,8 +527,9 @@ static inline void CLOCK_DeinitWdtOsc(void)
 }
 
 /*! @brief  Set UARTFRG
-* @param target UART clock src.
-*/
+ * @deprecated Do not use this function. Refer to CLOCK_SetFRGClkMul().
+ * @param target UART clock src.
+ */
 bool CLOCK_SetUARTFRGClkFreq(uint32_t freq);
 
 /*! @brief  updates the clock source of the CLKOUT

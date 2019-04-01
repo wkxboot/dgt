@@ -5,38 +5,10 @@
   <version>1.0</version>
   <description>LPC824M201JDH20,LPC824M201JHI33</description>
   <licenseText>
-The Clear BSD License
 Copyright 2016-2018 NXP
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted (subject to the limitations in the
-disclaimer below) provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-* Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE
-GRANTED BY THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
-HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
-IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+SPDX-License-Identifier: BSD-3-Clause
   </licenseText>
   <cpu>
     <name>CM0PLUS</name>
@@ -572,6 +544,31 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </register>
         </cluster>
         <register>
+          <name>MODCFG</name>
+          <description>Module Configuration register. This register provides information about this particular MRT instance.</description>
+          <addressOffset>0xF0</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x1F4</resetValue>
+          <resetMask>0x1FF</resetMask>
+          <fields>
+            <field>
+              <name>NOC</name>
+              <description>Identifies the number of channels in this MRT.(4 channels on this device.)</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>4</bitWidth>
+              <access>read-only</access>
+            </field>
+            <field>
+              <name>NOB</name>
+              <description>Identifies the number of timer bits in this MRT. (31 bits wide on this device.)</description>
+              <bitOffset>4</bitOffset>
+              <bitWidth>5</bitWidth>
+              <access>read-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>IDLE_CH</name>
           <description>Idle channel register. This register returns the number of the first idle channel.</description>
           <addressOffset>0xF4</addressOffset>
@@ -816,9 +813,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <dim>12</dim>
-          <dimIncrement>0x4</dimIncrement>
-          <name>PINASSIGN_DATA[%s]</name>
+          <name>PINASSIGN_DATA0</name>
           <description>Pin assign register</description>
           <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
           <addressOffset>0</addressOffset>
@@ -898,6 +893,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
+          <name>PINASSIGN_DATA1</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x4</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>PINASSIGN2</name>
           <description>Pin assign register 2. Assign movable functions U1_CTS, U1_SCLK, U2_TXD, U2_RXD.</description>
           <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
@@ -931,6 +966,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <field>
               <name>U2_RXD_I</name>
               <description>U2_RXD function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0(= 0) to PIO0_28 (= 0x1C).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PINASSIGN_DATA2</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x8</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
               <bitOffset>24</bitOffset>
               <bitWidth>8</bitWidth>
               <access>read-write</access>
@@ -978,6 +1053,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
+          <name>PINASSIGN_DATA3</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0xC</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>PINASSIGN4</name>
           <description>Pin assign register 4. Assign movable functions SPI0_MOSI, SPI0_MISO, SPI0_SSEL0, SPI0_SSEL1.</description>
           <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
@@ -1011,6 +1126,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <field>
               <name>SPI0_SSEL1_IO</name>
               <description>SPI0_SSEL1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_28 (= 0x1C).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PINASSIGN_DATA4</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x10</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
               <bitOffset>24</bitOffset>
               <bitWidth>8</bitWidth>
               <access>read-write</access>
@@ -1058,6 +1213,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
+          <name>PINASSIGN_DATA5</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x14</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>PINASSIGN6</name>
           <description>Pin assign register 6. Assign movable functions SPI1_MISO, SPI1_SSEL0, SPI1_SSEL1, SCT0_IN0.</description>
           <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
@@ -1091,6 +1286,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <field>
               <name>SCT_PIN0_I</name>
               <description>SCT_PIN0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_28 (= 0x1C).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PINASSIGN_DATA6</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x18</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
               <bitOffset>24</bitOffset>
               <bitWidth>8</bitWidth>
               <access>read-write</access>
@@ -1138,6 +1373,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
+          <name>PINASSIGN_DATA7</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x1C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>PINASSIGN8</name>
           <description>Pin assign register 8. Assign movable functions SCT_OUT1, SCT_OUT2, SCT_OUT3, SCT_OUT4.</description>
           <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
@@ -1171,6 +1446,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <field>
               <name>SCT_OUT4_O</name>
               <description>SCT_OUT4 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_28 (= 0x1C).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PINASSIGN_DATA8</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x20</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
               <bitOffset>24</bitOffset>
               <bitWidth>8</bitWidth>
               <access>read-write</access>
@@ -1218,6 +1533,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
+          <name>PINASSIGN_DATA9</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x24</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>PINASSIGN10</name>
           <description>Pin assign register 10. Assign movable functions, I2C2_SCL, I2C3_SDA, I2C3_SCL, ADC_PINTRIG0.</description>
           <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
@@ -1251,6 +1606,46 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <field>
               <name>ADC_PINTRIG0_I</name>
               <description>ADC_PINTRIG0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_28 (= 0x1C).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PINASSIGN_DATA10</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x28</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
               <bitOffset>24</bitOffset>
               <bitWidth>8</bitWidth>
               <access>read-write</access>
@@ -1298,13 +1693,53 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
+          <name>PINASSIGN_DATA11</name>
+          <description>Pin assign register</description>
+          <alternateGroup>PINASSIGN_PINASSIGN_DATA</alternateGroup>
+          <addressOffset>0x2C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0xFFFFFFFF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>T0_MAT3</name>
+              <description>T0_MAT3 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP0</name>
+              <description>T0_CAP0 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP1</name>
+              <description>T0_CAP1 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T0_CAP2</name>
+              <description>T0_CAP2 function assignment. The value is the pin number to be assigned to this function. The following pins are available: PIO0_0 (= 0) to PIO0_31 (= 0x1F) and from PIO1_0 (=0x20) to PIO1_21(=0x35).</description>
+              <bitOffset>24</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
           <name>PINENABLE0</name>
           <description>Pin enable register 0. Enables fixed-pin functions ACMP_I0, ACMP_I1, SWCLK, SWDIO, XTALIN, XTALOUT, RESET, CLKIN, VDDCMP and so on.</description>
           <addressOffset>0x1C0</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0</resetValue>
-          <resetMask>0</resetMask>
+          <resetValue>0xFFFFFECF</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>ACMP_I1</name>
@@ -2939,6 +3374,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 </enumeratedValue>
               </enumeratedValues>
             </field>
+            <field>
+              <name>GPDATA</name>
+              <description>Data retained during Deep power-down mode.</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>26</bitWidth>
+              <access>read-write</access>
+            </field>
           </fields>
         </register>
       </registers>
@@ -3242,7 +3684,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <dim>2</dim>
           <dimIncrement>0x4</dimIncrement>
           <name>DMA_INMUX_INMUX[%s]</name>
-          <description>Input mux register for DMA trigger input 20. Selects from 18 DMA trigger outputs</description>
+          <description>DMA output trigger selection to become DMA trigger 7 and DMA trigger 8</description>
           <addressOffset>0x4000</addressOffset>
           <size>32</size>
           <access>read-write</access>
@@ -3251,7 +3693,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <fields>
             <field>
               <name>INP</name>
-              <description>Input mux register for SCT input n (n = 0 to 3). 0 = sct input 0 1=sct input 1 2= sct input 2 3= sct gpio input 3 4= adc_thcmp_irq 5 = comparator out 6 = timer ct32b0 match2 7=gpio_int_bmatch 8=arm_txev 9=arm_halted</description>
+              <description>DMA trigger output number (decimal value) for DMA channel n (n = 0 to 17).</description>
               <bitOffset>0</bitOffset>
               <bitWidth>5</bitWidth>
               <access>read-write</access>
@@ -3271,7 +3713,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <fields>
             <field>
               <name>INP_N</name>
-              <description>Input mux register for SCT input n (n = 0 to 3). 0 = sct input 0 1=sct input 1 2= sct input 2 3= sct gpio input 3 4= adc_thcmp_irq 5 = comparator out 6 = timer ct32b0 match2 7=gpio_int_bmatch 8=arm_txev 9=arm_halted</description>
+              <description>Input mux register for SCT input n (n = 0 to 3). 0 = sct input 0 1=sct input 1 2= sct input 2 3= sct input 3 4= adc_thcmp_irq 5 = comparator out 6=arm_txev 7=debug_halted</description>
               <bitOffset>0</bitOffset>
               <bitWidth>4</bitWidth>
               <access>read-write</access>
@@ -3287,7 +3729,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <baseAddress>0x40040000</baseAddress>
       <addressBlock>
         <offset>0</offset>
-        <size>0x30</size>
+        <size>0xFEC</size>
         <usage>registers</usage>
       </addressBlock>
       <registers>
@@ -3387,6 +3829,42 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </field>
           </fields>
         </register>
+        <register>
+          <name>FMSTAT</name>
+          <description>Flash signature generation status bit</description>
+          <addressOffset>0xFE0</addressOffset>
+          <size>32</size>
+          <access>read-only</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>SIGNATURE_DONE</name>
+              <description>This status bit is set at the end of signature computation</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-only</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>FMSTATCLR</name>
+          <description>Clear FLASH signature generation status bit</description>
+          <addressOffset>0xFE8</addressOffset>
+          <size>32</size>
+          <access>write-only</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>SIGNATURE_DONE_CLR</name>
+              <description>When the bit is written to 1, the SIGNATURE_DONE bit is cleared.</description>
+              <bitOffset>1</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>write-only</access>
+            </field>
+          </fields>
+        </register>
       </registers>
     </peripheral>
     <peripheral>
@@ -3396,18 +3874,18 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <baseAddress>0x40044000</baseAddress>
       <addressBlock>
         <offset>0</offset>
-        <size>0x78</size>
+        <size>0x7C</size>
         <usage>registers</usage>
       </addressBlock>
       <registers>
         <register>
-          <name>PIO0</name>
-          <description>Digital I/O control for port 0 pins PIO0</description>
+          <name>PIO0_17</name>
+          <description>Digital I/O control for pins PIO0_17</description>
           <addressOffset>0</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -3571,13 +4049,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO1</name>
-          <description>Digital I/O control for port 0 pins PIO1</description>
+          <name>PIO0_13</name>
+          <description>Digital I/O control for pins PIO0_13</description>
           <addressOffset>0x4</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -3741,13 +4219,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO2</name>
-          <description>Digital I/O control for port 0 pins PIO2</description>
+          <name>PIO0_12</name>
+          <description>Digital I/O control for pins PIO0_12</description>
           <addressOffset>0x8</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -3911,13 +4389,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO3</name>
-          <description>Digital I/O control for port 0 pins PIO3</description>
+          <name>PIO0_5</name>
+          <description>Digital I/O control for pins PIO0_5</description>
           <addressOffset>0xC</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -4081,13 +4559,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO4</name>
-          <description>Digital I/O control for port 0 pins PIO4</description>
+          <name>PIO0_4</name>
+          <description>Digital I/O control for pins PIO0_4</description>
           <addressOffset>0x10</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -4251,13 +4729,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO5</name>
-          <description>Digital I/O control for port 0 pins PIO5</description>
+          <name>PIO0_3</name>
+          <description>Digital I/O control for pins PIO0_3</description>
           <addressOffset>0x14</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -4421,13 +4899,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO6</name>
-          <description>Digital I/O control for port 0 pins PIO6</description>
+          <name>PIO0_2</name>
+          <description>Digital I/O control for pins PIO0_2</description>
           <addressOffset>0x18</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -4591,62 +5069,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO7</name>
-          <description>Digital I/O control for port 0 pins PIO7</description>
+          <name>PIO0_11</name>
+          <description>Digital I/O control for pins PIO0_11</description>
           <addressOffset>0x1C</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x80</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
-            <field>
-              <name>MODE</name>
-              <description>Selects function mode (on-chip pull-up/pull-down resistor control).</description>
-              <bitOffset>3</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>INACTIVE</name>
-                  <description>Inactive. Inactive (no pull-down/pull-up resistor enabled).</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_DOWN</name>
-                  <description>Pull-down. Pull-down resistor enabled.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_UP</name>
-                  <description>Pull-up. Pull-up resistor enabled.</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>REPEATER</name>
-                  <description>Repeater. Repeater mode.</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>HYS</name>
-              <description>Hysteresis.</description>
-              <bitOffset>5</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>ENABLE</name>
-                  <description>Enable</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
             <field>
               <name>INV</name>
               <description>Invert input</description>
@@ -4667,21 +5097,26 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               </enumeratedValues>
             </field>
             <field>
-              <name>OD</name>
-              <description>Open-drain mode.</description>
-              <bitOffset>10</bitOffset>
-              <bitWidth>1</bitWidth>
+              <name>I2CMODE</name>
+              <description>Selects I2C mode.</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>2</bitWidth>
               <access>read-write</access>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable.</description>
+                  <name>STANDARAD_I2C</name>
+                  <description>Standard mode/ Fast-mode I2C.</description>
                   <value>0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>ENABLED</name>
-                  <description>Open-drain mode enabled. Remark: This is not a true open-drain mode.</description>
+                  <name>Standard_GPIO</name>
+                  <description>Standard GPIO functionality. Requires external pull-up for GPIO output function.</description>
                   <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FAST_PLUS_I2C</name>
+                  <description>Fast-mode Plus I2C</description>
+                  <value>0x2</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -4761,62 +5196,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO8</name>
-          <description>Digital I/O control for port 0 pins PIO8</description>
+          <name>PIO0_10</name>
+          <description>Digital I/O control for pins PIO0_10</description>
           <addressOffset>0x20</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x80</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
-            <field>
-              <name>MODE</name>
-              <description>Selects function mode (on-chip pull-up/pull-down resistor control).</description>
-              <bitOffset>3</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>INACTIVE</name>
-                  <description>Inactive. Inactive (no pull-down/pull-up resistor enabled).</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_DOWN</name>
-                  <description>Pull-down. Pull-down resistor enabled.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_UP</name>
-                  <description>Pull-up. Pull-up resistor enabled.</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>REPEATER</name>
-                  <description>Repeater. Repeater mode.</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>HYS</name>
-              <description>Hysteresis.</description>
-              <bitOffset>5</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>ENABLE</name>
-                  <description>Enable</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
             <field>
               <name>INV</name>
               <description>Invert input</description>
@@ -4837,21 +5224,26 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               </enumeratedValues>
             </field>
             <field>
-              <name>OD</name>
-              <description>Open-drain mode.</description>
-              <bitOffset>10</bitOffset>
-              <bitWidth>1</bitWidth>
+              <name>I2CMODE</name>
+              <description>Selects I2C mode.</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>2</bitWidth>
               <access>read-write</access>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable.</description>
+                  <name>STANDARAD_I2C</name>
+                  <description>Standard mode/ Fast-mode I2C.</description>
                   <value>0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>ENABLED</name>
-                  <description>Open-drain mode enabled. Remark: This is not a true open-drain mode.</description>
+                  <name>Standard_GPIO</name>
+                  <description>Standard GPIO functionality. Requires external pull-up for GPIO output function.</description>
                   <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FAST_PLUS_I2C</name>
+                  <description>Fast-mode Plus I2C</description>
+                  <value>0x2</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -4931,13 +5323,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO9</name>
-          <description>Digital I/O control for port 0 pins PIO9</description>
+          <name>PIO0_16</name>
+          <description>Digital I/O control for pins PIO0_16</description>
           <addressOffset>0x24</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -5101,13 +5493,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO10</name>
-          <description>Digital I/O control for port 0 pins PIO10</description>
+          <name>PIO0_15</name>
+          <description>Digital I/O control for pins PIO0_15</description>
           <addressOffset>0x28</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0x4A0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -5177,26 +5569,21 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               </enumeratedValues>
             </field>
             <field>
-              <name>I2CMODE</name>
-              <description>Selects I2C mode.</description>
-              <bitOffset>8</bitOffset>
-              <bitWidth>2</bitWidth>
+              <name>OD</name>
+              <description>Open-drain mode.</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>1</bitWidth>
               <access>read-write</access>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>STANDARAD_I2C</name>
-                  <description>Standard mode/ Fast-mode I2C.</description>
+                  <name>DISABLE</name>
+                  <description>Disable.</description>
                   <value>0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>Standard_GPIO</name>
-                  <description>Standard GPIO functionality. Requires external pull-up for GPIO output function.</description>
+                  <name>ENABLED</name>
+                  <description>Open-drain mode enabled. Remark: This is not a true open-drain mode.</description>
                   <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>FAST_PLUS_I2C</name>
-                  <description>Fast-mode Plus I2C</description>
-                  <value>0x2</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -5276,188 +5663,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO11</name>
-          <description>Digital I/O control for port 0 pins PIO11</description>
+          <name>PIO0_1</name>
+          <description>Digital I/O control for pins PIO0_1</description>
           <addressOffset>0x2C</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0x4A0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
-          <fields>
-            <field>
-              <name>MODE</name>
-              <description>Selects function mode (on-chip pull-up/pull-down resistor control).</description>
-              <bitOffset>3</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>INACTIVE</name>
-                  <description>Inactive. Inactive (no pull-down/pull-up resistor enabled).</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_DOWN</name>
-                  <description>Pull-down. Pull-down resistor enabled.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_UP</name>
-                  <description>Pull-up. Pull-up resistor enabled.</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>REPEATER</name>
-                  <description>Repeater. Repeater mode.</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>HYS</name>
-              <description>Hysteresis.</description>
-              <bitOffset>5</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>ENABLE</name>
-                  <description>Enable</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>INV</name>
-              <description>Invert input</description>
-              <bitOffset>6</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NOT_INVERTED</name>
-                  <description>Input not inverted (HIGH on pin reads as 1; LOW on pin reads as 0).</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INVERTED</name>
-                  <description>Input inverted (HIGH on pin reads as 0, LOW on pin reads as 1).</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>I2CMODE</name>
-              <description>Selects I2C mode.</description>
-              <bitOffset>8</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>STANDARAD_I2C</name>
-                  <description>Standard mode/ Fast-mode I2C.</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>Standard_GPIO</name>
-                  <description>Standard GPIO functionality. Requires external pull-up for GPIO output function.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>FAST_PLUS_I2C</name>
-                  <description>Fast-mode Plus I2C</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>S_MODE</name>
-              <description>Digital filter sample mode.</description>
-              <bitOffset>11</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>S_MODE_0</name>
-                  <description>Bypass input filter.</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>S_MODE_1</name>
-                  <description>1 clock cycle. Input pulses shorter than one filter clock are rejected.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>S_MODE_2</name>
-                  <description>2 clock cycles. Input pulses shorter than two filter clocks are rejected.</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>S_MODE_3</name>
-                  <description>3 clock cycles. Input pulses shorter than three filter clocks are rejected.</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CLK_DIV</name>
-              <description>Select peripheral clock divider for input filter sampling clock. Value 0x7 is reserved.</description>
-              <bitOffset>13</bitOffset>
-              <bitWidth>3</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>CLK_DIV_0</name>
-                  <description>IOCONCLKDIV0</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_1</name>
-                  <description>IOCONCLKDIV1</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_2</name>
-                  <description>IOCONCLKDIV2</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_3</name>
-                  <description>IOCONCLKDIV3</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_4</name>
-                  <description>IOCONCLKDIV4</description>
-                  <value>0x4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_5</name>
-                  <description>IOCONCLKDIV5</description>
-                  <value>0x5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_6</name>
-                  <description>IOCONCLKDIV6</description>
-                  <value>0x6</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>PIO12</name>
-          <description>Digital I/O control for port 0 pins PIO12</description>
-          <addressOffset>0x30</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -5621,13 +5833,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO13</name>
-          <description>Digital I/O control for port 0 pins PIO13</description>
+          <name>PIO0_9</name>
+          <description>Digital I/O control for pins PIO0_9</description>
           <addressOffset>0x34</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -5791,13 +6003,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO14</name>
-          <description>Digital I/O control for port 0 pins PIO14</description>
+          <name>PIO0_8</name>
+          <description>Digital I/O control for pins PIO0_8</description>
           <addressOffset>0x38</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -5961,13 +6173,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO15</name>
-          <description>Digital I/O control for port 0 pins PIO15</description>
+          <name>PIO0_7</name>
+          <description>Digital I/O control for pins PIO0_7</description>
           <addressOffset>0x3C</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -6131,13 +6343,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO16</name>
-          <description>Digital I/O control for port 0 pins PIO16</description>
+          <name>PIO0_6</name>
+          <description>Digital I/O control for pins PIO0_6</description>
           <addressOffset>0x40</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -6301,13 +6513,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO17</name>
-          <description>Digital I/O control for port 0 pins PIO17</description>
+          <name>PIO0_0</name>
+          <description>Digital I/O control for pins PIO0_0</description>
           <addressOffset>0x44</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -6471,13 +6683,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO18</name>
-          <description>Digital I/O control for port 0 pins PIO18</description>
+          <name>PIO0_14</name>
+          <description>Digital I/O control for pins PIO0_14</description>
           <addressOffset>0x48</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -6641,183 +6853,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO19</name>
-          <description>Digital I/O control for port 0 pins PIO19</description>
-          <addressOffset>0x4C</addressOffset>
-          <size>32</size>
-          <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
-          <fields>
-            <field>
-              <name>MODE</name>
-              <description>Selects function mode (on-chip pull-up/pull-down resistor control).</description>
-              <bitOffset>3</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>INACTIVE</name>
-                  <description>Inactive. Inactive (no pull-down/pull-up resistor enabled).</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_DOWN</name>
-                  <description>Pull-down. Pull-down resistor enabled.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULL_UP</name>
-                  <description>Pull-up. Pull-up resistor enabled.</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>REPEATER</name>
-                  <description>Repeater. Repeater mode.</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>HYS</name>
-              <description>Hysteresis.</description>
-              <bitOffset>5</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>ENABLE</name>
-                  <description>Enable</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>INV</name>
-              <description>Invert input</description>
-              <bitOffset>6</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NOT_INVERTED</name>
-                  <description>Input not inverted (HIGH on pin reads as 1; LOW on pin reads as 0).</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INVERTED</name>
-                  <description>Input inverted (HIGH on pin reads as 0, LOW on pin reads as 1).</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>OD</name>
-              <description>Open-drain mode.</description>
-              <bitOffset>10</bitOffset>
-              <bitWidth>1</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>DISABLE</name>
-                  <description>Disable.</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>ENABLED</name>
-                  <description>Open-drain mode enabled. Remark: This is not a true open-drain mode.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>S_MODE</name>
-              <description>Digital filter sample mode.</description>
-              <bitOffset>11</bitOffset>
-              <bitWidth>2</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>S_MODE_0</name>
-                  <description>Bypass input filter.</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>S_MODE_1</name>
-                  <description>1 clock cycle. Input pulses shorter than one filter clock are rejected.</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>S_MODE_2</name>
-                  <description>2 clock cycles. Input pulses shorter than two filter clocks are rejected.</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>S_MODE_3</name>
-                  <description>3 clock cycles. Input pulses shorter than three filter clocks are rejected.</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CLK_DIV</name>
-              <description>Select peripheral clock divider for input filter sampling clock. Value 0x7 is reserved.</description>
-              <bitOffset>13</bitOffset>
-              <bitWidth>3</bitWidth>
-              <access>read-write</access>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>CLK_DIV_0</name>
-                  <description>IOCONCLKDIV0</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_1</name>
-                  <description>IOCONCLKDIV1</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_2</name>
-                  <description>IOCONCLKDIV2</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_3</name>
-                  <description>IOCONCLKDIV3</description>
-                  <value>0x3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_4</name>
-                  <description>IOCONCLKDIV4</description>
-                  <value>0x4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_5</name>
-                  <description>IOCONCLKDIV5</description>
-                  <value>0x5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CLK_DIV_6</name>
-                  <description>IOCONCLKDIV6</description>
-                  <value>0x6</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>PIO20</name>
-          <description>Digital I/O control for port 0 pins PIO20</description>
+          <name>PIO0_28</name>
+          <description>Digital I/O control for pins PIO0_28</description>
           <addressOffset>0x50</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -6981,13 +7023,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO21</name>
-          <description>Digital I/O control for port 0 pins PIO21</description>
+          <name>PIO0_27</name>
+          <description>Digital I/O control for pins PIO0_27</description>
           <addressOffset>0x54</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -7151,13 +7193,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO22</name>
-          <description>Digital I/O control for port 0 pins PIO22</description>
+          <name>PIO0_26</name>
+          <description>Digital I/O control for pins PIO0_26</description>
           <addressOffset>0x58</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -7321,13 +7363,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO23</name>
-          <description>Digital I/O control for port 0 pins PIO23</description>
+          <name>PIO0_25</name>
+          <description>Digital I/O control for pins PIO0_25</description>
           <addressOffset>0x5C</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -7491,13 +7533,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO24</name>
-          <description>Digital I/O control for port 0 pins PIO24</description>
+          <name>PIO0_24</name>
+          <description>Digital I/O control for pins PIO0_24</description>
           <addressOffset>0x60</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -7661,13 +7703,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO25</name>
-          <description>Digital I/O control for port 0 pins PIO25</description>
+          <name>PIO0_23</name>
+          <description>Digital I/O control for pins PIO0_23</description>
           <addressOffset>0x64</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -7831,13 +7873,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO26</name>
-          <description>Digital I/O control for port 0 pins PIO26</description>
+          <name>PIO0_22</name>
+          <description>Digital I/O control for pins PIO0_22</description>
           <addressOffset>0x68</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -8001,13 +8043,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO27</name>
-          <description>Digital I/O control for port 0 pins PIO27</description>
+          <name>PIO0_21</name>
+          <description>Digital I/O control for pins PIO0_21</description>
           <addressOffset>0x6C</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -8171,13 +8213,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO28</name>
-          <description>Digital I/O control for port 0 pins PIO28</description>
+          <name>PIO0_20</name>
+          <description>Digital I/O control for pins PIO0_20</description>
           <addressOffset>0x70</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -8341,13 +8383,183 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <name>PIO29</name>
-          <description>Digital I/O control for port 0 pins PIO29</description>
+          <name>PIO0_19</name>
+          <description>Digital I/O control for pins PIO0_19</description>
           <addressOffset>0x74</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xA0</resetValue>
-          <resetMask>0xFFFFFFE0</resetMask>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MODE</name>
+              <description>Selects function mode (on-chip pull-up/pull-down resistor control).</description>
+              <bitOffset>3</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>INACTIVE</name>
+                  <description>Inactive. Inactive (no pull-down/pull-up resistor enabled).</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PULL_DOWN</name>
+                  <description>Pull-down. Pull-down resistor enabled.</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PULL_UP</name>
+                  <description>Pull-up. Pull-up resistor enabled.</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>REPEATER</name>
+                  <description>Repeater. Repeater mode.</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>HYS</name>
+              <description>Hysteresis.</description>
+              <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <description>Disable</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <description>Enable</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>INV</name>
+              <description>Invert input</description>
+              <bitOffset>6</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NOT_INVERTED</name>
+                  <description>Input not inverted (HIGH on pin reads as 1; LOW on pin reads as 0).</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INVERTED</name>
+                  <description>Input inverted (HIGH on pin reads as 0, LOW on pin reads as 1).</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>OD</name>
+              <description>Open-drain mode.</description>
+              <bitOffset>10</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <description>Disable.</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLED</name>
+                  <description>Open-drain mode enabled. Remark: This is not a true open-drain mode.</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>S_MODE</name>
+              <description>Digital filter sample mode.</description>
+              <bitOffset>11</bitOffset>
+              <bitWidth>2</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>S_MODE_0</name>
+                  <description>Bypass input filter.</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>S_MODE_1</name>
+                  <description>1 clock cycle. Input pulses shorter than one filter clock are rejected.</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>S_MODE_2</name>
+                  <description>2 clock cycles. Input pulses shorter than two filter clocks are rejected.</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>S_MODE_3</name>
+                  <description>3 clock cycles. Input pulses shorter than three filter clocks are rejected.</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>CLK_DIV</name>
+              <description>Select peripheral clock divider for input filter sampling clock. Value 0x7 is reserved.</description>
+              <bitOffset>13</bitOffset>
+              <bitWidth>3</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>CLK_DIV_0</name>
+                  <description>IOCONCLKDIV0</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CLK_DIV_1</name>
+                  <description>IOCONCLKDIV1</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CLK_DIV_2</name>
+                  <description>IOCONCLKDIV2</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CLK_DIV_3</name>
+                  <description>IOCONCLKDIV3</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CLK_DIV_4</name>
+                  <description>IOCONCLKDIV4</description>
+                  <value>0x4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CLK_DIV_5</name>
+                  <description>IOCONCLKDIV5</description>
+                  <value>0x5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CLK_DIV_6</name>
+                  <description>IOCONCLKDIV6</description>
+                  <value>0x6</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PIO0_18</name>
+          <description>Digital I/O control for pins PIO0_18</description>
+          <addressOffset>0x78</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0x90</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>MODE</name>
@@ -8983,11 +9195,11 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0x3</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>BYPASS</name>
-              <description>oscillator (Xtal) Test Mode input (Active High)</description>
+              <description>Bypass system oscillator</description>
               <bitOffset>0</bitOffset>
               <bitWidth>1</bitWidth>
               <access>read-write</access>
@@ -9008,7 +9220,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0x1FF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIVSEL</name>
@@ -9232,22 +9444,22 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <access>read-write</access>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>SEL_0</name>
+                  <name>IRC_Osc</name>
                   <description>IRC Oscillator.</description>
                   <value>0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>SEL_1</name>
+                  <name>PLL_in</name>
                   <description>PLL input.</description>
                   <value>0x1</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>SEL_2</name>
+                  <name>WDTOSC</name>
                   <description>Watchdog oscillator.</description>
                   <value>0x2</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>SEL_3</name>
+                  <name>PLL_out</name>
                   <description>PLL output.</description>
                   <value>0x3</value>
                 </enumeratedValue>
@@ -9821,7 +10033,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0x3</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>SEL</name>
@@ -9831,22 +10043,22 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <access>read-write</access>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>SEL_0</name>
+                  <name>IRC_osc</name>
                   <description>IRC oscillator</description>
                   <value>0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>SEL_1</name>
+                  <name>SYSOSC</name>
                   <description>Crystal oscillator (SYSOSC)</description>
                   <value>0x1</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>SEL_2</name>
+                  <name>WDTOSC</name>
                   <description>Watchdog oscillator</description>
                   <value>0x2</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>SEL_3</name>
+                  <name>MAIN_CLK</name>
                   <description>Main clock</description>
                   <value>0x3</value>
                 </enumeratedValue>
@@ -9922,7 +10134,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </register>
         <register>
           <name>UARTFRGMULT</name>
-          <description>USART1 to USART4 common fractional generator divider value</description>
+          <description>USART common fractional generator divider value</description>
           <addressOffset>0xF4</addressOffset>
           <size>32</size>
           <access>read-write</access>
@@ -9988,7 +10200,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10006,7 +10218,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10024,7 +10236,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10042,7 +10254,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10060,7 +10272,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10078,7 +10290,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10096,7 +10308,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
-          <resetMask>0xFF</resetMask>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>DIV</name>
@@ -10905,8 +11117,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <addressOffset>0x238</addressOffset>
           <size>32</size>
           <access>read-write</access>
-          <resetValue>0xEDF8</resetValue>
-          <resetMask>0xFFFF</resetMask>
+          <resetValue>0xEDF0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
           <fields>
             <field>
               <name>IRCOUT_PD</name>
@@ -12958,6 +13170,25 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 </enumeratedValue>
               </enumeratedValues>
             </field>
+            <field>
+              <name>MSTIDLEEN</name>
+              <description>Determines whether an interrupt occurs when the MSTIDLE enable</description>
+              <bitOffset>8</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-write</access>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>MSTIDLEEN_0</name>
+                  <description>No interrupt will be generated when MSTIDLE enabled.</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>MSTIDLEEN_1</name>
+                  <description>An interrupt will be generated when MSTIDLE enabled.</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
           </fields>
         </register>
         <register>
@@ -13008,6 +13239,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <name>SSDEN</name>
               <description>Writing 1 clears the corresponding bits in the INTENSET register.</description>
               <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>write-only</access>
+            </field>
+            <field>
+              <name>MSTIDLE</name>
+              <description>Writing 1 clears the corresponding bits in the INTENSET register.</description>
+              <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
               <access>write-only</access>
             </field>
@@ -13457,6 +13695,13 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <name>SSD</name>
               <description>Slave Select Deassert.</description>
               <bitOffset>5</bitOffset>
+              <bitWidth>1</bitWidth>
+              <access>read-only</access>
+            </field>
+            <field>
+              <name>MSTIDLE</name>
+              <description>Master Idle status flag.</description>
+              <bitOffset>8</bitOffset>
               <bitWidth>1</bitWidth>
               <access>read-only</access>
             </field>
@@ -14610,7 +14855,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <baseAddress>0x50004000</baseAddress>
       <addressBlock>
         <offset>0</offset>
-        <size>0x528</size>
+        <size>0x530</size>
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
@@ -15135,7 +15380,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               <name>OUT</name>
               <description>Writing a 1 to bit n forces the corresponding output HIGH. Writing a 0 forces the corresponding output LOW (output 0 = bit 0, output 1 = bit 1, etc.). The number of bits = number of outputs in this SCT.</description>
               <bitOffset>0</bitOffset>
-              <bitWidth>8</bitWidth>
+              <bitWidth>6</bitWidth>
               <access>read-write</access>
             </field>
           </fields>
@@ -15631,9 +15876,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <dim>8</dim>
-          <dimIncrement>0x4</dimIncrement>
-          <name>SCTCAP[%s]</name>
+          <name>SCTCAP0</name>
           <description>SCT capture register of capture channel</description>
           <alternateGroup>CAP_MATCH</alternateGroup>
           <addressOffset>0x100</addressOffset>
@@ -15659,9 +15902,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <dim>8</dim>
-          <dimIncrement>0x4</dimIncrement>
-          <name>SCTMATCH[%s]</name>
+          <name>SCTMATCH0</name>
           <description>SCT match value register of match channels</description>
           <alternateGroup>CAP_MATCH</alternateGroup>
           <addressOffset>0x100</addressOffset>
@@ -15687,9 +15928,371 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <dim>8</dim>
-          <dimIncrement>0x4</dimIncrement>
-          <name>SCTCAPCTRL[%s]</name>
+          <name>SCTCAP1</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x104</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH1</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x104</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAP2</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x108</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH2</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x108</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAP3</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x10C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH3</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x10C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAP4</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x110</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH4</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x110</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAP5</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x114</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH5</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x114</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAP6</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x118</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH6</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x118</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAP7</name>
+          <description>SCT capture register of capture channel</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x11C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPn_L</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the lower 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPn_H</name>
+              <description>When UNIFY = 0, read the 16-bit counter value at which this register was last captured. When UNIFY = 1, read the upper 16 bits of the 32-bit value at which this register was last captured.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCH7</name>
+          <description>SCT match value register of match channels</description>
+          <alternateGroup>CAP_MATCH</alternateGroup>
+          <addressOffset>0x11C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>MATCHn_L</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the L counter. When UNIFY = 1, read or write the lower 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MATCHn_H</name>
+              <description>When UNIFY = 0, read or write the 16-bit value to be compared to the H counter. When UNIFY = 1, read or write the upper 16 bits of the 32-bit value to be compared to the unified counter.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL0</name>
           <description>SCT capture control register</description>
           <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
           <addressOffset>0x200</addressOffset>
@@ -15715,12 +16318,374 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <register>
-          <dim>8</dim>
-          <dimIncrement>0x4</dimIncrement>
-          <name>SCTMATCHREL[%s]</name>
+          <name>SCTMATCHREL0</name>
           <description>SCT match reload value register</description>
           <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
           <addressOffset>0x200</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL1</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x204</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL1</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x204</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL2</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x208</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL2</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x208</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL3</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x20C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL3</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x20C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL4</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x210</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL4</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x210</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL5</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x214</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL5</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x214</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL6</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x218</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL6</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x218</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>RELOADn_L</name>
+              <description>When UNIFY = 0, specifies the 16-bit value to be loaded into the MATCHn_L register. When UNIFY = 1, specifies the lower 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RELOADn_H</name>
+              <description>When UNIFY = 0, specifies the 16-bit to be loaded into the MATCHn_H register. When UNIFY = 1, specifies the upper 16 bits of the 32-bit value to be loaded into the MATCHn register.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>16</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTCAPCTRL7</name>
+          <description>SCT capture control register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x21C</addressOffset>
+          <size>32</size>
+          <access>read-write</access>
+          <resetValue>0</resetValue>
+          <resetMask>0xFFFFFFFF</resetMask>
+          <fields>
+            <field>
+              <name>CAPCONn_L</name>
+              <description>If bit m is one, event m causes the CAPn_L (UNIFY = 0) or the CAPn (UNIFY = 1) register to be loaded (event 0 = bit 0, event 1 = bit 1, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>0</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CAPCONn_H</name>
+              <description>If bit m is one, event m causes the CAPn_H (UNIFY = 0) register to be loaded (event 0 = bit 16, event 1 = bit 17, etc.). The number of bits = number of match/captures in this SCT.</description>
+              <bitOffset>16</bitOffset>
+              <bitWidth>8</bitWidth>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SCTMATCHREL7</name>
+          <description>SCT match reload value register</description>
+          <alternateGroup>CAPCTRL_MATCHREL</alternateGroup>
+          <addressOffset>0x21C</addressOffset>
           <size>32</size>
           <access>read-write</access>
           <resetValue>0</resetValue>
@@ -15761,7 +16726,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <name>STATEMSKn</name>
                 <description>If bit m is one, event n happens in state m of the counter selected by the HEVENT bit (n = event number, m = state number; state 0 = bit 0, state 1= bit 1, etc.). The number of bits = number of states in this SCT.</description>
                 <bitOffset>0</bitOffset>
-                <bitWidth>6</bitWidth>
+                <bitWidth>8</bitWidth>
                 <access>read-write</access>
               </field>
             </fields>
@@ -15946,7 +16911,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </register>
         </cluster>
         <cluster>
-          <dim>5</dim>
+          <dim>6</dim>
           <dimIncrement>0x8</dimIncrement>
           <name>OUT[%s]</name>
           <description>no description available</description>
@@ -15997,7 +16962,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <baseAddress>0x50008000</baseAddress>
       <addressBlock>
         <offset>0</offset>
-        <size>0x50C</size>
+        <size>0x51C</size>
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
@@ -16319,7 +17284,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </fields>
         </register>
         <cluster>
-          <dim>17</dim>
+          <dim>18</dim>
           <dimIncrement>0x10</dimIncrement>
           <name>CHANNEL[%s]</name>
           <description>no description available</description>

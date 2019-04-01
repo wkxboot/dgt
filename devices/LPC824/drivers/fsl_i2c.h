@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2016, Freescale Semiconductor, Inc.
  * Copyright 2016-2017 NXP
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
  *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef _FSL_I2C_H_
 #define _FSL_I2C_H_
@@ -42,6 +16,11 @@
  * Definitions
  ******************************************************************************/
 
+/* Macro gate for enable/dsiable I2C transactional APIs, 1 for enable, 0 for disable. */
+#ifndef FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS
+#define FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS 1
+#endif
+
 #define I2C_CFG_MASK 0x1f
 
 /*!
@@ -53,13 +32,13 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief I2C driver version 2.0.1. */
-#define FSL_I2C_DRIVER_VERSION (MAKE_VERSION(2, 0, 1))
+/*! @brief I2C driver version 2.0.2. */
+#define FSL_I2C_DRIVER_VERSION (MAKE_VERSION(2, 0, 2))
 /*@}*/
 
 /*! @brief Timeout times for waiting flag. */
 #ifndef I2C_WAIT_TIMEOUT
-#define I2C_WAIT_TIMEOUT 1000U /* Define to zero means keep waiting until the flag is assert/deassert. */
+#define I2C_WAIT_TIMEOUT 0U /* Define to zero means keep waiting until the flag is assert/deassert. */
 #endif
 
 /* definitions for MSTCODE bits in I2C Status register STAT */
@@ -384,7 +363,6 @@ struct _i2c_slave_handle
     void *userData;                         /*!< Callback parameter passed to callback. */
 };
 
-
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -499,7 +477,6 @@ static inline void I2C_MasterEnable(I2C_Type *base, bool enable)
         base->CFG = (base->CFG & I2C_CFG_MASK) & ~I2C_CFG_MSTEN_MASK;
     }
 }
-
 
 /*@}*/
 
@@ -705,6 +682,7 @@ status_t I2C_MasterTransferBlocking(I2C_Type *base, i2c_master_transfer_t *xfer)
 
 /*@}*/
 
+#if defined(FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS) && (FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS)
 /*! @name Non-blocking */
 /*@{*/
 
@@ -785,6 +763,7 @@ void I2C_MasterTransferHandleIRQ(I2C_Type *base, void *i2cHandle);
 
 /*! @name Slave initialization and deinitialization */
 /*@{*/
+#endif /* FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS */
 
 /*!
  * @brief Provides a default configuration for the I2C slave peripheral.
@@ -920,6 +899,7 @@ status_t I2C_SlaveReadBlocking(I2C_Type *base, uint8_t *rxBuff, size_t rxSize);
 
 /*@}*/ /* end of Slave bus operations */
 
+#if defined(FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS) && (FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS)
 /*! @name Slave non-blocking */
 /*@{*/
 
@@ -1076,6 +1056,7 @@ void I2C_SlaveTransferHandleIRQ(I2C_Type *base, void *i2cHandle);
 /*@}*/ /* end of Slave IRQ handler */
 
 /*! @} */ /* end of i2c_slave_driver */
+#endif    /* FSL_SDK_ENABLE_I2C_DRIVER_TRANSACTIONAL_APIS */
 
 #if defined(__cplusplus)
 }
