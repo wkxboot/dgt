@@ -48,12 +48,23 @@
  * Definitions
  ******************************************************************************/
 
+#define BOARD_LED_CTRL_GPIO      GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_LED_CTRL_PORT      0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_LED_CTRL_PIN       23U                           /*!<@brief 0U pin index: 23 */
+
+#define BOARD_HX711_DOUT_GPIO    GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_HX711_DOUT_PORT    0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_HX711_DOUT_PIN     11U                           /*!<@brief 0U pin index: 23 */
+
+
+#define BOARD_HX711_SCLK_GPIO    GPIO                          /*!<@brief GPIO device name: GPIO */
+#define BOARD_HX711_SCLK_PORT    0U                            /*!<@brief PORT device name: 0U */
+#define BOARD_HX711_SCLK_PIN     10U                           /*!<@brief 0U pin index: 23 */
+
 int board_init();
 void bsp_sys_led_turn_on();
 void bsp_sys_led_turn_off();
 void bsp_sys_led_toggle();
-void bsp_485_enable_read();
-void bsp_485_enable_write();
 /*
 * @brief 硬件us级延时
 * @param us 延时长度

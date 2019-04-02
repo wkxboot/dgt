@@ -75,11 +75,11 @@ int main(void)
     protocol_task_msg_q_id = osMessageCreate(osMessageQ(protocol_task_msg_q),protocol_task_hdl);
     log_assert(protocol_task_msg_q_id);  
     /*看门狗任务*/
-    osThreadDef(watch_dog_task, watch_dog_task, osPriorityBelowNormal, 0, 160);
+    osThreadDef(watch_dog_task, watch_dog_task, osPriorityBelowNormal, 0, 200);
     watch_dog_task_hdl = osThreadCreate(osThread(watch_dog_task), NULL);
     log_assert(watch_dog_task_hdl);
     /*adc任务*/
-    osThreadDef(adc_task, adc_task, osPriorityAboveNormal, 0, 160);
+    osThreadDef(adc_task, adc_task, osPriorityAboveNormal, 0, 200);
     adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
     log_assert(adc_task_hdl);
     /*电子秤功能任务*/
@@ -87,7 +87,7 @@ int main(void)
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
     log_assert(scale_task_hdl);
     /*通信协议任务*/
-    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 160);
+    osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 200);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
     log_assert(protocol_task_hdl);
     

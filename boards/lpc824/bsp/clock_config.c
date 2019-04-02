@@ -1,38 +1,4 @@
 /*
- * The Clear BSD License
- * Copyright (c) 2018, NXP Semiconductors, Inc.
- * All rights reserved.
- *
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- * that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
  * How to set up clock using clock driver functions:
  *
  * 1. Setup clock sources.
@@ -44,11 +10,11 @@
 
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Clocks v4.1
+product: Clocks v5.0
 processor: LPC824
-package_id: LPC824M201JHI33
+package_id: LPC824M201JDH20
 mcu_data: ksdk2_0
-processor_version: 0.0.1
+processor_version: 5.0.0
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 
 #include "fsl_power.h"
@@ -70,105 +36,62 @@ extern uint32_t SystemCoreClock;
  ******************************************************************************/
 void BOARD_InitBootClocks(void)
 {
-    BOARD_BootClockIRC12M();
+    BOARD_BootClockRUN();
 }
 
 /*******************************************************************************
- ******************** Configuration BOARD_BootClockIRC12M **********************
+ ********************** Configuration BOARD_BootClockRUN ***********************
  ******************************************************************************/
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!Configuration
-name: BOARD_BootClockIRC12M
+name: BOARD_BootClockRUN
 called_from_default_init: true
 outputs:
-- {id: ADC_clock.outFreq, value: 12 MHz}
-- {id: I2C0_clock.outFreq, value: 12 MHz}
-- {id: I2C1_clock.outFreq, value: 12 MHz}
-- {id: I2C2_clock.outFreq, value: 12 MHz}
+- {id: ADC_clock.outFreq, value: 30 MHz}
+- {id: I2C0_clock.outFreq, value: 30 MHz}
+- {id: I2C1_clock.outFreq, value: 30 MHz}
+- {id: I2C2_clock.outFreq, value: 30 MHz}
+- {id: I2C3_clock.outFreq, value: 30 MHz}
+- {id: IOCON0_clock.outFreq, value: 30 MHz}
 - {id: LowPower_clock.outFreq, value: 10 kHz}
-- {id: SPI0_clock.outFreq, value: 12 MHz}
-- {id: SPI1_clock.outFreq, value: 12 MHz}
-- {id: SYSPLL_clock.outFreq, value: 12 MHz}
-- {id: System_clock.outFreq, value: 12 MHz}
-- {id: divto750k_clock.outFreq, value: 750 kHz}
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-
-/*******************************************************************************
- * Variables for BOARD_BootClockIRC12M configuration
- ******************************************************************************/
-/*******************************************************************************
- * Code for BOARD_BootClockIRC12M configuration
- ******************************************************************************/
-void BOARD_BootClockIRC12M(void)
-{
-    /*!< Set up the clock sources */
-    /*!< Set up IRC */
-    POWER_DisablePD(kPDRUNCFG_PD_IRC_OUT); /*!< Ensure FRO is on  */
-    POWER_DisablePD(kPDRUNCFG_PD_IRC);     /*!< Ensure FRO is on  */
-    CLOCK_Select(kSYSPLL_From_Irc);        /*!< set IRC to pll select */
-    clock_sys_pll_t config;
-    config.src = kCLOCK_SysPllSrcIrc;          /*!< set pll src  */
-    config.targetFreq = 12000000U;             /*!< set pll target freq */
-    CLOCK_InitSystemPll(&config);              /*!< set parameters */
-    CLOCK_SetMainClkSrc(kCLOCK_MainClkSrcIrc); /*!< slecte irc for main clock */
-    CLOCK_Select(kCLKOUT_From_Irc);            /*!< slecte IRC for CLKOUT */
-    CLOCK_SetCoreSysClkDiv(1U);
-    /*!< Set SystemCoreClock variable. */
-    SystemCoreClock = BOARD_BOOTCLOCKIRC12M_CORE_CLOCK;
-}
-
-/*******************************************************************************
- ******************** Configuration BOARD_BootClockPll24M **********************
- ******************************************************************************/
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-!!Configuration
-name: BOARD_BootClockPll24M
-outputs:
-- {id: ADC_clock.outFreq, value: 24 MHz}
-- {id: I2C0_clock.outFreq, value: 24 MHz}
-- {id: I2C1_clock.outFreq, value: 24 MHz}
-- {id: I2C2_clock.outFreq, value: 24 MHz}
-- {id: LowPower_clock.outFreq, value: 10 kHz}
-- {id: SPI0_clock.outFreq, value: 24 MHz}
-- {id: SPI1_clock.outFreq, value: 24 MHz}
-- {id: SYSPLL_clock.outFreq, value: 24 MHz}
-- {id: System_clock.outFreq, value: 24 MHz}
+- {id: SPI0_clock.outFreq, value: 30 MHz}
+- {id: SPI1_clock.outFreq, value: 30 MHz}
+- {id: SYSPLL_clock.outFreq, value: 60 MHz}
+- {id: System_clock.outFreq, value: 30 MHz}
+- {id: UART0_clock.outFreq, value: 60 MHz}
+- {id: UART1_clock.outFreq, value: 60 MHz}
+- {id: UART2_clock.outFreq, value: 60 MHz}
+- {id: WWDT_clock.outFreq, value: 10 kHz}
 - {id: divto750k_clock.outFreq, value: 750 kHz}
 settings:
+- {id: SYSCON.DIV.scale, value: '256'}
+- {id: SYSCON.IOCONCLKDIV0.scale, value: '2', locked: true}
 - {id: SYSCON.MAINCLKSEL.sel, value: SYSCON.PLL}
-- {id: SYSCON.M_MULT.scale, value: '2'}
+- {id: SYSCON.MULT.scale, value: '256'}
+- {id: SYSCON.M_MULT.scale, value: '5', locked: true}
+- {id: SYSCON.N_DIV.scale, value: '1', locked: true}
+- {id: SYSCON.SYSAHBCLKDIV.scale, value: '2', locked: true}
+- {id: SYSCON.USARTCLKDIV.scale, value: '1', locked: true}
+- {id: SYSCON.WDT_DIV.scale, value: '60', locked: true}
+- {id: SYSCON_PDRUNCFG0_PDEN_WDT_OSC_CFG, value: Power_up}
+- {id: UARTFRGConfig, value: Enabled}
+sources:
+- {id: SYSCON.wwdt_osc.outFreq, value: 600 kHz}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 
 /*******************************************************************************
- * Variables for BOARD_BootClockPll24M configuration
+ * Variables for BOARD_BootClockRUN configuration
  ******************************************************************************/
 /*******************************************************************************
- * Code for BOARD_BootClockPll24M configuration
+ * Code for BOARD_BootClockRUN configuration
  ******************************************************************************/
-void BOARD_BootClockPll24M(void)
-{
-    /*!< Set up the clock sources */
-    /*!< Set up IRC */
-    POWER_DisablePD(kPDRUNCFG_PD_IRC_OUT); /*!< Ensure FRO is on  */
-    POWER_DisablePD(kPDRUNCFG_PD_IRC);     /*!< Ensure FRO is on  */
-    CLOCK_Select(kSYSPLL_From_Irc);        /*!< set IRC to pll select */
-    clock_sys_pll_t config;
-    config.src = kCLOCK_SysPllSrcIrc;             /*!< set pll src  */
-    config.targetFreq = 24000000U;                /*!< set pll target freq */
-    CLOCK_InitSystemPll(&config);                 /*!< set parameters */
-    CLOCK_SetMainClkSrc(kCLOCK_MainClkSrcSysPll); /*!< slecte syspll for main clock */
-    CLOCK_Select(kCLKOUT_From_Irc);               /*!< slecte IRC for CLKOUT */
-    CLOCK_SetCoreSysClkDiv(1U);
-    /*!< Set SystemCoreClock variable. */
-    SystemCoreClock = BOARD_BOOTCLOCKPLL24M_CORE_CLOCK;
-}
-
-void BOARD_BootClockPll30M(void)
+void BOARD_BootClockRUN(void)
 {
     /*!< Set up the clock sources */
     /*!< Set up IRC */
     POWER_DisablePD(kPDRUNCFG_PD_IRC_OUT);                   /*!< Ensure IRC OUT is on  */
     POWER_DisablePD(kPDRUNCFG_PD_IRC);                   /*!< Ensure IRC is on  */
+    POWER_DisablePD(kPDRUNCFG_PD_SYSOSC);                  /*!< Ensure SYSOSC is on */
     CLOCK_Select(kSYSPLL_From_Irc);                         /*!< set IRC to pll select */
     clock_sys_pll_t config;
     config.src = kCLOCK_SysPllSrcIrc;                           /*!< set pll src  */
@@ -179,9 +102,11 @@ void BOARD_BootClockPll30M(void)
     CLOCK_InitWdtOsc(kCLOCK_WdtAnaFreq600KHZ ,(29+1)*2);
     CLOCK_Select(kCLKOUT_From_Irc);                         /*!< select IRC for CLKOUT */
     CLOCK_SetCoreSysClkDiv(2U);
+    CLOCK_SetClkDivider(kCLOCK_IOCONCLKDiv0, 2U);  /*!< set IOCOMCLK0 div */
     CLOCK_SetClkDivider(kCLOCK_DivUsartClk, 1U);     /*!< set UART div */
     SYSCON->UARTFRGDIV = SYSCON_UARTFRGDIV_DIV_MASK;            /*!> Set UARTFRGDIV */
     CLOCK_SetUARTFRGMULT(0U);                       /*!< Set UARTFRGMULT */
     /*!< Set SystemCoreClock variable. */
-    SystemCoreClock = BOARD_BOOTCLOCKPLL30M_CORE_CLOCK;
+    SystemCoreClock = BOARD_BOOTCLOCKRUN_CORE_CLOCK;
 }
+

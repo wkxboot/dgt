@@ -46,17 +46,11 @@ static void bsp_hx711_comm_if_init();
 /*板级初始化*/
 int board_init()
 {
-    /* Enable clock of usart1. */   
-    CLOCK_EnableClock(kCLOCK_Uart1);
-    /* Ser DIV of uart0. */
-    CLOCK_SetClkDivider(kCLOCK_DivUsartClk,1U);  
-    /* Enable clock of i2c1. */   
-    CLOCK_EnableClock(kCLOCK_I2c1);
- 
-    BOARD_InitPins();
-    BOARD_BootClockPll24M();
     bsp_sys_led_ctrl_pin_init();
     bsp_hx711_comm_if_init();
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+
 
     return 0;
 }
@@ -66,11 +60,11 @@ int board_init()
 * @brief 硬件us级延时
 * @param us 延时长度
 * @return 无
-* @note 不太准确 24MHz下相差 10%
+* @note 不太准确 30MHz
 */
 void bsp_hal_delay(uint32_t us)
 {
-    for (uint32_t i = 0; i < 2 * us ;i++) {
+    for (uint32_t i = 0; i < 3 * us ;i++) {
          __ASM("NOP");
     }
 }
@@ -107,7 +101,7 @@ static void bsp_hx711_comm_if_init()
 
 void bsp_hx711_sclk_rise(void)
 {
- GPIO_PortSet(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
+    GPIO_PortSet(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
 }
  /*
  * @brief hx711时钟下降沿
@@ -117,7 +111,7 @@ void bsp_hx711_sclk_rise(void)
  */
 void bsp_hx711_sclk_fall(void)
 {
- GPIO_PortClear(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
+    GPIO_PortClear(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
 }
 
 /*
@@ -129,7 +123,7 @@ void bsp_hx711_sclk_fall(void)
 */
 uint8_t bsp_hx711_read_dout_status(void)
 {
-  return GPIO_PinRead(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT,BOARD_HX711_DOUT_PIN);
+    return GPIO_PinRead(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT,BOARD_HX711_DOUT_PIN);
 }
 
 
@@ -143,28 +137,29 @@ uint8_t bsp_hx711_read_dout_status(void)
 
 static void bsp_sys_led_ctrl_pin_init()
 {
-  gpio_pin_config_t config = {
-  kGPIO_DigitalOutput, 0,
-  };
- GPIO_PortInit(BOARD_INITPINS_LED_CTRL_GPIO, BOARD_INITPINS_LED_CTRL_PORT);
- GPIO_PinInit(BOARD_INITPINS_LED_CTRL_GPIO, BOARD_INITPINS_LED_CTRL_PORT, BOARD_INITPINS_LED_CTRL_PIN ,&config);
+    gpio_pin_config_t config =
+    {
+        kGPIO_DigitalOutput, 0,
+    };
+    GPIO_PortInit(BOARD_LED_CTRL_GPIO, BOARD_LED_CTRL_PORT);
+    GPIO_PinInit(BOARD_LED_CTRL_GPIO, BOARD_LED_CTRL_PORT, BOARD_LED_CTRL_PIN ,&config);
 }
 
 
 /*led指示灯点亮*/
 void bsp_sys_led_turn_on()
 {
- GPIO_PortSet(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,(1<<BOARD_INITPINS_LED_CTRL_PIN));  
+    GPIO_PortSet(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,(1<<BOARD_LED_CTRL_PIN));  
 }
 /*led指示灯关闭*/
 void bsp_sys_led_turn_off()
 {
- GPIO_PortClear(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,(1<<BOARD_INITPINS_LED_CTRL_PIN));
+    GPIO_PortClear(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,(1<<BOARD_LED_CTRL_PIN));
 }
 /*led指示灯取反状态*/
 void bsp_sys_led_toggle()
 {
- GPIO_PortToggle(BOARD_INITPINS_LED_CTRL_GPIO,BOARD_INITPINS_LED_CTRL_PORT,(1<<BOARD_INITPINS_LED_CTRL_PIN));
+    GPIO_PortToggle(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,(1<<BOARD_LED_CTRL_PIN));
 }
 
 

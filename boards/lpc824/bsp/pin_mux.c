@@ -7,25 +7,25 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v4.1
+product: Pins v5.0
 processor: LPC824
 package_id: LPC824M201JDH20
 mcu_data: ksdk2_0
-processor_version: 4.0.1
+processor_version: 5.0.0
 pin_labels:
-- {pin_num: '1', pin_signal: PIO0_23/ADC_3/ACMP_I4, label: LED, identifier: LED_CTRL}
+- {pin_num: '1', pin_signal: PIO0_23/ADC_3/ACMP_I4, label: LED, identifier: LED_CTRL;LED}
 - {pin_num: '2', pin_signal: PIO0_17/ADC_9, label: RWE_485, identifier: RWE_485_CTRL}
 - {pin_num: '3', pin_signal: PIO0_13/ADC_10, label: DEBUG_RX}
 - {pin_num: '20', pin_signal: PIO0_14/ACMP_I3/ADC_2, label: DEBUG_TX}
 - {pin_num: '4', pin_signal: PIO0_12, label: AD_SPI_DO, identifier: AD_SPI_DO}
-- {pin_num: '6', pin_signal: PIO0_4/ADC_11, label: TX_485}
-- {pin_num: '19', pin_signal: PIO0_0/ACMP_I1, label: RX_485}
+- {pin_num: '6', pin_signal: PIO0_4/ADC_11, label: TX_232}
+- {pin_num: '19', pin_signal: PIO0_0/ACMP_I1, label: RX_232}
 - {pin_num: '12', pin_signal: PIO0_1/ACMP_I2/CLKIN, label: AD_SYNC, identifier: AD_SYNC_CTRL}
-- {pin_num: '9', pin_signal: PIO0_11/I2C0_SDA, label: AD_SPI_DI, identifier: AD_SPI_DI}
-- {pin_num: '10', pin_signal: PIO0_10/I2C0_SCL, label: AD_SPI_CLK, identifier: AD_SPI_CLK}
 - {pin_num: '11', pin_signal: PIO0_15, label: AD_SPI_CS, identifier: AD_SPI_CS}
 - {pin_num: '13', pin_signal: PIO0_9/XTALOUT, label: EEPROM_SDA}
 - {pin_num: '14', pin_signal: PIO0_8/XTALIN, label: EEPROM_SCL}
+- {pin_num: '9', pin_signal: PIO0_11/I2C0_SDA, label: DOUT, identifier: DOUT}
+- {pin_num: '10', pin_signal: PIO0_10/I2C0_SCL, label: CLK, identifier: CLK}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -55,17 +55,11 @@ BOARD_InitPins:
   - {pin_num: '20', peripheral: USART0, signal: TXD, pin_signal: PIO0_14/ACMP_I3/ADC_2}
   - {pin_num: '19', peripheral: USART1, signal: RXD, pin_signal: PIO0_0/ACMP_I1}
   - {pin_num: '6', peripheral: USART1, signal: TXD, pin_signal: PIO0_4/ADC_11}
-  - {pin_num: '12', peripheral: GPIO, signal: 'PIO0, 1', pin_signal: PIO0_1/ACMP_I2/CLKIN, direction: OUTPUT, gpio_init_state: 'false'}
   - {pin_num: '8', peripheral: SWD, signal: SWDIO, pin_signal: SWDIO/PIO0_2}
   - {pin_num: '7', peripheral: SWD, signal: SWCLK, pin_signal: SWCLK/PIO0_3}
-  - {pin_num: '1', peripheral: GPIO, signal: 'PIO0, 23', pin_signal: PIO0_23/ADC_3/ACMP_I4, direction: OUTPUT, gpio_init_state: 'false'}
-  - {pin_num: '2', peripheral: GPIO, signal: 'PIO0, 17', pin_signal: PIO0_17/ADC_9, direction: OUTPUT, gpio_init_state: 'false'}
-  - {pin_num: '13', peripheral: I2C1, signal: SDA, pin_signal: PIO0_9/XTALOUT}
-  - {pin_num: '14', peripheral: I2C1, signal: SCL, pin_signal: PIO0_8/XTALIN}
-  - {pin_num: '11', peripheral: GPIO, signal: 'PIO0, 15', pin_signal: PIO0_15, mode: pullUp, hysteresis: enabled}
-  - {pin_num: '9', peripheral: SPI1, signal: MISO, pin_signal: PIO0_11/I2C0_SDA, i2cmode: no_init}
-  - {pin_num: '4', peripheral: SPI1, signal: MOSI, pin_signal: PIO0_12, mode: pullUp, hysteresis: enabled}
-  - {pin_num: '10', peripheral: SPI1, signal: SCK, pin_signal: PIO0_10/I2C0_SCL, i2cmode: no_init}
+  - {pin_num: '1', peripheral: GPIO, signal: 'PIO0, 23', pin_signal: PIO0_23/ADC_3/ACMP_I4, identifier: LED, direction: OUTPUT, gpio_init_state: 'false'}
+  - {pin_num: '9', peripheral: GPIO, signal: 'PIO0, 11', pin_signal: PIO0_11/I2C0_SDA, direction: INPUT}
+  - {pin_num: '10', peripheral: GPIO, signal: 'PIO0, 10', pin_signal: PIO0_10/I2C0_SCL, direction: OUTPUT, gpio_init_state: 'false'}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -79,9 +73,7 @@ BOARD_InitPins:
 /* Function assigned for the Cortex-M0P */
 void BOARD_InitPins(void)
 {
-    /* Enables clock for IOCON block.: 0x01u */
-    CLOCK_EnableClock(kCLOCK_Iocon);
-    /* Enables clock for switch matrix.: 0x01u */
+    /* Enables clock for switch matrix.: Enable. */
     CLOCK_EnableClock(kCLOCK_Swm);
 
     GPIO->CLR[0] = ((GPIO->CLR[0] &
@@ -89,38 +81,16 @@ void BOARD_InitPins(void)
                      (~(GPIO_CLR_CLRP_MASK)))
 
                     /* Clear output bits (bit 0 = PIOn_0, bit 1 = PIOn_1, etc.). Supported pins depends on the specific
-                     * device and package. 0 = No operation. 1 = Clear output bit.: 0x820002u */
-                    | GPIO_CLR_CLRP(0x820002u));
+                     * device and package. 0 = No operation. 1 = Clear output bit.: 0x800400u */
+                    | GPIO_CLR_CLRP(0x800400u));
 
     GPIO->DIR[0] = ((GPIO->DIR[0] &
                      /* Mask bits to zero which are setting */
                      (~(GPIO_DIR_DIRP_MASK)))
 
                     /* Selects pin direction for pin PIOm_n (bit 0 = PIOn_0, bit 1 = PIOn_1, etc.). Supported pins
-                     * depends on the specific device and package. 0 = input. 1 = output.: 0x820002u */
-                    | GPIO_DIR_DIRP(0x820002u));
-
-    IOCON->PIO[10] = ((IOCON->PIO[10] &
-                       /* Mask bits to zero which are setting */
-                       (~(IOCON_PIO_MODE_MASK | IOCON_PIO_HYS_MASK)))
-
-                      /* Selects function mode (on-chip pull-up/pull-down resistor control).: Pull-up. Pull-up resistor
-                       * enabled. */
-                      | IOCON_PIO_MODE(PIO10_MODE_PULL_UP)
-
-                      /* Hysteresis.: Enable */
-                      | IOCON_PIO_HYS(PIO10_HYS_ENABLE));
-
-    IOCON->PIO[2] = ((IOCON->PIO[2] &
-                      /* Mask bits to zero which are setting */
-                      (~(IOCON_PIO_MODE_MASK | IOCON_PIO_HYS_MASK)))
-
-                     /* Selects function mode (on-chip pull-up/pull-down resistor control).: Pull-up. Pull-up resistor
-                      * enabled. */
-                     | IOCON_PIO_MODE(PIO2_MODE_PULL_UP)
-
-                     /* Hysteresis.: Enable */
-                     | IOCON_PIO_HYS(PIO2_HYS_ENABLE));
+                     * depends on the specific device and package. 0 = input. 1 = output.: 0x800400u */
+                    | GPIO_DIR_DIRP(0x800400u));
 
     /* USART0_TXD connect to P0_14 */
     SWM_SetMovablePinSelect(SWM0, kSWM_USART0_TXD, kSWM_PortPin_P0_14);
@@ -133,21 +103,6 @@ void BOARD_InitPins(void)
 
     /* USART1_RXD connect to P0_0 */
     SWM_SetMovablePinSelect(SWM0, kSWM_USART1_RXD, kSWM_PortPin_P0_0);
-     
-    /* SPI1_SCK connect to P0_15 */
-    //SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_SCK, kSWM_PortPin_P0_15);
-
-    /* SPI1_MOSI connect to P0_10 */
-    //SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MOSI, kSWM_PortPin_P0_10);
-
-    /* SPI1_MISO connect to P0_11 */
-    //SWM_SetMovablePinSelect(SWM0, kSWM_SPI1_MISO, kSWM_PortPin_P0_11);
-
-    /* I2C1_SDA connect to P0_9 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SDA, kSWM_PortPin_P0_9);
-
-    /* I2C1_SCL connect to P0_8 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_I2C1_SCL, kSWM_PortPin_P0_8);
 
     /* SWCLK connect to P0_3 */
     SWM_SetFixedPinSelect(SWM0, kSWM_SWCLK, true);
