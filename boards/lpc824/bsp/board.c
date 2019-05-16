@@ -46,11 +46,12 @@ static void bsp_hx711_comm_if_init();
 /*板级初始化*/
 int board_init()
 {
-    bsp_sys_led_ctrl_pin_init();
-    bsp_hx711_comm_if_init();
+    GPIO_PortInit(GPIO,0);
     BOARD_InitPins();
     BOARD_BootClockRUN();
 
+    bsp_sys_led_ctrl_pin_init();
+    bsp_hx711_comm_if_init();
 
     return 0;
 }
@@ -81,13 +82,12 @@ static void bsp_hx711_comm_if_init()
     gpio_pin_config_t config;
     
     config.pinDirection = kGPIO_DigitalInput;
-    
-    GPIO_PortInit(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT);
+    config.outputLogic = 1;
     GPIO_PinInit(BOARD_HX711_DOUT_GPIO,BOARD_HX711_DOUT_PORT,BOARD_HX711_DOUT_PIN,&config);
+
     /*HX711 sclk pin*/
     config.pinDirection = kGPIO_DigitalOutput;
     config.outputLogic = 0;
-    GPIO_PortInit(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT);
     GPIO_PinInit(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,BOARD_HX711_SCLK_PIN,&config);
 }
 
@@ -141,7 +141,7 @@ static void bsp_sys_led_ctrl_pin_init()
     {
         kGPIO_DigitalOutput, 0,
     };
-    GPIO_PortInit(BOARD_LED_CTRL_GPIO, BOARD_LED_CTRL_PORT);
+
     GPIO_PinInit(BOARD_LED_CTRL_GPIO, BOARD_LED_CTRL_PORT, BOARD_LED_CTRL_PIN ,&config);
 }
 

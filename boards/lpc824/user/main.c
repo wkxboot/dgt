@@ -39,7 +39,7 @@
 #include "protocol_task.h"
 #include "utils.h"
 #include "log.h"
-
+#include "firmware_version.h"
 
 
 
@@ -62,6 +62,7 @@ int main(void)
 { 
     int rc;
     log_init();
+    log_info("\r\nfirmware version:%s\r\n",FIRMWARE_VERSION_STR);
     rc = board_init();
     log_assert(rc == 0);
 

@@ -9,15 +9,19 @@ void scale_task(void const *argument);
 
 #define  SCALE_TASK_CALCULATE_VARIANCE              0
 
+#define  SCALE_BUFFER_SIZE                          16
 #define  SCALE_TASK_SUCCESS                         1
 #define  SCALE_TASK_FAILURE                         2
 
-#define  SCALE_TASK_NV_INVALID                      0x55
-#define  SCALE_TASK_NV_VALID                        0xaa
+#define  SCALE_ADDR_NAME_STR                       "addr"
+#define  SCALE_A_NAME_STR                          "a"
+#define  SCALE_B_NAME_STR                          "b"
+#define  SCALE_TARE_NAME_STR                       "tare"
 
-#define  SCALE_TASK_NV_ADDR_ADDR                    0x00
-#define  SCALE_TASK_SCALE_NV_PARAM_ADDR             0x10
-
+#define  SCALE_TASK_DEFAULT_A_VALUE                 (6.95875e-3)
+#define  SCALE_TASK_DEFAULT_B_VALUE                 (-3.75259e3)
+#define  SCALE_TASK_DEFAULT_TARE_VALUE              (0)
+#define  SCALE_ADDR_DEFAULT                         1
 
 
 #define  SCALE_TASK_ADDR_VALUE_MAX                  0xF7

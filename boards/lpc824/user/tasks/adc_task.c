@@ -94,12 +94,14 @@ static float standard_deviation(moving_average_filter_t *filter)
 #if DEBUG_CHART > 0
 #include "nxp_serial_uart_hal_driver.h"
 
-int chart_serial_handle;
+static serial_handle_t chart_serial_handle;
+static uint8_t recv_buffer[CHART_RX_BUFFER_SIZE];
+static uint8_t send_buffer[CHART_TX_BUFFER_SIZE];
 /*串口中断处理*/
 void USART0_IRQHandler()
 {
-    if (chart_serial_handle != 0) {
-        nxp_serial_uart_hal_isr(chart_serial_handle);
+    if (chart_serial_handle.init) {
+        nxp_serial_uart_hal_isr(&chart_serial_handle);
     }
 }
 
@@ -119,12 +121,12 @@ void adc_task(void const * argument)
     extern serial_hal_driver_t nxp_serial_uart_hal_driver;
     char chart_buffer[30];
     uint8_t size;
-    rc = serial_create(&chart_serial_handle,CHART_RX_BUFFER_SIZE,CHART_TX_BUFFER_SIZE);
+    rc = serial_create(&chart_serial_handle,recv_buffer,CHART_RX_BUFFER_SIZE,send_buffer,CHART_TX_BUFFER_SIZE);
     log_assert(rc == 0);
-    rc = serial_register_hal_driver(chart_serial_handle,&nxp_serial_uart_hal_driver);
+    rc = serial_register_hal_driver(&chart_serial_handle,&nxp_serial_uart_hal_driver);
     log_assert(rc == 0);
  
-    rc = serial_open(chart_serial_handle,
+    rc = serial_open(&chart_serial_handle,
                     CHART_SERIAL_PORT,
                     CHART_SERIAL_BAUDRATES,
                     CHART_SERIAL_DATABITS,
@@ -132,7 +134,7 @@ void adc_task(void const * argument)
     log_assert(rc == 0); 
     log_debug("chart serial ok.\r\n");
     
-    serial_flush(chart_serial_handle);
+    serial_flush(&chart_serial_handle);
 #endif
 
     /*三次滑动平均滤波迭代初始化*/
@@ -179,7 +181,7 @@ adc_task_restart:
         /*图像化数据输出*/
 #if  DEBUG_CHART > 0
         size = snprintf(chart_buffer,30,"%d,%d,%d\n",adc,adc1,adc_filter);
-        serial_write(chart_serial_handle,chart_buffer,size);
+        serial_write(&chart_serial_handle,chart_buffer,size);
 
 #endif
         /*发送消息给电子称*/

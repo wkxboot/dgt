@@ -361,12 +361,15 @@
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/tasks</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/hx711</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/circle_buffer</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/utils</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/nv_flash</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/lib</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/device_env</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/flash_if</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial_uart_hal</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/cpu</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/printf</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/serial_uart</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/SEGGER_RTT_V612j/RTT</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/logSEGGER_RTT_V612j</state>
                 </option>
@@ -2211,6 +2214,9 @@
                     <name>$PROJ_DIR$\..\..\user\debug\log\log.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\..\user\debug\log\serial_uart\log_serial_uart.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\..\user\debug\log\printf\printf.c</name>
                 </file>
                 <file>
@@ -2220,6 +2226,18 @@
                     <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\RTT\SEGGER_RTT_printf.c</name>
                 </file>
             </group>
+        </group>
+        <group>
+            <name>device_env</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\device_env\device_env.c</name>
+            </file>
+        </group>
+        <group>
+            <name>flash_if</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\flash_if\flash_if.c</name>
+            </file>
         </group>
         <group>
             <name>hx711</name>
@@ -2234,9 +2252,12 @@
             </file>
         </group>
         <group>
-            <name>nv_flash</name>
+            <name>lib</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\nv_flash\nv_flash.c</name>
+                <name>$PROJ_DIR$\..\..\user\lib\crc16.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\lib\utils.c</name>
             </file>
         </group>
         <group>
@@ -2264,12 +2285,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\user\tasks\watch_dog_task.c</name>
-            </file>
-        </group>
-        <group>
-            <name>utils</name>
-            <file>
-                <name>$PROJ_DIR$\..\..\user\utils\utils.c</name>
             </file>
         </group>
         <file>

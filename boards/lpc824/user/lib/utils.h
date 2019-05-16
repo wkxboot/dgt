@@ -2,7 +2,7 @@
 #define  __UTILS_H__
 #include "stdbool.h"
 #include "stdint.h"
-
+#include "stdlib.h"
 
 typedef struct
 {
@@ -35,12 +35,14 @@ do {                                                \
 
 
 
-
-
-/*字节转换成HEX字符串*/
- void bytes_to_hex_str(const char *src,char *dest,uint16_t src_len);
-   
-   
+/*
+* @brief 数组转成HEX字符串
+* @param
+* @param
+* @return 
+* @note
+*/
+int dump_hex_str(const char *src,char *dst,uint16_t src_len);
 /* 函数：utils_timer_init
 *  功能：自定义定时器初始化
 *  参数：timer 定时器指针
@@ -49,38 +51,16 @@ do {                                                \
 *  返回: 0：成功 其他：失败
 */ 
 int utils_timer_init(utils_timer_t *timer,uint32_t timeout,bool up);
-
 /* 函数：utils_timer_value
 *  功能：定时器现在的值
 *  返回：>=0：现在时间值 其他：失败
 */ 
-uint32_t utils_timer_value(utils_timer_t *timer);
+uint32_t utils_timer_value(utils_timer_t *timer);   
 
-/* 函数：utils_get_str_addr_by_num
-*  功能：获取字符串中第num个str的地址
-*  参数：buffer 字符串地址
-*  参数：str    查找的字符串
-*  参数：num    第num个str
-*  参数：addr   第num个str的地址
-*  返回：0：成功 其他：失败
-*/ 
-int utils_get_str_addr_by_num(char *buffer,const char *str,const uint8_t num,char **addr);
-
-/* 函数：utils_get_str_value_by_num
-*  功能：获取字符串中第num和第num+1个str之间的字符串
-*  参数：buffer 字符串地址
-*  参数：dst    存储地址
-*  参数：str    字符串
-*  参数：num    第num个字符串
-*  返回：0：成功 其他：失败
-*/
-int utils_get_str_value_by_num(char *buffer,char *dst,const char *str,uint8_t num);
-
-
-   
-   
-   
-   
-   
+/* 函数：utils_atof
+*  功能：字符串转浮点
+*  返回：浮点数
+*/   
+double utils_atof(char *s);
    
 #endif

@@ -4,7 +4,7 @@
 #include "task_msg.h"
 #include "firmware_version.h"
 #include "sensor_id.h"
-#include "nv_flash.h"
+#include "device_env.h"
 #include "adc_task.h"
 #include "protocol_task.h"
 #include "scale_task.h"
@@ -14,44 +14,24 @@
 osThreadId   scale_task_hdl;
 osMessageQId scale_task_msg_q_id;
 
-
-#define  SCALE_TASK_DEFAULT_A_VALUE       (6.95875e-3)
-#define  SCALE_TASK_DEFAULT_B_VALUE       (-3.75259e3)
-
-#define  SCALE_ADDR_DEFAULT                0x01
-
-
 typedef struct
 {
-    float     a;
-    float     b;
-    uint8_t   valid;
-    int16_t   zero_weight;
-    int16_t   full_weight;
-    uint32_t  zero_adc;
-    uint32_t  full_adc;
-    int16_t   tar_weight;
+    float  a;
+    float  b;
+    int16_t tare_weight;
+    uint8_t addr;
 }scale_nv_param_t;
 
 typedef struct
 {
-    uint16_t         nv_param_addr;
     scale_nv_param_t nv_param;
-    uint32_t         cur_adc;
-    int16_t          net_weight;
-    int16_t          gross_weight;
+    uint32_t cur_adc;
+    int16_t  net_weight;
+    int16_t  gross_weight;
 }scale_t;
 
 typedef struct
 {
-    uint8_t          addr;
-    uint8_t          valid;
-}scale_nv_addr_t;
-
-typedef struct
-{
-    scale_nv_addr_t  nv_addr;
-    uint8_t          nv_addr_addr;
     scale_t          scale; 
 }digital_scale_t;
 
@@ -60,8 +40,12 @@ static digital_scale_t digital_scale;
 
 static void scale_task_param_init()
 {
-    digital_scale.nv_addr_addr = SCALE_TASK_NV_ADDR_ADDR;
-    digital_scale.scale.nv_param_addr =  SCALE_TASK_SCALE_NV_PARAM_ADDR;
+    digital_scale.scale.nv_param.addr = SCALE_ADDR_DEFAULT;
+
+    digital_scale.scale.nv_param.a = SCALE_TASK_DEFAULT_A_VALUE;
+    digital_scale.scale.nv_param.b = SCALE_TASK_DEFAULT_B_VALUE;
+    digital_scale.scale.nv_param.tare_weight = SCALE_TASK_DEFAULT_TARE_VALUE;
+
     digital_scale.scale.net_weight = SCALE_TASK_WEIGHT_ERR_VALUE;
     digital_scale.scale.gross_weight = SCALE_TASK_WEIGHT_ERR_VALUE;
 }
@@ -182,21 +166,25 @@ static int16_t get_fine_weight(float weight)
 /*电子秤任务*/
 void scale_task(void const *argument)
 {
+
     osStatus status;
     osEvent  os_msg;
     uint8_t  result;
 
-    int      nv_result;
+    int  rc;
+    char *temp;
+    float a,b;
+    uint32_t zero_adc = 0;
+    int16_t zero_weight = 0;
+    int tare_weight;
+
+    char buffer[SCALE_BUFFER_SIZE];
     int16_t  weight;
     float    temp_weight;
-    scale_nv_param_t  pre_nv_param;
-    scale_nv_addr_t   pre_nv_addr;
     task_message_t    msg;
     task_message_t    protocol_msg;
 
-    log_info("\r\nfirmware version:%s\r\n",FIRMWARE_VERSION_STR);
-
-    nv_flash_region_int();
+    device_env_init();
     scale_task_param_init();
 
 #if SCALE_TASK_CALCULATE_VARIANCE > 0
@@ -204,39 +192,30 @@ void scale_task(void const *argument)
 #endif
  
     /*查看保存的地址是否有效*/
-    nv_flash_read_user_data(digital_scale.nv_addr_addr,(uint8_t*)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));
-
-    if (digital_scale.nv_addr.valid != SCALE_TASK_NV_VALID || digital_scale.nv_addr.addr > SCALE_TASK_ADDR_VALUE_MAX){
-        digital_scale.nv_addr.valid = SCALE_TASK_NV_VALID;
-        log_info("legacy addr invalid:%d. use default:%d and save.\r\n",digital_scale.nv_addr.addr,SCALE_ADDR_DEFAULT);
-        digital_scale.nv_addr.addr = SCALE_ADDR_DEFAULT;
-        
-        nv_result = nv_flash_save_user_data(digital_scale.nv_addr_addr,(uint8_t *)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));   
-        if (nv_result != 0) {
-            log_error("default addr save err.\r\n");
-        }
+    temp = device_env_get(SCALE_ADDR_NAME_STR);
+    if (temp == NULL) {
+        log_info("addr use default:%d.\r\n",SCALE_ADDR_DEFAULT);
     }else {
-        log_info("legacy addr valid:%d.\r\n",digital_scale.nv_addr.addr);
+        digital_scale.scale.nv_param.addr = atoi(temp);
+        log_info("addr:%d.\r\n",digital_scale.scale.nv_param.addr);
     }
- 
-    nv_flash_read_user_data(digital_scale.scale.nv_param_addr,(uint8_t*)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
- 
-    /*如果上次断电后保存的数据无效的*/
-    if (digital_scale.scale.nv_param.valid != SCALE_TASK_NV_VALID){
-        digital_scale.scale.nv_param.valid = SCALE_TASK_NV_VALID;
-        digital_scale.scale.nv_param.a = SCALE_TASK_DEFAULT_A_VALUE;
-        digital_scale.scale.nv_param.b = SCALE_TASK_DEFAULT_B_VALUE;
-        log_info("scale.nv is invlaid.use default and save.\r\n");
 
-        nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));   
-        if (nv_result != 0) {
-            log_error("default addr save err.\r\n");
-        }
-    } else {
-        log_info("legacy param valid.a:%.5f b:%.5f.\r\n",digital_scale.scale.nv_param.a,digital_scale.scale.nv_param.b);
+    /*查看保存的nv参数是否有效*/
+    temp = device_env_get(SCALE_A_NAME_STR);
+    if (temp) {
+        digital_scale.scale.nv_param.a = utils_atof(temp);  
     }
- 
- 
+
+    temp = device_env_get(SCALE_B_NAME_STR);
+    if (temp) {
+        digital_scale.scale.nv_param.b = utils_atof(temp);  
+    }
+
+    temp = device_env_get(SCALE_TARE_NAME_STR);
+    if (temp) {
+        digital_scale.scale.nv_param.tare_weight = atoi(temp);  
+    }
+
     while (1) {
         os_msg = osMessageGet(scale_task_msg_q_id,SCALE_TASK_MSG_WAIT_TIMEOUT_VALUE);
         if (os_msg.status == osEventMessage){
@@ -254,7 +233,7 @@ void scale_task(void const *argument)
                 digital_scale.scale.net_weight = SCALE_TASK_WEIGHT_ERR_VALUE;      
             }else{
                 digital_scale.scale.gross_weight = weight;
-                digital_scale.scale.net_weight =  digital_scale.scale.gross_weight -  digital_scale.scale.nv_param.tar_weight; 
+                digital_scale.scale.net_weight =  digital_scale.scale.gross_weight -  digital_scale.scale.nv_param.tare_weight; 
             }   
             /*向adc_task回应处理结果*/
             osSignalSet(adc_task_hdl,ADC_TASK_RESTART_SIGNAL);
@@ -308,55 +287,27 @@ void scale_task(void const *argument)
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
     }
  
-    /*向protocol_task回应0点校准重量值*/
-    if (msg.type ==  TASK_MSG_REQ_CALIBRATE_ZERO_VALUE){
-        protocol_msg.type = TASK_MSG_RSP_CALIBRATE_ZERO_VALUE;
-        protocol_msg.value = digital_scale.scale.nv_param.zero_weight;
-  
-        status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
-    }
-  
-    /*向protocol_task回应增益校准重量值*/
-    if (msg.type ==  TASK_MSG_REQ_CALIBRATE_FULL_VALUE){
-        protocol_msg.type = TASK_MSG_RSP_CALIBRATE_FULL_VALUE;
-        protocol_msg.value = digital_scale.scale.nv_param.full_weight;;
-
-        status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
-    }
-  
  
     /*向protocol_task回应0点校准结果*/
     if (msg.type ==  TASK_MSG_REQ_CALIBRATE_ZERO) {  
         if (digital_scale.scale.net_weight == SCALE_TASK_WEIGHT_ERR_VALUE ){
+            rc = -1;
             result = SCALE_TASK_FAILURE; 
-            log_error("scale calibrate zero fail.\r\n");
             goto calibrate_zero_msg_handle; 
         }
-        /*保留先前参数*/
-        pre_nv_param = digital_scale.scale.nv_param;
-    
-        digital_scale.scale.nv_param.zero_adc = digital_scale.scale.cur_adc;
-        digital_scale.scale.nv_param.zero_weight = msg.value;
-        /*避免除法错误*/
-        if (digital_scale.scale.nv_param.zero_adc == digital_scale.scale.nv_param.full_adc){
-            digital_scale.scale.nv_param.full_adc += 1;
-        }
-        digital_scale.scale.nv_param.a = (float)(digital_scale.scale.nv_param.full_weight - digital_scale.scale.nv_param.zero_weight) / (float)(digital_scale.scale.nv_param.full_adc - digital_scale.scale.nv_param.zero_adc);
-        digital_scale.scale.nv_param.b = (float)digital_scale.scale.nv_param.zero_weight - digital_scale.scale.nv_param.a * digital_scale.scale.nv_param.zero_adc;
-        digital_scale.scale.nv_param.tar_weight = 0;
-       
-        nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
-        if (nv_result != 0) {
-            result = SCALE_TASK_FAILURE;
-            /*恢复先前参数*/
-            digital_scale.scale.nv_param = pre_nv_param ;
-            log_error("scale calibrate zero fail.nv param err.\r\n");
-            goto calibrate_zero_msg_handle;
-        }    
-        log_info("scale calibrate zero success.nv a:%.5f b:%.5f.\r\n",digital_scale.scale.nv_param.a,digital_scale.scale.nv_param.b);
+
+        /*暂存校验参数*/
+        zero_weight = 0;
+        zero_adc = digital_scale.scale.cur_adc;
+        rc = 0;
         result = SCALE_TASK_SUCCESS;  
 
 calibrate_zero_msg_handle:
+        if (rc == 0) {
+            log_info("calibrate zero ok.\r\n");        
+        } else {
+            log_error("calibrate zero fail.\r\n");
+        }
         protocol_msg.type = TASK_MSG_RSP_CALIBRATE_ZERO;
         protocol_msg.value = result;
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
@@ -366,107 +317,150 @@ calibrate_zero_msg_handle:
     /*向protocol_task回应满量程点校准结果*/
     if (msg.type ==  TASK_MSG_REQ_CALIBRATE_FULL) {
         if (digital_scale.scale.net_weight == SCALE_TASK_WEIGHT_ERR_VALUE ){
+            rc = -1;
             result = SCALE_TASK_FAILURE; 
-            log_error("scale calibrate full fail.\r\n");
             goto calibrate_full_msg_handle; 
         }
-    /*保留先前参数*/
-    pre_nv_param = digital_scale.scale.nv_param;
+
+        /*避免除法错误*/
+        a = (float)(msg.value - zero_weight) / (float)(digital_scale.scale.cur_adc - zero_adc + 1);
+        b = (float)msg.value - a * digital_scale.scale.cur_adc;
+        tare_weight = 0;
+
+        snprintf(buffer,SCALE_BUFFER_SIZE,"%f",a);
+        /*预写入*/
+        rc = device_env_set(SCALE_A_NAME_STR,buffer);
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto calibrate_full_msg_handle;
+        } 
    
-    digital_scale.scale.nv_param.full_adc = digital_scale.scale.cur_adc;
-    digital_scale.scale.nv_param.full_weight = msg.value;
-    /*避免除法错误*/
-    if (digital_scale.scale.nv_param.zero_adc == digital_scale.scale.nv_param.full_adc){
-        digital_scale.scale.nv_param.full_adc += 1;
-    }
-    digital_scale.scale.nv_param.a = (float)(digital_scale.scale.nv_param.full_weight - digital_scale.scale.nv_param.zero_weight) / (float)(digital_scale.scale.nv_param.full_adc - digital_scale.scale.nv_param.zero_adc);
-    digital_scale.scale.nv_param.b = (float)digital_scale.scale.nv_param.full_weight - digital_scale.scale.nv_param.a * digital_scale.scale.nv_param.full_adc;
-       
-    nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
-    if (nv_result != 0){
-        result = SCALE_TASK_FAILURE;
-        /*恢复先前参数*/
-        digital_scale.scale.nv_param = pre_nv_param ;
-        log_error("scalecalibrate full fail.nv param err.\r\n");
-        goto calibrate_full_msg_handle;
-    }
-    log_info("scale calibrate full success.nv a:%.5f b:%.5f.\r\n",digital_scale.scale.nv_param.a,digital_scale.scale.nv_param.b);
-   
-    result = SCALE_TASK_SUCCESS;   
+        snprintf(buffer,SCALE_BUFFER_SIZE,"%f",b);
+        /*预写入*/
+        rc = device_env_set(SCALE_B_NAME_STR,buffer);
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto calibrate_full_msg_handle;
+        }  
+
+        snprintf(buffer,SCALE_BUFFER_SIZE,"%d",tare_weight);
+        rc = device_env_set(SCALE_TARE_NAME_STR,buffer);
+        /*预写入*/
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto calibrate_full_msg_handle;
+        } 
+
+        /*执行保存*/
+        rc = device_env_do_save();
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto calibrate_full_msg_handle;
+        } 
+    
+        result = SCALE_TASK_SUCCESS;  
+        digital_scale.scale.nv_param.a = a;
+        digital_scale.scale.nv_param.b = b;
+        digital_scale.scale.nv_param.tare_weight = tare_weight;
+
+        result = SCALE_TASK_SUCCESS;   
 calibrate_full_msg_handle:
-    protocol_msg.type = TASK_MSG_RSP_CALIBRATE_FULL;
-    protocol_msg.value = result;
-    status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
-    log_assert(status == osOK);
+        if (rc == 0) {
+            log_info("calibrate full ok.a:%f b:%f.\r\n",a,b);
+        } else {
+            log_error("calibrate full fail.\r\n");
+        }
+
+        protocol_msg.type = TASK_MSG_RSP_CALIBRATE_FULL;
+        protocol_msg.value = result;
+        status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
+        log_assert(status == osOK);
    }
  
     /*向protocol_task回应去皮结果*/
     if(msg.type ==  TASK_MSG_REQ_REMOVE_TARE_WEIGHT){
         if (digital_scale.scale.net_weight == SCALE_TASK_WEIGHT_ERR_VALUE ){
+            rc = -1;
             result = SCALE_TASK_FAILURE; 
-            log_error("scale calibrate full fail.\r\n");
-            goto calibrate_full_msg_handle; 
+            goto remove_tare_weight_msg_handle; 
         }
-        /*保留先前参数*/
-        pre_nv_param = digital_scale.scale.nv_param;  
-        digital_scale.scale.nv_param.tar_weight = digital_scale.scale.gross_weight;
-        //scale.nv_param.b = (float)scale.gross_weight - scale.nv_param.a * scale.cur_adc; 
-   
-        nv_result = nv_flash_save_user_data(digital_scale.scale.nv_param_addr,(uint8_t *)&digital_scale.scale.nv_param,sizeof(digital_scale.scale.nv_param));
-        if (nv_result != 0){
+
+        snprintf(buffer,SCALE_BUFFER_SIZE,"%d",digital_scale.scale.gross_weight);
+        /*预写入*/
+        rc = device_env_set(SCALE_TARE_NAME_STR,buffer);
+        if (rc != 0) {
             result = SCALE_TASK_FAILURE;
-            /*恢复先前参数*/
-            digital_scale.scale.nv_param = pre_nv_param ;
-            log_error("scale remove tar weight fail.nv param err.\r\n");
-            goto remove_tar_weight_msg_handle;
+            goto remove_tare_weight_msg_handle;
+        } 
+       
+        /*执行保存*/
+        rc = device_env_do_save();
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto remove_tare_weight_msg_handle;
         }  
-        log_info("scale remove tar weight success.\r\n"); 
+  
+        digital_scale.scale.nv_param.tare_weight = digital_scale.scale.gross_weight;
         result = SCALE_TASK_SUCCESS;   
-remove_tar_weight_msg_handle:
+
+remove_tare_weight_msg_handle:
+        if (rc == 0) {
+            log_info("tare ok.\r\n",a,b);
+        } else {
+            log_error("tare fail.\r\n");
+        }
+
         protocol_msg.type = TASK_MSG_RSP_REMOVE_TARE_WEIGHT;
         protocol_msg.value = result;
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
         log_assert(status == osOK);
     }
  
- 
-    /*向protocol_task回应设置地址结果*/
-    if(msg.type ==  TASK_MSG_REQ_SET_ADDR){
-    if (msg.value > SCALE_TASK_ADDR_VALUE_MAX || msg.value == 0){
-        log_error("set addr fail.addr:%d.\r\n",msg.value); 
-        result = SCALE_TASK_FAILURE ;
-        goto set_addr_msg_handle;
-    }
-    /*保存先前地址*/
-    pre_nv_addr = digital_scale.nv_addr;
-   
-    digital_scale.nv_addr.addr = msg.value;   
-       
-    nv_result = nv_flash_save_user_data(digital_scale.nv_addr_addr,(uint8_t *)&digital_scale.nv_addr,sizeof(digital_scale.nv_addr));
-    if (nv_result != 0){
-        result = SCALE_TASK_FAILURE;
-        /*恢复先前地址*/
-        digital_scale.nv_addr = pre_nv_addr;
-        log_error("set scale addr fail.nv addr err.\r\n");
-        goto set_addr_msg_handle;
-    }
-    result = SCALE_TASK_SUCCESS;   
-    log_info("set scale addr success.nv addr:%d.\r\n",digital_scale.nv_addr.addr);
-set_addr_msg_handle:
-    protocol_msg.type = TASK_MSG_RSP_SET_ADDR;
-    protocol_msg.value = result;
-    status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
-    log_assert(status == osOK);
-  }
- 
     /*向protocol_task回应当前地址值*/
     if (msg.type ==  TASK_MSG_REQ_ADDR){
         protocol_msg.type = TASK_MSG_RSP_ADDR;
-        protocol_msg.value = digital_scale.nv_addr.addr;
+        protocol_msg.value = digital_scale.scale.nv_param.addr;
         status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);  
         log_assert(status == osOK);   
     } 
- 
+
+    /*向protocol_task回应设置地址结果*/
+    if(msg.type ==  TASK_MSG_REQ_SET_ADDR){
+        if (msg.value > SCALE_TASK_ADDR_VALUE_MAX || msg.value == 0){
+            rc = -1;
+            result = SCALE_TASK_FAILURE ;
+            goto set_addr_msg_handle;
+        }
+
+        snprintf(buffer,SCALE_BUFFER_SIZE,"%d",msg.value);
+        /*预写入*/
+        rc = device_env_set(SCALE_ADDR_NAME_STR,buffer);
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto set_addr_msg_handle;
+        }  
+      
+         /*执行保存*/
+        rc = device_env_do_save();
+        if (rc != 0) {
+            result = SCALE_TASK_FAILURE;
+            goto set_addr_msg_handle;
+        } 
+  
+        digital_scale.scale.nv_param.addr = msg.value;
+        result = SCALE_TASK_SUCCESS;   
+
+set_addr_msg_handle:
+        if (rc == 0) {
+            log_info("set addr:%d ok.\r\n", msg.value);
+        } else {
+            log_error("set addr err.\r\n");
+        }
+        protocol_msg.type = TASK_MSG_RSP_SET_ADDR;
+        protocol_msg.value = result;
+        status = osMessagePut(protocol_task_msg_q_id,*(uint32_t*)&protocol_msg,SCALE_TASK_MSG_PUT_TIMEOUT_VALUE);
+        log_assert(status == osOK);
+  }
  
     /*向protocol_task回应传感器ID*/
     if (msg.type ==  TASK_MSG_REQ_SENSOR_ID){

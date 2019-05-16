@@ -13,6 +13,53 @@
 #define WDT_CLK_FREQ CLOCK_GetFreq(kCLOCK_WdtOsc)
 
 osThreadId   watch_dog_task_hdl;
+
+#if  WDT_ENABLE  > 0 
+
+/*
+* @brief 看门狗中断
+* @param 无
+* @param
+* @return 无
+* @note
+*/
+void WDT_IRQHandler(void)
+{
+    uint32_t wdtStatus = WWDT_GetStatusFlags(WWDT);
+
+    /* The chip will reset before this happens */
+    if (wdtStatus & kWWDT_TimeoutFlag)
+    {
+        /* A watchdog feed didn't occur prior to window timeout */
+        /* Stop WDT */
+        WWDT_Disable(WWDT);
+        WWDT_ClearStatusFlags(WWDT, kWWDT_TimeoutFlag);
+        /* Needs restart */
+        WWDT_Enable(WWDT);
+    }
+
+    /* Handle warning interrupt */
+    if (wdtStatus & kWWDT_WarningFlag)
+    {
+        /* A watchdog feed didn't occur prior to warning timeout */
+        WWDT_ClearStatusFlags(WWDT, kWWDT_WarningFlag);
+       /* Feed only for the first 5 warnings then allow for a WDT reset to occur */
+        WWDT_Refresh(WWDT);
+        log_debug("feed dog.\r\n");
+    }
+       
+
+    /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate overlapping
+    exception return operation might vector to incorrect interrupt */
+
+#if defined __CORTEX_M && (__CORTEX_M == 4U)
+    __DSB();
+#endif
+}
+
+#endif
+
+
 /*
 * @brief 看门狗任务
 * @param
@@ -32,8 +79,8 @@ void watch_dog_task(void const * argument)
     uint32_t wdtFreq;
     /* Enable clock of wwdt. */
     CLOCK_EnableClock(kCLOCK_Wwdt);
-
-    CLOCK_InitWdtOsc(kCLOCK_WdtAnaFreq600KHZ, 2U);
+    /*4 khz*/
+    CLOCK_InitWdtOsc(kCLOCK_WdtAnaFreq600KHZ, 60U);
 
 #if !defined(FSL_FEATURE_WWDT_HAS_NO_PDCFG) || (!FSL_FEATURE_WWDT_HAS_NO_PDCFG)
     POWER_DisablePD(kPDRUNCFG_PD_WDT_OSC);
@@ -41,6 +88,7 @@ void watch_dog_task(void const * argument)
 
     /* The WDT divides the input frequency into it by 4 */
     wdtFreq = WDT_CLK_FREQ / 4;
+    NVIC_EnableIRQ(WDT_IRQn);
     WWDT_GetDefaultConfig(&config);
 
     /* Check if reset is due to Watchdog */
@@ -55,8 +103,8 @@ void watch_dog_task(void const * argument)
      * Set watchdog window time to 1s
      */
     config.timeoutValue = wdtFreq * 2;
-    config.warningValue = 512;
-    config.windowValue = wdtFreq * 1;
+    config.warningValue = 1000;
+    config.windowValue = wdtFreq * 2;
     /* Configure WWDT to reset on timeout */
     config.enableWatchdogReset = true;
     /* Setup watchdog clock frequency(Hz). */
@@ -70,13 +118,6 @@ void watch_dog_task(void const * argument)
     while (1){
         osDelay(WATCH_DOG_TASK_INTERVAL_VALUE);
         bsp_sys_led_toggle();
-#if WDT_ENABLE > 0
-        /*看门狗*/
-        if (WWDT->TV < WWDT->WINDOW) {
-            WWDT_Refresh(WWDT);
-            log_debug("feed dog.\r\n");
-        }
-#endif
 
         /*设置日志输出等级*/
         read_cnt = log_read(cmd,15);
