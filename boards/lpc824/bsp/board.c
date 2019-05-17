@@ -46,10 +46,11 @@ static void bsp_hx711_comm_if_init();
 /*板级初始化*/
 int board_init()
 {
-    GPIO_PortInit(GPIO,0);
+
     BOARD_InitPins();
     BOARD_BootClockRUN();
 
+    GPIO_PortInit(GPIO,0);
     bsp_sys_led_ctrl_pin_init();
     bsp_hx711_comm_if_init();
 
@@ -101,7 +102,7 @@ static void bsp_hx711_comm_if_init()
 
 void bsp_hx711_sclk_rise(void)
 {
-    GPIO_PortSet(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
+    GPIO_PinWrite(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,BOARD_HX711_SCLK_PIN,1);  
 }
  /*
  * @brief hx711时钟下降沿
@@ -111,7 +112,7 @@ void bsp_hx711_sclk_rise(void)
  */
 void bsp_hx711_sclk_fall(void)
 {
-    GPIO_PortClear(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,(1 << BOARD_HX711_SCLK_PIN));  
+    GPIO_PinWrite(BOARD_HX711_SCLK_GPIO,BOARD_HX711_SCLK_PORT,BOARD_HX711_SCLK_PIN,0);  
 }
 
 /*
@@ -149,19 +150,13 @@ static void bsp_sys_led_ctrl_pin_init()
 /*led指示灯点亮*/
 void bsp_sys_led_turn_on()
 {
-    GPIO_PortSet(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,(1<<BOARD_LED_CTRL_PIN));  
+    GPIO_PinWrite(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,BOARD_LED_CTRL_PIN,1);  
 }
 /*led指示灯关闭*/
 void bsp_sys_led_turn_off()
 {
-    GPIO_PortClear(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,(1<<BOARD_LED_CTRL_PIN));
+    GPIO_PinWrite(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,BOARD_LED_CTRL_PIN,0);
 }
-/*led指示灯取反状态*/
-void bsp_sys_led_toggle()
-{
-    GPIO_PortToggle(BOARD_LED_CTRL_GPIO,BOARD_LED_CTRL_PORT,(1<<BOARD_LED_CTRL_PIN));
-}
-
 
 
 

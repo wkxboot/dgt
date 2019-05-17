@@ -45,7 +45,7 @@ void WDT_IRQHandler(void)
         WWDT_ClearStatusFlags(WWDT, kWWDT_WarningFlag);
        /* Feed only for the first 5 warnings then allow for a WDT reset to occur */
         WWDT_Refresh(WWDT);
-        log_debug("feed dog.\r\n");
+        log_debug("feed dog.v:%d.\r\n",WWDT->TV);
     }
        
 
@@ -70,9 +70,10 @@ void WDT_IRQHandler(void)
 
 void watch_dog_task(void const * argument)
 {
-    uint8_t  read_cnt;
-    char     cmd[16];
-    uint8_t  level;
+    uint8_t read_cnt;
+    char    cmd[16];
+    uint8_t level;
+    uint8_t turn_on = 0;
 
 #if  WDT_ENABLE  > 0 
     wwdt_config_t config;
@@ -92,9 +93,10 @@ void watch_dog_task(void const * argument)
     WWDT_GetDefaultConfig(&config);
 
     /* Check if reset is due to Watchdog */
-    if (WWDT_GetStatusFlags(WWDT) & kWWDT_TimeoutFlag)
-    {
+    if (WWDT_GetStatusFlags(WWDT) & kWWDT_TimeoutFlag) {
         log_warning("Watchdog reset last.\r\n");
+    } else {
+        log_warning("reset normal last.\r\n");
     }
 
     /*
@@ -114,10 +116,17 @@ void watch_dog_task(void const * argument)
 #endif
 
     bsp_sys_led_turn_on();
+    turn_on = 1;
 
     while (1){
         osDelay(WATCH_DOG_TASK_INTERVAL_VALUE);
-        bsp_sys_led_toggle();
+        if (turn_on) {
+            turn_on = 0;
+            bsp_sys_led_turn_off();
+        } else {
+            turn_on = 1;
+            bsp_sys_led_turn_on();
+        }
 
         /*设置日志输出等级*/
         read_cnt = log_read(cmd,15);
