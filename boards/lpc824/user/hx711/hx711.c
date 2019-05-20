@@ -100,7 +100,7 @@ uint32_t hx711_read_convertion_code(hx711_gain_t gain,hx711_chn_t chn)
         bsp_hal_delay(HX711_CLK_DELAY);
     }
     
-    return code;
+    return code^0x800000;
 }
 
 

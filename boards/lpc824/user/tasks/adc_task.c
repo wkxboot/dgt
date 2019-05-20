@@ -34,8 +34,8 @@ kalman1_state kalman_filter;
 /*标准差*/
 static volatile float sd;
 
-#define  ADC_TASK_SAMPLE1_CNT     8
-#define  ADC_TASK_SAMPLE2_CNT     32
+#define  ADC_TASK_SAMPLE1_CNT     32
+#define  ADC_TASK_SAMPLE2_CNT     8
 
 static uint32_t buffer1[ADC_TASK_SAMPLE1_CNT];
 static uint32_t buffer2[ADC_TASK_SAMPLE2_CNT];
