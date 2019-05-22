@@ -25,9 +25,9 @@ void adc_task(void const * argument);
 
     
 
-#define  DEBUG_CHART                         1
+#define  DEBUG_CHART                         0
 #define  CHART_RX_BUFFER_SIZE                4
-#define  CHART_TX_BUFFER_SIZE                32
+#define  CHART_TX_BUFFER_SIZE                64
 #define  CHART_SERIAL_PORT                   0
 #define  CHART_SERIAL_BAUDRATES              115200
 #define  CHART_SERIAL_DATABITS               8

@@ -35,7 +35,7 @@ kalman1_state kalman_filter;
 static volatile float sd;
 
 #define  ADC_TASK_SAMPLE1_CNT     32
-#define  ADC_TASK_SAMPLE2_CNT     8
+#define  ADC_TASK_SAMPLE2_CNT     16
 
 static uint32_t buffer1[ADC_TASK_SAMPLE1_CNT];
 static uint32_t buffer2[ADC_TASK_SAMPLE2_CNT];
@@ -119,7 +119,7 @@ void adc_task(void const * argument)
     /*串口输出，测试用*/
     int rc;
     extern serial_hal_driver_t nxp_serial_uart_hal_driver;
-    char chart_buffer[30];
+    char chart_buffer[60];
     uint8_t size;
     rc = serial_create(&chart_serial_handle,recv_buffer,CHART_RX_BUFFER_SIZE,send_buffer,CHART_TX_BUFFER_SIZE);
     log_assert(rc == 0);
@@ -166,7 +166,7 @@ adc_task_restart:
         sd = standard_deviation(&adc_filter2);
         if (sd <= STANDARD_DEVIATION_LIMIT) {
             if (kalman_filter_init == false) {
-                kalman1_init(&kalman_filter,adc2,200);
+                kalman1_init(&kalman_filter,adc2,1000);
                 kalman_filter_init = true;
             }
             adc_filter = (uint32_t)kalman1_filter(&kalman_filter,adc2);
@@ -180,7 +180,8 @@ adc_task_restart:
         
         /*图像化数据输出*/
 #if  DEBUG_CHART > 0
-        size = snprintf(chart_buffer,30,"%d,%d,%d\n",adc,adc1,adc_filter);
+        uint32_t time = osKernelSysTick();
+        size = snprintf(chart_buffer,60,"%d,%d;%d,%d;%d,%d\r\n",time,adc,time,adc1,time,adc_filter);
         serial_write(&chart_serial_handle,chart_buffer,size);
 
 #endif

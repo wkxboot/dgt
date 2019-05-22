@@ -49,7 +49,7 @@
 
 uint32_t log_time()
 {
-return osKernelSysTick();
+    return osKernelSysTick();
 }
 
 /*******************************************************************************
