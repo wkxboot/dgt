@@ -60,11 +60,9 @@ uint32_t log_time()
  */
 int main(void)
 { 
-    int rc;
+    board_init();
     log_init();
     log_info("\r\nfirmware version:%s\r\n",FIRMWARE_VERSION_STR);
-    rc = board_init();
-    log_assert(rc == 0);
 
 
     /*电子秤任务消息队列*/
