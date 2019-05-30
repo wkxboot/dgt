@@ -166,7 +166,7 @@ adc_task_restart:
         sd = standard_deviation(&adc_filter2);
         if (sd <= STANDARD_DEVIATION_LIMIT) {
             if (kalman_filter_init == false) {
-                kalman1_init(&kalman_filter,adc2,1000);
+                kalman1_init(&kalman_filter,adc2,100.00);
                 kalman_filter_init = true;
             }
             adc_filter = (uint32_t)kalman1_filter(&kalman_filter,adc2);

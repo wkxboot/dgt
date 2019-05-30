@@ -6,7 +6,7 @@ extern osThreadId   adc_task_hdl;
 extern osMessageQId adc_task_msg_q_id;
 void adc_task(void const * argument);
 
-#define  STANDARD_DEVIATION_LIMIT            1000 /*开始使用卡尔曼滤波算法的最小标准差*/
+#define  STANDARD_DEVIATION_LIMIT            800 /*开始使用卡尔曼滤波算法的最小标准差*/
 
 #define  ADC_TASK_INTERVAL_VALUE             2    /*任务运行间隔*/
 #define  ADC_TASK_MSG_PUT_TIMEOUT_VALUE      5    /*发送消息超时时间*/
