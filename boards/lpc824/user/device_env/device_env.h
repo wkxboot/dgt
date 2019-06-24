@@ -22,11 +22,11 @@ extern "C" {
 #define  DEVICE_MIN_ERASE_SIZE                 64           /*最小擦除单元大小 bytes*/
 #define  DEVICE_ADDR_MAP_LIMIT                 0x00008000   /*设备最大地址映射*/    
     
-#define  DEVICE_ENV_BASE_ADDR                  0x00007F80   /*环境变量基地址*/   
+#define  DEVICE_ENV_BASE_ADDR                  0x00007F00   /*环境变量基地址*/   
 
-#define  DEVICE_ENV_BACKUP_BASE_ADDR           0x00007FC0   /*环境变量备份基地址*/      
+#define  DEVICE_ENV_BACKUP_BASE_ADDR           0x00007F80   /*环境变量备份基地址*/      
      
-#define  DEVICE_ENV_SIZE_LIMIT                 (DEVICE_MIN_ERASE_SIZE * 1)   /*环境变量大小*/ 
+#define  DEVICE_ENV_SIZE_LIMIT                 (DEVICE_MIN_ERASE_SIZE * 2)   /*环境变量大小*/ 
 
 
 /********************    配置设备环境结束    **************************************/

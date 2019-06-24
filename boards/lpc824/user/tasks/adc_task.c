@@ -11,9 +11,18 @@
 
 
 osThreadId adc_task_hdl;
-
+ /** @brief ADC消息体*/
 static task_message_t   scale_msg;
 
+ /** @brief ADC转换结果结构*/
+typedef struct
+{
+    uint32_t value;
+    uint8_t is_err;
+    uint8_t is_complete;
+    uint16_t timeout;
+}adc_conversion_t;
+ /** @brief ADC过滤器结构体*/
 typedef struct
 {
     uint32_t *buffer;
@@ -24,7 +33,9 @@ typedef struct
     uint32_t size;
 }moving_average_filter_t;
 
-/*滑动平均滤波对象*/
+/** adc滤波结果对象*/
+static adc_conversion_t adc_conversion;
+/**滑动平均滤波对象*/
 static moving_average_filter_t adc_filter1;
 static moving_average_filter_t adc_filter2;
 
@@ -111,9 +122,8 @@ void USART0_IRQHandler()
 
 void adc_task(void const * argument)
 {
-    uint32_t adc,adc1,adc2,adc_filter;
+    uint32_t adc,adc1,adc2;
     bool kalman_filter_init = false;
-    uint16_t timeout = 0;
     
 #if DEBUG_CHART > 0
     /*串口输出，测试用*/
@@ -141,56 +151,64 @@ void adc_task(void const * argument)
     moving_average_filter_init(&adc_filter1,buffer1,ADC_TASK_SAMPLE1_CNT);
     moving_average_filter_init(&adc_filter2,buffer2,ADC_TASK_SAMPLE2_CNT);
 
-    
-adc_task_restart: 
     hx711_soft_reset();
 
     while(1){
         osDelay(ADC_TASK_INTERVAL_VALUE);
-
+        /*转换完成标志未就绪*/
         if (hx711_is_ready() != true) {
-            timeout += ADC_TASK_INTERVAL_VALUE;
-            if (timeout >= ADC_TASK_SAMPLE_TIMEOUT_VALUE) {
+            adc_conversion.timeout += ADC_TASK_INTERVAL_VALUE;
+            if (adc_conversion.timeout >= ADC_TASK_SAMPLE_TIMEOUT_VALUE) {
                 log_error("sensor sample timeout.reset.\r\n");
-                timeout  = 0;
-                goto adc_task_restart;
+                hx711_soft_reset();
+                adc_conversion.is_complete = 1;
+                adc_conversion.is_err = 1;          
             }
-            continue;
-        }
-        timeout  = 0;
-        adc = hx711_read_convertion_code(ADC_TASK_GAIN,ADC_TASK_CHANNEL);
-        /*两次滑动平均滤波迭代*/     
-        adc1 = moving_average_filter_put(&adc_filter1,adc);
-        adc2 = moving_average_filter_put(&adc_filter2,adc1);
-        /*计算标准差 小于阈值使用kalman滤波，否则使用滑动平均滤波*/
-        sd = standard_deviation(&adc_filter2);
-        if (sd <= STANDARD_DEVIATION_LIMIT) {
-            if (kalman_filter_init == false) {
-                kalman1_init(&kalman_filter,adc2,100.00);
-                kalman_filter_init = true;
+        } else { /*转换完成标志就绪*/
+            adc_conversion.is_err = 0;
+            adc_conversion.is_complete = 1;
+            adc = hx711_read_convertion_code(ADC_TASK_GAIN,ADC_TASK_CHANNEL);
+            /*两次滑动平均滤波迭代*/     
+            adc1 = moving_average_filter_put(&adc_filter1,adc);
+            adc2 = moving_average_filter_put(&adc_filter2,adc1);
+            /*计算标准差 小于阈值使用kalman滤波，否则使用滑动平均滤波*/
+            sd = standard_deviation(&adc_filter2);
+            if (sd <= STANDARD_DEVIATION_LIMIT) {
+                if (kalman_filter_init == false) {
+                    kalman1_init(&kalman_filter,adc2,100.00);
+                    kalman_filter_init = true;
+                }
+                adc_conversion.value = (uint32_t)kalman1_filter(&kalman_filter,adc2);
+            } else {
+                kalman_filter_init = false;
+                adc_conversion.value = adc2;
             }
-            adc_filter = (uint32_t)kalman1_filter(&kalman_filter,adc2);
-        } else {
-            kalman_filter_init = false;
-            adc_filter = adc2;
-        }
-        /*构建电子秤消息体*/
-        scale_msg.type = TASK_MSG_ADC_COMPLETE;
-        scale_msg.value = adc_filter;
-        
-        /*图像化数据输出*/
+   
+            /*图像化数据输出*/
 #if  DEBUG_CHART > 0
-        uint32_t time = osKernelSysTick();
-        size = snprintf(chart_buffer,60,"%d,%d;%d,%d;%d,%d\r\n",time,adc,time,adc1,time,adc_filter);
-        serial_write(&chart_serial_handle,chart_buffer,size);
-
+            uint32_t time = osKernelSysTick();
+            size = snprintf(chart_buffer,60,"%d,%d;%d,%d;%d,%d\r\n",time,adc,time,adc1,time,adc_conversion.value);
+            serial_write(&chart_serial_handle,chart_buffer,size);
 #endif
-        /*发送消息给电子称*/
-        osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
-        
+        }
 
-        /*等待scale 发出restart信号*/
-        osSignalWait(ADC_TASK_RESTART_SIGNAL,osWaitForever); 
+        /*判断转换结果*/
+        if (adc_conversion.is_complete) {
+            adc_conversion.timeout  = 0;
+            adc_conversion.is_complete = 0;
+            if (adc_conversion.is_err) {
+                adc_conversion.is_err = 0;
+                /*构建adc错误消息体*/
+                scale_msg.type = TASK_MSG_ADC_ERROR;
+            } else { /*构建adc完成消息体*/
+                scale_msg.type = TASK_MSG_ADC_COMPLETE;
+                scale_msg.value = adc_conversion.value;
+            }
+            /*发送消息给电子称*/
+            osMessagePut(scale_task_msg_q_id,*(uint32_t*)&scale_msg,ADC_TASK_MSG_PUT_TIMEOUT_VALUE);
+            /*等待scale 发出restart信号*/
+            osSignalWait(ADC_TASK_RESTART_SIGNAL,osWaitForever); 
         }
 
     }
+}

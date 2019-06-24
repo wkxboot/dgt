@@ -8,13 +8,12 @@
 #include "kalman_filter.h"
 #include "log.h"
  
-#define  WDT_ENABLE           1
+#define  WDT_ENABLE_RESET           1
    
 #define WDT_CLK_FREQ CLOCK_GetFreq(kCLOCK_WdtOsc)
 
 osThreadId   watch_dog_task_hdl;
 
-#if  WDT_ENABLE  > 0 
 
 /*
 * @brief 看门狗中断
@@ -27,25 +26,12 @@ void WDT_IRQHandler(void)
 {
     uint32_t wdtStatus = WWDT_GetStatusFlags(WWDT);
 
-    /* The chip will reset before this happens */
-    if (wdtStatus & kWWDT_TimeoutFlag)
-    {
-        /* A watchdog feed didn't occur prior to window timeout */
-        /* Stop WDT */
-        WWDT_Disable(WWDT);
-        WWDT_ClearStatusFlags(WWDT, kWWDT_TimeoutFlag);
-        /* Needs restart */
-        WWDT_Enable(WWDT);
-    }
-
     /* Handle warning interrupt */
     if (wdtStatus & kWWDT_WarningFlag)
     {
-        /* A watchdog feed didn't occur prior to warning timeout */
+        log_debug("feed dog.tv:%d.\r\n",WWDT->TV);
         WWDT_ClearStatusFlags(WWDT, kWWDT_WarningFlag);
-       /* Feed only for the first 5 warnings then allow for a WDT reset to occur */
         WWDT_Refresh(WWDT);
-        log_debug("feed dog.v:%d.\r\n",WWDT->TV);
     }
        
 
@@ -56,9 +42,6 @@ void WDT_IRQHandler(void)
     __DSB();
 #endif
 }
-
-#endif
-
 
 /*
 * @brief 看门狗任务
@@ -75,7 +58,6 @@ void watch_dog_task(void const * argument)
     uint8_t level;
     uint8_t turn_on = 0;
 
-#if  WDT_ENABLE  > 0 
     wwdt_config_t config;
     uint32_t wdtFreq;
     /* Enable clock of wwdt. */
@@ -101,19 +83,21 @@ void watch_dog_task(void const * argument)
 
     /*
      * Set watchdog feed time constant to approximately 2s
-     * Set watchdog warning time to 512 ticks after feed time constant
+     * Set watchdog warning time to 1000 ticks after feed time constant
      * Set watchdog window time to 1s
      */
     config.timeoutValue = wdtFreq * 2;
     config.warningValue = 1000;
     config.windowValue = wdtFreq * 2;
-    /* Configure WWDT to reset on timeout */
+#if  WDT_ENABLE_RESET  > 0 
     config.enableWatchdogReset = true;
+#else
+    config.enableWatchdogReset = false;
+#endif
     /* Setup watchdog clock frequency(Hz). */
     config.clockFreq_Hz = WDT_CLK_FREQ;
 
     WWDT_Init(WWDT, &config);
-#endif
 
     bsp_sys_led_turn_on();
     turn_on = 1;
