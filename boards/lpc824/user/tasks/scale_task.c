@@ -220,8 +220,11 @@ void scale_task(void const *argument)
         full_weight = digital_scale.scale.nv_param.full_weight;
         full_adc = digital_scale.scale.nv_param.full_adc;
         /*执行校准计算并避免除法错误*/
-        a = (float)(full_weight - zero_weight) / (float)(full_adc - zero_adc + 1);
-        b = (float)full_weight - a * (float)zero_adc;
+        if (full_adc == zero_adc) {
+            full_adc += 1;
+        }
+        a = (float)(full_weight - zero_weight) / (float)(full_adc - zero_adc);
+        b = (float)zero_weight - a * (float)zero_adc;
         tare_weight = 0;
  
         snprintf(buffer,SCALE_BUFFER_SIZE,"%f",a);
@@ -280,7 +283,7 @@ void scale_task(void const *argument)
 
 calibrate_zero_msg_handle:
         if (result == SCALE_TASK_SUCCESS) {
-            log_info("calibrate full ok.a:%f b:%f.\r\n",a,b);   
+            log_info("calibrate zero ok.a:%f b:%f.\r\n",a,b);   
         } else {
             log_error("calibrate zero fail.\r\n");
         }
@@ -302,9 +305,11 @@ calibrate_zero_msg_handle:
         full_adc = digital_scale.scale.cur_adc;
         zero_weight = digital_scale.scale.nv_param.zero_weight;
         zero_adc = digital_scale.scale.nv_param.zero_adc;
-
         /*避免除法错误*/
-        a = (float)(full_weight - zero_weight) / (float)(full_adc - zero_adc + 1);
+        if (full_adc == zero_adc) {
+            full_adc += 1;
+        }
+        a = (float)(full_weight - zero_weight) / (float)(full_adc - zero_adc);
         b = (float)full_weight - a * (float)full_adc;
         tare_weight = 0;
 
