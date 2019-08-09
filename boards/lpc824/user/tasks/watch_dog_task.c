@@ -8,7 +8,7 @@
 #include "kalman_filter.h"
 #include "log.h"
  
-#define  WDT_ENABLE_RESET           1
+#define  WDT_ENABLE_RESET           0
    
 #define WDT_CLK_FREQ CLOCK_GetFreq(kCLOCK_WdtOsc)
 
@@ -29,7 +29,7 @@ void WDT_IRQHandler(void)
     /* Handle warning interrupt */
     if (wdtStatus & kWWDT_WarningFlag)
     {
-        log_debug("feed dog.tv:%d.\r\n",WWDT->TV);
+        //log_debug("feed dog.tv:%d.\r\n",WWDT->TV);
         WWDT_ClearStatusFlags(WWDT, kWWDT_WarningFlag);
         WWDT_Refresh(WWDT);
     }

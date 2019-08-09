@@ -162,7 +162,7 @@ int device_env_init(void)
     /*对比校验值*/
     rc = device_env_crc_check();
     if (!rc) {
-        log_warning("env crc bad. ");
+        log_warning("env crc bad.\r\n");
 
 #if DEVICE_ENV_USE_BACKUP > 0 
         log_debug("read backup env...\r\n");
@@ -174,15 +174,15 @@ int device_env_init(void)
         /*如果备份环境变量是有效的，就使用备份*/
         rc = device_env_crc_check();
         if (rc) {
-            log_warning("backup env crc ok. ");
+            log_warning("backup env crc ok.\r\n");
             return 0;
         }
-        log_warning("backup crc bad. ");
+        log_warning("backup crc bad.\r\n");
 #endif
         /*如果环境变量无效 初始化为0*/
         memset(&device_env,0x00,sizeof(device_env_t));
     } else {
-        log_warning("env crc ok. ");
+        log_warning("env crc ok.\r\n");
     }
 
     return 0;

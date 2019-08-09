@@ -34,13 +34,40 @@ void scale_task(void const *argument);
 #define  SCALE_MAX_WEIGHT_VALUE                     (32766) /**<最大重量值32766  g*/
 #define  SCALE_MIN_WEIGHT_VALUE                     (-32768.0) /**<最小重量值-32768 g*/
 
-#define  SCALE_TASK_MSG_PUT_TIMEOUT_VALUE            10
-#define  SCALE_TASK_MSG_WAIT_TIMEOUT_VALUE           osWaitForever    
+#define  SCALE_TASK_PUT_MSG_TIMEOUT                 10
+#define  SCALE_TASK_MSG_WAIT_TIMEOUT                osWaitForever    
 
 
 
+enum
+{
+    SCALE_TASK_MSG_ADC_COMPLETE,
+    SCALE_TASK_MSG_ADC_ERROR,
+    SCALE_TASK_MSG_GET_NET_WEIGHT,
+    SCALE_TASK_MSG_CALIBRATE_ZERO,
+    SCALE_TASK_MSG_CALIBRATE_FULL,
+    SCALE_TASK_MSG_REMOVE_TARE_WEIGHT,
+    SCALE_TASK_MSG_SET_ADDR,
+    SCALE_TASK_MSG_GET_SENSOR_ID,
+    SCALE_TASK_MSG_GET_FW_VERSION,
+    SCALE_TASK_MSG_GET_ADDR
+};
 
 
+typedef struct
+{
+    struct
+    {
+    uint32_t id;
+    uint32_t type;
+    }head;
+    union 
+    {
+    uint32_t adc;
+    int16_t calibration_weight;
+    uint8_t addr_setting;
+    }content;
+}scale_task_message_t;
 
 
 

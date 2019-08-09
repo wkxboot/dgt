@@ -37,7 +37,6 @@
 #include "watch_dog_task.h"
 #include "scale_task.h"
 #include "protocol_task.h"
-#include "utils.h"
 #include "log.h"
 #include "firmware_version.h"
 
@@ -64,31 +63,30 @@ int main(void)
     log_init();
     log_info("\r\nfirmware version:%s\r\n",FIRMWARE_VERSION_STR);
 
-
     /*电子秤任务消息队列*/
-    osMessageQDef(scale_task_msg_q,5,uint32_t);
-    scale_task_msg_q_id = osMessageCreate(osMessageQ(scale_task_msg_q),scale_task_hdl);
-    log_assert(scale_task_msg_q_id);  
+    scale_task_msg_q_id = xQueueCreate(6,sizeof(scale_task_message_t));
+    log_assert_null_ptr(scale_task_msg_q_id);
+
     /*通信协议任务消息队列*/
-    osMessageQDef(protocol_task_msg_q,5,uint32_t);
-    protocol_task_msg_q_id = osMessageCreate(osMessageQ(protocol_task_msg_q),protocol_task_hdl);
-    log_assert(protocol_task_msg_q_id);  
+    protocol_task_msg_q_id = xQueueCreate(6,sizeof(protocol_task_message_t));
+    log_assert_null_ptr(protocol_task_msg_q_id);
+
     /*看门狗任务*/
     osThreadDef(watch_dog_task, watch_dog_task, osPriorityBelowNormal, 0, 200);
     watch_dog_task_hdl = osThreadCreate(osThread(watch_dog_task), NULL);
-    log_assert(watch_dog_task_hdl);
+    log_assert_null_ptr(watch_dog_task_hdl);
     /*adc任务*/
     osThreadDef(adc_task, adc_task, osPriorityAboveNormal, 0, 200);
     adc_task_hdl = osThreadCreate(osThread(adc_task), NULL);
-    log_assert(adc_task_hdl);
+    log_assert_null_ptr(adc_task_hdl);
     /*电子秤功能任务*/
     osThreadDef(scale_task, scale_task, osPriorityNormal, 0, 200);
     scale_task_hdl = osThreadCreate(osThread(scale_task), NULL);
-    log_assert(scale_task_hdl);
+    log_assert_null_ptr(scale_task_hdl);
     /*通信协议任务*/
     osThreadDef(protocol_task, protocol_task, osPriorityNormal, 0, 200);
     protocol_task_hdl = osThreadCreate(osThread(protocol_task), NULL);
-    log_assert(protocol_task_hdl);
+    log_assert_null_ptr(protocol_task_hdl);
     
 
 

@@ -9,7 +9,7 @@ void adc_task(void const * argument);
 #define  STANDARD_DEVIATION_LIMIT            800 /*开始使用卡尔曼滤波算法的最小标准差*/
 
 #define  ADC_TASK_INTERVAL_VALUE             2    /*任务运行间隔*/
-#define  ADC_TASK_MSG_PUT_TIMEOUT_VALUE      5    /*发送消息超时时间*/
+#define  ADC_TASK_PUT_MSG_TIMEOUT            5    /*发送消息超时时间*/
 
 
 #define  ADC_TASK_RESTART_SIGNAL             (1 << 0)
@@ -32,9 +32,6 @@ void adc_task(void const * argument);
 #define  CHART_SERIAL_BAUDRATES              115200
 #define  CHART_SERIAL_DATABITS               8
 #define  CHART_SERIAL_STOPBITS               1
-
-
-
 
 
 
