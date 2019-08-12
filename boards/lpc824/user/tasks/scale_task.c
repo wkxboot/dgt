@@ -8,7 +8,7 @@
 #include "adc_task.h"
 #include "protocol_task.h"
 #include "scale_task.h"
-#include "math.h"
+#include "kalman_filter.h"
 #include "log.h"
 
 osThreadId   scale_task_hdl;
@@ -30,10 +30,11 @@ typedef struct
 {
     scale_nv_param_t nv_param;
     uint32_t cur_adc;
-    int16_t  net_weight;
-    int16_t  gross_weight;
-    int32_t  net_weight_int32;
-    int32_t  gross_weight_int32;
+    int16_t net_weight;
+    int16_t gross_weight;
+    int32_t net_weight_int32;
+    int32_t gross_weight_int32;
+    uint8_t is_err;
 }scale_t;
 
 typedef struct
@@ -41,9 +42,92 @@ typedef struct
     scale_t          scale; 
 }digital_scale_t;
 
+/** 数字称对象*/
 static digital_scale_t digital_scale;
 
+typedef struct
+{
+    kalman1_state kalman1_state;
+    uint8_t is_init;
+}kalman1_filter_t;
 
+/** 卡尔曼滤波对象*/
+kalman1_filter_t kalman_filter;
+
+
+enum {
+    STEP_SEARCH_HIGH,
+    STEP_SEARCH_LOW
+};
+
+typedef struct
+{
+    float high;
+    float low;
+    float average;
+    float diff;
+    uint8_t is_stable;
+    uint8_t step;
+}data_wave_t;
+
+/*数字称滤波对象*/
+static data_wave_t data_wave1;
+
+#define  SCALE_TASK_WEIGHT_DIFF  5.0
+
+/**
+* @brief 波峰波谷滤波
+* @details
+* @param
+* @param
+* @return 1：找到了新的平均数 0：没有找到新的平均数
+* @attention
+* @note
+*/
+static int data_wave_put(data_wave_t *wave,float value)
+{
+    float average;
+
+    /*判断波峰*/
+    if (wave->step == STEP_SEARCH_HIGH) {
+        if (value < wave->high) {
+            wave->step = STEP_SEARCH_LOW;
+            wave->low = value;
+        } else {
+            wave->high = value;
+        }
+    /*判断波谷*/
+    } else {
+        if (value > wave->low) {
+            /*计算平均值*/
+            wave->average = (wave->high + wave->low) / 2.0;
+            wave->step = STEP_SEARCH_HIGH;
+            wave->high = value;
+            return 1;
+        } else {
+            wave->low = value;
+        }
+    }
+    /*判断波动范围*/
+/*
+    average = (wave->high + wave->low) / 2.0;
+    wave->diff = average - wave->average;
+    if (wave->diff >= SCALE_TASK_WEIGHT_DIFF || wave->diff <= -SCALE_TASK_WEIGHT_DIFF) {
+        wave->average = average;
+    }
+*/
+    return 0;
+}
+
+/**
+* @brief
+* @details
+* @param
+* @param
+* @return
+* @attention
+* @note
+*/
 static void scale_task_param_init()
 {
     digital_scale.scale.nv_param.addr = SCALE_DEFAULT_ADDR;
@@ -152,21 +236,30 @@ void scale_task(void const *argument)
     if (xQueueReceive(scale_task_msg_q_id, &msg_recv,SCALE_TASK_MSG_WAIT_TIMEOUT) == pdTRUE) {
         /*ADC转换错误*/
         if (msg_recv.head.id == SCALE_TASK_MSG_ADC_ERROR){       
-            digital_scale.scale.net_weight_int32 = SCALE_WEIGHT_ERR_VALUE;
-            digital_scale.scale.gross_weight_int32 = SCALE_WEIGHT_ERR_VALUE;
-            digital_scale.scale.net_weight = SCALE_WEIGHT_ERR_VALUE;
-            digital_scale.scale.gross_weight = SCALE_WEIGHT_ERR_VALUE;  
+            digital_scale.scale.is_err = 1;
             /*向adc_task回应处理结果*/
             osSignalSet(adc_task_hdl,ADC_TASK_RESTART_SIGNAL);
         }
 
         /*实时计算毛重和净重*/
-        if (msg_recv.head.id == SCALE_TASK_MSG_ADC_COMPLETE){    
+        if (msg_recv.head.id == SCALE_TASK_MSG_ADC_COMPLETE){
+            digital_scale.scale.is_err = 0;
             digital_scale.scale.cur_adc = msg_recv.content.adc;
             /*计算毛重和净重*/
             temp_weight = digital_scale.scale.cur_adc * digital_scale.scale.nv_param.a + digital_scale.scale.nv_param.b;
-            weight = get_fine_weight(temp_weight);
-
+            rc = data_wave_put(&data_wave1,temp_weight);
+/*
+            if (rc == 1) {
+                if (kalman_filter.is_init == 0) {
+                    kalman1_init(&kalman_filter.kalman1_state,data_wave1.average,1);
+                    kalman_filter.is_init = 1;
+                }
+                data_wave1.average = kalman1_filter(&kalman_filter.kalman1_state,data_wave1.average);
+            } else {
+                kalman_filter.is_init = 0;
+            }
+*/
+            weight = get_fine_weight(data_wave1.average);
             /*计算32位净重和毛重值*/
             digital_scale.scale.gross_weight_int32 = weight;
             digital_scale.scale.net_weight_int32 = weight - digital_scale.scale.nv_param.tare_weight;
@@ -196,7 +289,11 @@ void scale_task(void const *argument)
         /*净重值*/
         if (msg_recv.head.id == SCALE_TASK_MSG_GET_NET_WEIGHT){
             protocol_msg.head.id = PROTOCOL_TASK_MSG_NET_WEIGHT_VALUE;
-            protocol_msg.content.net_weight = digital_scale.scale.net_weight;
+            if (digital_scale.scale.is_err == 0) {
+                protocol_msg.content.net_weight = digital_scale.scale.net_weight;
+            } else {
+                protocol_msg.content.net_weight = SCALE_WEIGHT_ERR_VALUE;
+            }
  
             log_assert_bool_false(xQueueSend(protocol_task_msg_q_id,&protocol_msg,SCALE_TASK_PUT_MSG_TIMEOUT) == pdPASS);
         }
@@ -204,7 +301,7 @@ void scale_task(void const *argument)
  
         /*0点校准*/
         if (msg_recv.head.id == SCALE_TASK_MSG_CALIBRATE_ZERO) {  
-            if (digital_scale.scale.net_weight == SCALE_WEIGHT_ERR_VALUE ){
+            if (digital_scale.scale.is_err == 1 ) {
                 result = SCALE_TASK_FAILURE; 
                 goto calibrate_zero_msg_handle; 
             }
@@ -289,7 +386,7 @@ calibrate_zero_msg_handle:
     
         /*满量程点校准*/
         if (msg_recv.head.id ==  SCALE_TASK_MSG_CALIBRATE_FULL) {
-            if (digital_scale.scale.net_weight == SCALE_WEIGHT_ERR_VALUE ){
+            if (digital_scale.scale.is_err == 1 ) {
                 result = SCALE_TASK_FAILURE; 
                 goto calibrate_full_msg_handle; 
             }
@@ -375,7 +472,7 @@ calibrate_full_msg_handle:
         
         /*去皮*/
         if (msg_recv.head.id ==  SCALE_TASK_MSG_REMOVE_TARE_WEIGHT) {
-            if (digital_scale.scale.net_weight == SCALE_WEIGHT_ERR_VALUE ){
+            if (digital_scale.scale.is_err == 1 ) {
                 rc = -1;
                 result = SCALE_TASK_FAILURE; 
                 goto remove_tare_weight_msg_handle; 
