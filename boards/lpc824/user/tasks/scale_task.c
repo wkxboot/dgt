@@ -14,6 +14,10 @@
 osThreadId   scale_task_hdl;
 osMessageQId scale_task_msg_q_id;
 
+/** 数据变化阈值，为了实时显示数据变化，需要在未找到波峰波谷的时间段内，表现数据变化*/
+#define  SCALE_TASK_WEIGHT_DIFF  40.0
+
+ /** 电子秤非易失参数*/
 typedef struct
 {
     uint8_t addr;
@@ -26,6 +30,7 @@ typedef struct
     uint32_t full_adc;
 }scale_nv_param_t;
 
+ /** 电子秤实时参数*/
 typedef struct
 {
     scale_nv_param_t nv_param;
@@ -37,6 +42,7 @@ typedef struct
     uint8_t is_err;
 }scale_t;
 
+ /** 电子秤*/
 typedef struct
 {
     scale_t          scale; 
@@ -45,6 +51,7 @@ typedef struct
 /** 数字称对象*/
 static digital_scale_t digital_scale;
 
+ /** 卡尔曼滤波结构体*/
 typedef struct
 {
     kalman1_state kalman1_state;
@@ -60,34 +67,32 @@ enum {
     STEP_SEARCH_LOW
 };
 
+ /** 数据波峰波谷结构*/
 typedef struct
 {
     float high;
     float low;
     float average;
     float diff;
-    uint8_t is_stable;
     uint8_t step;
 }data_wave_t;
 
 /*数字称滤波对象*/
 static data_wave_t data_wave1;
 
-#define  SCALE_TASK_WEIGHT_DIFF  5.0
-
 /**
 * @brief 波峰波谷滤波
 * @details
 * @param
 * @param
-* @return 1：找到了新的平均数 0：没有找到新的平均数
+* @return 0：数据无变化 1：找到了波峰波谷数，并计算了平均值 2：平均数值差异大于阈值，并计算了平均值
 * @attention
 * @note
 */
 static int data_wave_put(data_wave_t *wave,float value)
 {
     float average;
-
+    
     /*判断波峰*/
     if (wave->step == STEP_SEARCH_HIGH) {
         if (value < wave->high) {
@@ -108,14 +113,15 @@ static int data_wave_put(data_wave_t *wave,float value)
             wave->low = value;
         }
     }
+
     /*判断波动范围*/
-/*
     average = (wave->high + wave->low) / 2.0;
     wave->diff = average - wave->average;
     if (wave->diff >= SCALE_TASK_WEIGHT_DIFF || wave->diff <= -SCALE_TASK_WEIGHT_DIFF) {
         wave->average = average;
+        return 2;
     }
-*/
+
     return 0;
 }
 
@@ -147,12 +153,12 @@ static void scale_task_param_init()
 }
 
 /*获取四舍五入的重量值*/
-static int16_t get_fine_weight(float weight)
+static int32_t get_fine_weight(float weight)
 {
-    int16_t int_weight = 0;
+    int32_t int_weight = 0;
     float float_weight;
     
-    int_weight = (int16_t)weight;
+    int_weight = (int32_t)weight;
     float_weight = weight - int_weight;
     
     if (float_weight >= 0.5) {
@@ -248,17 +254,17 @@ void scale_task(void const *argument)
             /*计算毛重和净重*/
             temp_weight = digital_scale.scale.cur_adc * digital_scale.scale.nv_param.a + digital_scale.scale.nv_param.b;
             rc = data_wave_put(&data_wave1,temp_weight);
-/*
+
             if (rc == 1) {
                 if (kalman_filter.is_init == 0) {
                     kalman1_init(&kalman_filter.kalman1_state,data_wave1.average,1);
                     kalman_filter.is_init = 1;
                 }
                 data_wave1.average = kalman1_filter(&kalman_filter.kalman1_state,data_wave1.average);
-            } else {
+            } else if (rc == 2) {
                 kalman_filter.is_init = 0;
             }
-*/
+
             weight = get_fine_weight(data_wave1.average);
             /*计算32位净重和毛重值*/
             digital_scale.scale.gross_weight_int32 = weight;
