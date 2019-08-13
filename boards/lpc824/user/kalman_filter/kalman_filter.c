@@ -33,7 +33,7 @@ void kalman1_init(kalman1_state *state, float init_x, float init_p)
     state->p = init_p;
     state->A = 1;
     state->H = 1;
-    state->q = 0.1404;  /* predict noise convariance 对预测的不信任度*/
+    state->q = 0.038038;  /* predict noise convariance 对预测的不信任度*/
     state->r = 1.00;  /* measure error convariance 实际的测量方差*/
 }
 

@@ -15,7 +15,7 @@ osThreadId   scale_task_hdl;
 osMessageQId scale_task_msg_q_id;
 
 /** 数据变化阈值，为了实时显示数据变化，需要在未找到波峰波谷的时间段内，表现数据变化*/
-#define  SCALE_TASK_WEIGHT_DIFF  40.0
+#define  SCALE_TASK_WEIGHT_DIFF  10.0
 
  /** 电子秤非易失参数*/
 typedef struct

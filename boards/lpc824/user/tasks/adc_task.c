@@ -114,10 +114,10 @@ void USART0_IRQHandler()
 
 void adc_task(void const * argument)
 {
-    int rc;
     uint32_t adc;
 
 #if DEBUG_CHART > 0
+    int rc;
     /*串口输出，测试用*/
     extern xuart_hal_driver_t xuart_hal_driver;
     uint8_t chart_buffer[60];
