@@ -2,6 +2,6 @@
 !/boards/lpc824/toolchains/iar/dgt.ewp
 !/boards/lpc824/toolchains/iar/dgt.ewd
 !/boards/lpc824/toolchains/iar/dgt.eww
-!/boards/lpc824/toolchains/iar/LPC824_flash.icf
+!/boards/lpc824/toolchains/iar/LPC824M201.icf
 !/boards/lpc824/toolchains/iar/startup_LPC824.s
 
