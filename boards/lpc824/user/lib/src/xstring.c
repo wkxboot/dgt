@@ -1,17 +1,13 @@
-#include "stdio.h"
-#include "string.h"
-#include "stdint.h"
-#include "stdbool.h"
-#include "utils.h"
-#include "cmsis_os.h"
-/*
-* @brief 数组转成HEX字符串
+#include "xstring.h"
+
+/**
+* @brief 转成HEX字符串
 * @param
 * @param
 * @return 
 * @note
 */
-int dump_hex_str(const char *src,char *dst,uint16_t src_len)
+int xstring_hex_to_string(char *dst,const char *src,uint16_t src_len)
  {
     char temp;
 
@@ -30,49 +26,7 @@ int dump_hex_str(const char *src,char *dst,uint16_t src_len)
     return 0;
 }
 
-/* 函数：utils_timer_init
-*  功能：自定义定时器初始化
-*  参数：timer 定时器指针
-*  参数：timeout 超时时间
-*  参数：up 定时器方向-向上计数-向下计数
-*  返回: 0：成功 其他：失败
-*/ 
-int utils_timer_init(utils_timer_t *timer,uint32_t timeout,bool up)
-{
-    if(timer == NULL){
-        return -1;
-    }
-
-    timer->up = up;
-    timer->start = osKernelSysTick();  
-    timer->value = timeout;  
-
-    return 0;
-}
-
-/* 函数：utils_timer_value
-*  功能：定时器现在的值
-*  返回：>=0：现在时间值 其他：失败
-*/ 
-uint32_t utils_timer_value(utils_timer_t *timer)
-{
-    uint32_t time_elapse;
-
-    if (timer == NULL){
-        return 0;
-    }  
-
-    time_elapse = osKernelSysTick() - timer->start; 
-
-    if (timer->up == true) {
-        return  timer->value > time_elapse ? time_elapse : timer->value;
-    }
-
-    return  timer->value > time_elapse ? timer->value - time_elapse : 0; 
-}
-
-
-/*
+/**
 * @brief 判断是否是数字字符
 * @param s字符串
 * @param 
@@ -87,14 +41,15 @@ static uint8_t is_digit(char c)
 
     return 0;
 }
-/*
+
+/**
 * @brief 字符串转浮点数
 * @param s字符串
 * @param 
 * @return 浮点数
 * @note
 */
-double utils_atof(char *s)
+double xstring_atof(char *s)
 { 
     double tf;
     int nc,i,neg;

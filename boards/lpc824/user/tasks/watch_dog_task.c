@@ -29,7 +29,7 @@ void WDT_IRQHandler(void)
     /* Handle warning interrupt */
     if (wdtStatus & kWWDT_WarningFlag)
     {
-        log_debug("feed dog.tv:%d.\r\n",WWDT->TV);
+        //log_debug("feed dog.tv:%d.\r\n",WWDT->TV);
         WWDT_ClearStatusFlags(WWDT, kWWDT_WarningFlag);
         WWDT_Refresh(WWDT);
     }

@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.30.2.18207</state>
+                    <state>8.32.4.20866</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -116,7 +116,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>35</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>35</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>35</state>
                 </option>
                 <option>
@@ -215,14 +215,12 @@
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
                     <name>CCDefines</name>
-                    <state>CPU_LPC824</state>
-                    <state>CPU_LPC824M201JHI33</state>
-                    <state>FEATURE_FULL=1</state>
+                    <state>CPU_LPC824M201JDH20</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -355,21 +353,17 @@
                     <state>$PROJ_DIR$/../../../../CMSIS/Driver/Include</state>
                     <state>$PROJ_DIR$/../../../../CMSIS/Include</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/bsp</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial_uart_hal</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/kalman_filter</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/tasks</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/hx711</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/circle_buffer</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/lib</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/device_env</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/flash_if</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/serial_uart_hal</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/cpu</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/printf</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/lib/src</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log</state>
-                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/serial_uart</state>
+                    <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/uart_console</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/log/SEGGER_RTT_V612j/RTT</state>
                     <state>$PROJ_DIR$/../../../../boards/lpc824/user/debug/logSEGGER_RTT_V612j</state>
                 </option>
@@ -488,6 +482,10 @@
                 <option>
                     <name>IccRTTI2</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
                 </option>
             </data>
         </settings>
@@ -709,7 +707,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>21</version>
+                <version>22</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -790,7 +788,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile</name>
-                    <state>$PROJ_DIR$/LPC824_flash.icf</state>
+                    <state>$PROJ_DIR$\LPC824M201.icf</state>
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
@@ -1025,6 +1023,10 @@
                     <name>IlinkTrustzoneImportLibraryOut</name>
                     <state>dgt_import_lib.o</state>
                 </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1169,7 +1171,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -1186,7 +1188,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -1209,7 +1211,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>26</version>
+                    <version>27</version>
                     <state>38</state>
                 </option>
                 <option>
@@ -1268,7 +1270,7 @@
             <name>ICCARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>34</version>
+                <version>35</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1516,6 +1518,10 @@
                     <name>IccRTTI2</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>OICompilerExtraOption</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1736,7 +1742,7 @@
             <name>ILINK</name>
             <archiveVersion>0</archiveVersion>
             <data>
-                <version>21</version>
+                <version>22</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2052,6 +2058,10 @@
                     <name>IlinkTrustzoneImportLibraryOut</name>
                     <state>###Unitialized###</state>
                 </option>
+                <option>
+                    <name>OILinkExtraOption</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -2195,12 +2205,6 @@
     <group>
         <name>user</name>
         <group>
-            <name>circle_buffer</name>
-            <file>
-                <name>$PROJ_DIR$\..\..\user\circle_buffer\circle_buffer.c</name>
-            </file>
-        </group>
-        <group>
             <name>debug</name>
             <group>
                 <name>cpu</name>
@@ -2210,20 +2214,26 @@
             </group>
             <group>
                 <name>log</name>
+                <group>
+                    <name>segger_rtt</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\RTT\SEGGER_RTT.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\RTT\SEGGER_RTT_printf.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\Syscalls\SEGGER_RTT_Syscalls_IAR.c</name>
+                    </file>
+                </group>
+                <group>
+                    <name>uart_console</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\..\user\debug\log\uart_console\uart_console.c</name>
+                    </file>
+                </group>
                 <file>
                     <name>$PROJ_DIR$\..\..\user\debug\log\log.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\log\serial_uart\log_serial_uart.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\log\printf\printf.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\RTT\SEGGER_RTT.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\..\user\debug\log\SEGGER_RTT_V612j\RTT\SEGGER_RTT_printf.c</name>
                 </file>
             </group>
         </group>
@@ -2254,22 +2264,25 @@
         <group>
             <name>lib</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\lib\crc16.c</name>
+                <name>$PROJ_DIR$\..\..\user\lib\src\circle_buffer.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\user\lib\utils.c</name>
+                <name>$PROJ_DIR$\..\..\user\lib\src\crc16.c</name>
             </file>
-        </group>
-        <group>
-            <name>serial</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\serial\serial.c</name>
+                <name>$PROJ_DIR$\..\..\user\lib\src\nxp_cm0_uart_hal_driver.c</name>
             </file>
-        </group>
-        <group>
-            <name>serial_uart_hal</name>
             <file>
-                <name>$PROJ_DIR$\..\..\user\serial_uart_hal\nxp_serial_uart_hal_driver.c</name>
+                <name>$PROJ_DIR$\..\..\user\lib\src\printf.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\lib\src\xstring.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\lib\src\xtimer.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\user\lib\src\xuart.c</name>
             </file>
         </group>
         <group>
