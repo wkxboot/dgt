@@ -8,7 +8,7 @@
 #include "kalman_filter.h"
 #include "log.h"
  
-#define  WDT_ENABLE_RESET           0
+#define  WDT_ENABLE_RESET           1
    
 #define WDT_CLK_FREQ CLOCK_GetFreq(kCLOCK_WdtOsc)
 
